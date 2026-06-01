@@ -72,3 +72,25 @@ test("deepseekEnabled=false notifies on filters alone", async () => {
   expect(scoreCalled).toBe(false);
   expect(notified).toEqual(["100"]);
 });
+
+test("a failing offer is isolated: others still process and markInactive runs", async () => {
+  let markInactiveCalled = false;
+  const { deps, notified } = makeDeps({
+    parseListUrls: () => [
+      { externalId: "bad", url: "https://x/bad-ogl1.html" },
+      { externalId: "good", url: "https://x/good-ogl2.html" },
+    ],
+    parseDetail: (html) => {
+      if (html === "boom") throw new Error("malformed detail page");
+      return { title: "OK 2pok", price: 3500, area: 50, rooms: 2, district: "W", description: "blisko SKM" };
+    },
+    fetchPage: async (url) =>
+      url.includes("bad") ? "boom" : url.includes("ogl") ? "<detail>" : "<list>",
+    markInactive: async () => { markInactiveCalled = true; },
+  });
+  const summary = await runCheck(deps);
+  expect(summary.errorCount).toBe(1);
+  expect(summary.notifiedCount).toBe(1);
+  expect(notified).toEqual(["good"]);
+  expect(markInactiveCalled).toBe(true);
+});
