@@ -24,5 +24,9 @@ export async function saveConfig(patch: Partial<Config>): Promise<Config> {
     headers: { "content-type": "application/json" },
     body: JSON.stringify(patch),
   });
-  return res.json();
+  const data = await res.json();
+  // On validation failure the API returns { error } with a 4xx — surface it
+  // instead of silently overwriting the form state with the error object.
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? `Save failed (HTTP ${res.status})`);
+  return data as Config;
 }
