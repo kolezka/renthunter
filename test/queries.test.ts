@@ -36,7 +36,7 @@ test("upsertOffer inserts then updates lastSeen without duplicating", async () =
   await upsertOffer({ externalId: "111", url: "u", title: "t2" });
   const all = await listOffers();
   expect(all.length).toBe(1);
-  expect(all[0].title).toBe("t2");
+  expect(all[0]!.title).toBe("t2");
 });
 
 test("getKnownExternalIds returns existing ids", async () => {
@@ -59,4 +59,12 @@ test("markNotified and markInactive", async () => {
   expect(o111.notified).toBe(true);
   expect(o111.status).toBe("active");
   expect(o222.status).toBe("inactive");
+});
+
+test("listOffers sorts scored offers above unscored (NULLS LAST)", async () => {
+  await upsertOffer({ externalId: "low", url: "u", title: "t", score: 30 });
+  await upsertOffer({ externalId: "none", url: "u", title: "t" }); // score null
+  await upsertOffer({ externalId: "high", url: "u", title: "t", score: 90 });
+  const ids = (await listOffers()).map((o) => o.externalId);
+  expect(ids).toEqual(["high", "low", "none"]);
 });

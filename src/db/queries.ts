@@ -8,8 +8,9 @@ export async function ensureConfig(defaultSearchUrl: string): Promise<void> {
 
 export async function getConfig(): Promise<Config> {
   const rows = await db.select().from(config).where(eq(config.id, 1)).limit(1);
-  if (rows.length === 0) throw new Error("Config not seeded; call ensureConfig first");
-  return rows[0];
+  const row = rows[0];
+  if (!row) throw new Error("Config not seeded; call ensureConfig first");
+  return row;
 }
 
 export async function updateConfig(patch: Partial<Omit<Config, "id">>): Promise<Config> {
@@ -33,6 +34,7 @@ export async function upsertOffer(o: NewOffer): Promise<void> {
         price: o.price ?? sql`${offers.price}`,
         area: o.area ?? sql`${offers.area}`,
         rooms: o.rooms ?? sql`${offers.rooms}`,
+        url: o.url,
         district: o.district ?? sql`${offers.district}`,
         description: o.description ?? sql`${offers.description}`,
         score: o.score ?? sql`${offers.score}`,
@@ -60,5 +62,9 @@ export async function markInactive(activeExternalIds: string[]): Promise<void> {
 }
 
 export async function listOffers(): Promise<Offer[]> {
-  return db.select().from(offers).orderBy(desc(offers.score), desc(offers.lastSeen));
+  // NULLS LAST so unscored offers don't float above scored ones (Postgres defaults NULLS FIRST on DESC).
+  return db
+    .select()
+    .from(offers)
+    .orderBy(sql`${offers.score} desc nulls last`, desc(offers.lastSeen));
 }
