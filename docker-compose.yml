@@ -3,10 +3,12 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: wynajem
-      POSTGRES_PASSWORD: wynajem
+      # Dev default; override via env (POSTGRES_PASSWORD) and rotate before any non-loopback exposure.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wynajem}
       POSTGRES_DB: wynajem
     ports:
-      - "5432:5432"
+      # Loopback-only: reachable from host (tests, trigger.dev dev) but not from the network.
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -18,7 +20,8 @@ services:
   apprise:
     image: caronc/apprise:latest
     ports:
-      - "8000:8000"
+      # Loopback-only: unauthenticated gateway, must not be exposed to the network.
+      - "127.0.0.1:8000:8000"
 
 volumes:
   pgdata:
