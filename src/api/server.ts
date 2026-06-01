@@ -1,18 +1,8 @@
+import { resolve } from "node:path";
 import { listOffers, getConfig, updateConfig } from "../db/queries";
-import type { Config } from "../db/schema";
+import { validateConfigPatch, safeStaticPath } from "./validate";
 
-const DIST = `${import.meta.dir}/../../web/dist`;
-
-const EDITABLE: (keyof Config)[] = [
-  "searchUrl", "minPrice", "maxPrice", "minArea", "minRooms",
-  "aiCriteria", "scoreThreshold", "pollIntervalMin", "appriseUrls", "deepseekEnabled",
-];
-
-function pickEditable(body: Record<string, unknown>): Partial<Config> {
-  const patch: Record<string, unknown> = {};
-  for (const k of EDITABLE) if (k in body) patch[k] = body[k];
-  return patch as Partial<Config>;
-}
+const DIST = resolve(import.meta.dir, "../../web/dist");
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json" } });
@@ -31,14 +21,24 @@ export function createServer(port: number) {
         return json(await getConfig());
       }
       if (path === "/api/config" && req.method === "PUT") {
-        const body = (await req.json()) as Record<string, unknown>;
-        return json(await updateConfig(pickEditable(body)));
+        let body: Record<string, unknown>;
+        try {
+          body = (await req.json()) as Record<string, unknown>;
+        } catch {
+          return json({ error: "invalid JSON body" }, 400);
+        }
+        const result = validateConfigPatch(body);
+        if (!result.ok) return json({ error: result.error }, 400);
+        return json(await updateConfig(result.patch));
       }
 
-      // static SPA build
+      // static SPA build (path-traversal safe; SPA fallback to index.html)
       const rel = path === "/" ? "/index.html" : path;
-      const file = Bun.file(`${DIST}${rel}`);
-      if (await file.exists()) return new Response(file);
+      const candidate = safeStaticPath(DIST, rel);
+      if (candidate) {
+        const file = Bun.file(candidate);
+        if (await file.exists()) return new Response(file);
+      }
       const index = Bun.file(`${DIST}/index.html`);
       if (await index.exists()) return new Response(index);
 
