@@ -22,7 +22,8 @@ Jedno repo (Bun), współdzielone moduły TS, kilka kontenerów w `docker-compos
 
 - **Svelte SPA** — panel UI (budowany bundlerem Bun przez `bun-plugin-svelte`, nie Vite/SvelteKit).
 - **Bun API** (`Bun.serve`) — serwuje statyczny build SPA + endpointy odczytu ofert i CRUD configu.
-- **PostgreSQL** — przechowuje oferty i konfigurację (dostęp przez `Bun.sql`).
+- **PostgreSQL** — przechowuje oferty i konfigurację. Dostęp przez **Drizzle ORM**
+  (sterownik `drizzle-orm/bun-sql`, pod spodem `Bun.sql` — zgodnie z CLAUDE.md).
 - **trigger.dev** — zadania w tle (scheduled co 5 min): scrape → parse → dedupe → fetch detali → AI score → notify. Cloud (projekt `proj_fcfuguqmrtfsffzmefyl`) teraz, self-hosted w przyszłości.
 - **Apprise** — usługa powiadomień (push), wołana HTTP POST.
 
@@ -47,7 +48,7 @@ frontendu (odczyt ofert, CRUD configu).
                                                        ▼
    ┌──────────────────────────────┐            ┌──────────────┐
    │ trigger.dev (scheduled 5 min)│───────────▶│  PostgreSQL  │
-   │  scrape → parse → dedupe →   │  Bun.sql   │ offers/config│
+   │  scrape → parse → dedupe →   │  Drizzle   │ offers/config│
    │  fetch detali → AI score →   │◀───────────└──────────────┘
    │  notify (Apprise)            │
    └───────────────┬──────────────┘
@@ -62,7 +63,8 @@ frontendu (odczyt ofert, CRUD configu).
 
 Importowane i przez Bun API, i przez zadania trigger.dev:
 
-- `src/db` — schema + zapytania (`Bun.sql`). Migracje proste (SQL na starcie).
+- `src/db` — **Drizzle**: schema (`drizzle-orm/pg-core`), instancja klienta
+  (`drizzle-orm/bun-sql`), zapytania. Migracje generowane i aplikowane przez `drizzle-kit`.
 - `src/scraper` — `fetch` + `HTMLRewriter`:
   - `parseListPage(html)` → lista `{ externalId, title, price, area, rooms, district, url }`
   - `parseDetailPage(html)` → `{ description, ...dodatkowe pola }`
