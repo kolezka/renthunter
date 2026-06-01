@@ -23,5 +23,21 @@ services:
       # Loopback-only: unauthenticated gateway, must not be exposed to the network.
       - "127.0.0.1:8000:8000"
 
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgres://wynajem:wynajem@db:5432/wynajem
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: https://api.deepseek.com
+      APPRISE_URL: http://apprise:8000
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      apprise:
+        condition: service_started
+
 volumes:
   pgdata:
