@@ -12,6 +12,7 @@ export const offers = pgTable("offers", {
   district: text("district"),
   url: text("url").notNull(),
   description: text("description"),
+  images: text("images").array().notNull().default([]),
   score: integer("score"),
   scoreReasons: text("score_reasons"),
   status: text("status").notNull().default("active"),

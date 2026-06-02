@@ -1,12 +1,17 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getOffers, runCrawler, refreshOffer, type Offer } from "./lib/api";
+  import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
+  import OfferDetail from "./OfferDetail.svelte";
 
   let offers: Offer[] = $state([]);
   let loading = $state(true);
   let running = $state(false);
   let toast = $state("");
   let refreshingIds = $state(new Set<string>());
+  let selected = $state<Offer | null>(null);
+  function openDetail(o: Offer) { selected = o; }
+  function closeDetail() { selected = null; }
 
   function flash(msg: string) {
     toast = msg;
@@ -32,6 +37,7 @@
     try {
       const updated = await refreshOffer(o.externalId);
       offers = offers.map((x) => (x.id === updated.id ? updated : x));
+      if (selected && selected.id === updated.id) selected = updated;
     } catch (e) {
       flash(e instanceof Error ? e.message : "Nie udało się odświeżyć");
     } finally {
@@ -55,23 +61,6 @@
     offers = await getOffers();
     loading = false;
   });
-
-  // Score → semantic tier.
-  function tier(score: number | null): "good" | "mid" | "bad" | "none" {
-    if (score == null) return "none";
-    if (score >= 75) return "good";
-    if (score >= 50) return "mid";
-    return "bad";
-  }
-  const tierClass: Record<string, string> = {
-    good: "text-good bg-good/10 border-good/30",
-    mid: "text-mid bg-mid/10 border-mid/30",
-    bad: "text-bad bg-bad/10 border-bad/30",
-    none: "text-ink-3 bg-[var(--glass-fill)] border-[var(--glass-border)]",
-  };
-
-  const pln = new Intl.NumberFormat("pl-PL");
-  const fmt = (n: number | null) => (n == null ? "–" : pln.format(n));
 
   const spring = "ease-[cubic-bezier(0.22,1.18,0.36,1)]";
   const vt = "inline-flex items-center gap-[7px] rounded-full border border-transparent bg-transparent px-[14px] py-[7px] text-[0.85rem] font-semibold cursor-pointer transition-colors duration-200";
@@ -140,11 +129,17 @@
   <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
     {#each offers as o, i (o.id)}
       <article
-        class="glass relative flex flex-col gap-3 rounded-[var(--radius-glass)] p-5 animate-rise transition-[transform,border-color,background] duration-[400ms] {spring} hover:-translate-y-[5px] hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-fill-strong)]"
+        class="glass relative flex cursor-pointer flex-col gap-3 rounded-[var(--radius-glass)] p-5 animate-rise transition-[transform,border-color,background] duration-[400ms] {spring} hover:-translate-y-[5px] hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-fill-strong)]"
         style="animation-delay:{Math.min(i, 12) * 45}ms"
+        onclick={() => openDetail(o)}
+        role="button" tabindex="0"
+        onkeydown={(e) => (e.key === "Enter" || e.key === " ") && openDetail(o)}
       >
         {#if o.notified}
           <span class="pointer-events-none absolute inset-0 rounded-[var(--radius-glass)] shadow-[inset_0_0_0_1px_rgba(52,211,153,0.4),0_0_30px_-6px_rgba(52,211,153,0.35)]"></span>
+        {/if}
+        {#if o.images?.length}
+          <img src={o.images[0]} alt={o.title} loading="lazy" class="-mx-5 -mt-5 mb-1 h-[150px] w-[calc(100%+40px)] rounded-t-[var(--radius-glass)] object-cover" />
         {/if}
 
         <header class="flex items-center justify-between">
@@ -157,7 +152,7 @@
 
         <h2 class="m-0 line-clamp-2 text-[0.98rem] font-semibold leading-[1.4] text-ink" title={o.title}>{o.title}</h2>
 
-        <div class="font-display text-[1.85rem] font-bold tracking-[-0.02em] [font-variant-numeric:tabular-nums]">{fmt(o.price)} <span class="text-[0.95rem] font-semibold text-ink-3">zł</span></div>
+        <div class="font-display text-[1.85rem] font-bold tracking-[-0.02em] [font-variant-numeric:tabular-nums]">{fmtPln(o.price)} <span class="text-[0.95rem] font-semibold text-ink-3">zł</span></div>
 
         <div class="flex flex-wrap gap-[7px]">
           {#if o.area != null}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{o.area} m²</span>{/if}
@@ -169,7 +164,7 @@
           <span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span>
           <div class="flex items-center gap-[8px]">
             <button
-              onclick={() => onRefresh(o)}
+              onclick={(e) => { e.stopPropagation(); onRefresh(o); }}
               disabled={refreshingIds.has(o.externalId)}
               title="Odśwież i przelicz ocenę"
               aria-label="Odśwież ofertę"
@@ -177,7 +172,7 @@
             >
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={refreshingIds.has(o.externalId) ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
             </button>
-            <a class={openBtn} href={o.url} target="_blank" rel="noreferrer">
+            <a class={openBtn} href={o.url} target="_blank" rel="noreferrer" onclick={(e) => e.stopPropagation()}>
               Otwórz
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
             </a>
@@ -192,35 +187,53 @@
     <table class="w-full border-collapse">
       <thead>
         <tr class="[&>th]:border-b [&>th]:border-[var(--glass-border)] [&>th]:bg-white/[0.03] [&>th]:px-4 [&>th]:py-[14px] [&>th]:text-left [&>th]:text-[0.72rem] [&>th]:font-bold [&>th]:uppercase [&>th]:tracking-[0.07em] [&>th]:text-ink-3">
-          <th>Score</th><th>Tytuł</th><th class="!text-right">Cena</th><th class="!text-right">m²</th>
-          <th class="!text-right">Pok.</th><th>Dzielnica</th><th>Status</th><th></th>
+          <th></th><th>Score</th><th>Tytuł</th><th class="!text-right">Cena</th><th class="!text-right">m²</th>
+          <th class="!text-right">Pok.</th><th>Dzielnica</th><th>AI</th><th>Dodano</th><th>Powiad.</th><th>Status</th><th></th>
         </tr>
       </thead>
       <tbody class="[&_tr:last-child>td]:border-0 [&>tr>td]:border-b [&>tr>td]:border-white/[0.06] [&>tr>td]:px-4 [&>tr>td]:py-[13px] [&>tr>td]:text-[0.9rem] [&>tr>td]:text-ink-2">
         {#each offers as o (o.id)}
-          <tr class="transition-colors hover:bg-white/[0.04] {o.notified ? 'shadow-[inset_3px_0_0_0_var(--color-good)]' : ''}">
+          <tr class="cursor-pointer transition-colors hover:bg-white/[0.04] {o.notified ? 'shadow-[inset_3px_0_0_0_var(--color-good)]' : ''}" onclick={() => openDetail(o)}>
+            <td>
+              {#if o.images?.length}
+                <img src={o.images[0]} alt="" loading="lazy" class="h-10 w-14 rounded-[7px] object-cover" />
+              {:else}
+                <div class="h-10 w-14 rounded-[7px] border border-[var(--glass-border)] bg-[var(--glass-fill)]"></div>
+              {/if}
+            </td>
             <td><span class="inline-grid min-w-[38px] place-items-center rounded-[9px] border px-2 py-1 text-[0.85rem] font-extrabold [font-variant-numeric:tabular-nums] {tierClass[tier(o.score)]}">{o.score ?? "–"}</span></td>
-            <td class="max-w-[320px] overflow-hidden text-ellipsis whitespace-nowrap !text-ink" title={o.title}>{o.title}</td>
-            <td class="text-right font-semibold !text-ink [font-variant-numeric:tabular-nums]">{fmt(o.price)} zł</td>
+            <td class="max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap !text-ink" title={o.title}>{o.title}</td>
+            <td class="text-right font-semibold !text-ink [font-variant-numeric:tabular-nums]">{fmtPln(o.price)} zł</td>
             <td class="text-right [font-variant-numeric:tabular-nums]">{o.area ?? "–"}</td>
             <td class="text-right [font-variant-numeric:tabular-nums]">{o.rooms ?? "–"}</td>
             <td>{o.district ?? "–"}</td>
+            <td class="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap text-ink-3" title={o.scoreReasons ?? ""}>{o.scoreReasons ?? "–"}</td>
+            <td class="whitespace-nowrap text-ink-3">{relativeDate(o.firstSeen)}</td>
+            <td>{#if o.notified}<span class="rounded-full border border-good/30 bg-good/10 px-[8px] py-[2px] text-[0.66rem] font-bold uppercase text-good">tak</span>{:else}<span class="text-ink-3">–</span>{/if}</td>
             <td><span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span></td>
             <td>
               <button
-                onclick={() => onRefresh(o)}
+                onclick={(e) => { e.stopPropagation(); onRefresh(o); }}
                 disabled={refreshingIds.has(o.externalId)}
-                title="Odśwież"
-                aria-label="Odśwież ofertę"
+                title="Odśwież" aria-label="Odśwież ofertę"
                 class="mr-3 align-middle text-ink-3 transition-colors hover:text-ink disabled:opacity-50"
               >
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline {refreshingIds.has(o.externalId) ? 'animate-spin' : ''}"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
               </button>
-              <a class="font-semibold text-ink no-underline hover:text-[var(--color-aurora-indigo)]" href={o.url} target="_blank" rel="noreferrer">otwórz ↗</a>
+              <a class="font-semibold text-ink no-underline hover:text-[var(--color-aurora-indigo)]" href={o.url} target="_blank" rel="noreferrer" onclick={(e) => e.stopPropagation()}>otwórz ↗</a>
             </td>
           </tr>
         {/each}
       </tbody>
     </table>
   </div>
+{/if}
+
+{#if selected}
+  <OfferDetail
+    offer={selected}
+    onClose={closeDetail}
+    onRefresh={onRefresh}
+    refreshing={refreshingIds.has(selected.externalId)}
+  />
 {/if}
