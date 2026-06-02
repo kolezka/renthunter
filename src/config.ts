@@ -6,7 +6,7 @@ export interface AppConfig {
   port: number;
 }
 
-export function loadConfig(env: Record<string, string | undefined> = Bun.env): AppConfig {
+export function loadConfig(env: Record<string, string | undefined> = process.env): AppConfig {
   const require = (key: string): string => {
     const v = env[key];
     if (!v) throw new Error(`Missing required env var: ${key}`);
