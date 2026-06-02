@@ -1,8 +1,9 @@
 import type { Source } from "./types";
 import { trojmiasto } from "./trojmiasto";
 import { olx } from "./olx";
+import { otodom } from "./otodom";
 
-export const SOURCES: Source[] = [trojmiasto, olx];
+export const SOURCES: Source[] = [trojmiasto, olx, otodom];
 
 /** Strip a leading "www." so "www.olx.pl" and "olx.pl" both match. */
 export function normalizeHost(host: string): string {
