@@ -3,9 +3,24 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun run build && bun --hot src/api/server.ts",
+    "start": "bun run src/api/server.ts",
+    "start:prod": "bunx drizzle-kit push && bun run src/api/server.ts",
+    "build": "bun run web/build.ts",
+    "test": "bun test",
+    "db:push": "bunx drizzle-kit push",
+    "db:generate": "bunx drizzle-kit generate",
+    "db:migrate": "bunx drizzle-kit migrate",
+    "db:studio": "bunx drizzle-kit studio",
+    "trigger:dev": "bunx trigger.dev@latest dev",
+    "trigger:deploy": "bunx trigger.dev@latest deploy"
+  },
   "devDependencies": {
     "@types/bun": "latest",
-    "drizzle-kit": "^0.31.10"
+    "bun-plugin-tailwind": "^0.1.2",
+    "drizzle-kit": "^0.31.10",
+    "tailwindcss": "^4.3.0"
   },
   "peerDependencies": {
     "typescript": "^5"
