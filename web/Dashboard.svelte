@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getOffers, runCrawler, refreshOffer, type Offer } from "./lib/api";
+  import { getOffers, runCrawler, refreshOffer, SOURCE_LABEL, type Offer } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
   import OfferDetail from "./OfferDetail.svelte";
 
@@ -17,7 +17,6 @@
     sourceFilter === "all" ? offers : offers.filter((o) => o.source === sourceFilter),
   );
 
-  const SOURCE_LABEL: Record<string, string> = { trojmiasto: "trójmiasto", olx: "OLX", otodom: "Otodom" };
   const SOURCE_CLASS: Record<string, string> = {
     trojmiasto: "border-[rgba(56,189,248,0.35)] bg-[rgba(56,189,248,0.12)] text-[#7dd3fc]",
     olx: "border-[rgba(52,211,153,0.35)] bg-[rgba(52,211,153,0.12)] text-[#6ee7b7]",
@@ -26,11 +25,9 @@
   const sourceLabel = (s: string) => SOURCE_LABEL[s] ?? s;
   const sourceClass = (s: string) =>
     SOURCE_CLASS[s] ?? "border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2";
-  const SOURCE_FILTERS: { value: string; label: string }[] = [
+  const SOURCE_FILTERS = [
     { value: "all", label: "Wszystkie" },
-    { value: "trojmiasto", label: "trójmiasto" },
-    { value: "olx", label: "OLX" },
-    { value: "otodom", label: "Otodom" },
+    ...Object.entries(SOURCE_LABEL).map(([value, label]) => ({ value, label })),
   ];
   function openDetail(o: Offer) { selected = o; }
   function closeDetail() { selected = null; }
