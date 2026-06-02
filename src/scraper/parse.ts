@@ -1,4 +1,4 @@
-import { metaContent, firstJsonLd } from "./html";
+import { metaContent, firstJsonLd, ldImages } from "./html";
 
 export interface ListItem {
   externalId: string;
@@ -120,21 +120,7 @@ export function parseDetail(html: string): OfferDetail {
   }
 
   // Images: JSON-LD `image` array (full gallery), fallback to og:image.
-  let images: string[] = [];
-  const ldImage = ld?.image;
-  if (Array.isArray(ldImage)) {
-    images = ldImage
-      .map((x) =>
-        typeof x === "string"
-          ? x
-          : x && typeof x === "object"
-            ? String((x as Record<string, unknown>).url ?? (x as Record<string, unknown>).contentUrl ?? "")
-            : "",
-      )
-      .filter(Boolean);
-  } else if (typeof ldImage === "string") {
-    images = [ldImage];
-  }
+  let images: string[] = ldImages(ld);
   if (images.length === 0) {
     const og = metaContent(html, "og:image");
     if (og) images = [og];

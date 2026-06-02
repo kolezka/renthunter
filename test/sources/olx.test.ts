@@ -25,8 +25,9 @@ test("olx.listPageUrls paginates with &page=N", () => {
 test("olx.parseDetail extracts core fields from fixture", async () => {
   const html = await Bun.file("test/fixtures/olx-detail.html").text();
   const d = olx.parseDetail(html);
-  expect(d.title.length).toBeGreaterThan(0);
-  expect(d.price === null || d.price > 0).toBe(true);
-  expect(d.area === null || d.area > 0).toBe(true);
-  expect(Array.isArray(d.images)).toBe(true);
+  expect(d.title).toContain("Guderskiego");
+  expect(d.price).toBe(2850);
+  expect(d.area).toBe(47);
+  expect(d.rooms).toBe(2);
+  expect(d.images.length).toBeGreaterThan(0);
 });
