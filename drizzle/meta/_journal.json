@@ -29,6 +29,13 @@
       "when": 1780444800000,
       "tag": "0003_multisource",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1780531200000,
+      "tag": "0004_multiportal",
+      "breakpoints": true
     }
   ]
 }

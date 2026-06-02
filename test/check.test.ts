@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
 import { runCheck, type CheckDeps } from "../src/pipeline/check";
+import type { Source } from "../src/scraper/sources/types";
 import type { LogInput } from "../src/log/logger";
 
 const baseConfig = {
@@ -10,6 +11,28 @@ const baseConfig = {
   appriseUrls: ["json://x"], deepseekEnabled: true,
   listPages: 1, maxDetailFetchesPerRun: 30, requestDelayMs: 0, concurrencyLimit: 1,
 };
+
+/** Build a fake Source. Returns ids VERBATIM (no namespacing) so tests can
+ *  assert bare ids like "100"/"good". Mimics trojmiasto pagination. */
+function makeSource(over: Partial<Source> = {}): Source {
+  return {
+    id: "trojmiasto",
+    hosts: ["x"],
+    listPageUrls: (url: string, pages: number) =>
+      Array.from({ length: pages }, (_, i) =>
+        i === 0 ? url : `${url}/?strona=${i + 1}`,
+      ),
+    parseList: () => [
+      { externalId: "100", url: "https://x/a-ogl100.html", source: "trojmiasto" },
+    ],
+    parseDetail: () => ({
+      title: "Ładne 2pok", price: 3500, area: 50, rooms: 2,
+      district: "Wrzeszcz", description: "blisko SKM",
+      images: ["https://img/1.jpg", "https://img/2.jpg"],
+    }),
+    ...over,
+  };
+}
 
 function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: string[]; upserts: any[]; logs: LogInput[] } {
   const notified: string[] = [];
@@ -22,8 +45,7 @@ function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: s
     markNotified: async (id) => { notified.push(id); },
     markInactive: async () => {},
     fetchPage: async (url) => url.includes("ogl") ? "<detail>" : "<list>",
-    parseListUrls: () => [{ externalId: "100", url: "https://x/a-ogl100.html" }],
-    parseDetail: () => ({ title: "Ładne 2pok", price: 3500, area: 50, rooms: 2, district: "Wrzeszcz", description: "blisko SKM", images: ["https://img/1.jpg", "https://img/2.jpg"] }),
+    resolveSource: () => makeSource(),
     scoreOffer: async () => ({ score: 88, reasons: "blisko SKM" }),
     sendNotification: async () => {},
     appriseUrl: "http://apprise:8000",
@@ -41,6 +63,7 @@ test("new offer passing filters + score>=threshold gets notified", async () => {
   expect(summary.notifiedCount).toBe(1);
   expect(notified).toEqual(["100"]);
   expect(upserts[0].score).toBe(88);
+  expect(upserts[0].source).toBe("trojmiasto");
 });
 
 test("known offer is not re-processed as new", async () => {
@@ -59,7 +82,9 @@ test("offer below score threshold is saved but not notified", async () => {
 
 test("offer failing hard filters is skipped (no detail score, no notify)", async () => {
   const { deps, notified } = makeDeps({
-    parseDetail: () => ({ title: "1pok", price: 3500, area: 50, rooms: 1, district: "X", description: "", images: [] }),
+    resolveSource: () => makeSource({
+      parseDetail: () => ({ title: "1pok", price: 3500, area: 50, rooms: 1, district: "X", description: "", images: [] }),
+    }),
   });
   const summary = await runCheck(deps);
   expect(summary.notifiedCount).toBe(0);
@@ -81,14 +106,16 @@ test("deepseekEnabled=false notifies on filters alone", async () => {
 test("a failing offer is isolated: others still process and markInactive runs", async () => {
   let markInactiveCalled = false;
   const { deps, notified } = makeDeps({
-    parseListUrls: () => [
-      { externalId: "bad", url: "https://x/bad-ogl1.html" },
-      { externalId: "good", url: "https://x/good-ogl2.html" },
-    ],
-    parseDetail: (html) => {
-      if (html === "boom") throw new Error("malformed detail page");
-      return { title: "OK 2pok", price: 3500, area: 50, rooms: 2, district: "W", description: "blisko SKM", images: [] };
-    },
+    resolveSource: () => makeSource({
+      parseList: () => [
+        { externalId: "bad", url: "https://x/bad-ogl1.html", source: "trojmiasto" },
+        { externalId: "good", url: "https://x/good-ogl2.html", source: "trojmiasto" },
+      ],
+      parseDetail: (html) => {
+        if (html === "boom") throw new Error("malformed detail page");
+        return { title: "OK 2pok", price: 3500, area: 50, rooms: 2, district: "W", description: "blisko SKM", images: [] };
+      },
+    }),
     fetchPage: async (url) =>
       url.includes("bad") ? "boom" : url.includes("ogl") ? "<detail>" : "<list>",
     markInactive: async () => { markInactiveCalled = true; },
@@ -136,10 +163,12 @@ test("maxDetailFetchesPerRun caps how many fresh offers are processed", async ()
   const cfg = { ...baseConfig, maxDetailFetchesPerRun: 1 };
   const { deps, upserts } = makeDeps({
     getConfig: async () => cfg as any,
-    parseListUrls: () => [
-      { externalId: "1", url: "https://x/a-ogl1.html" },
-      { externalId: "2", url: "https://x/b-ogl2.html" },
-    ],
+    resolveSource: () => makeSource({
+      parseList: () => [
+        { externalId: "1", url: "https://x/a-ogl1.html", source: "trojmiasto" },
+        { externalId: "2", url: "https://x/b-ogl2.html", source: "trojmiasto" },
+      ],
+    }),
   });
   const summary = await runCheck(deps);
   expect(summary.newCount).toBe(1);
@@ -151,7 +180,9 @@ test("concurrencyLimit > 1 still processes every fresh offer once", async () => 
   const ids = ["1", "2", "3", "4", "5"];
   const { deps, upserts } = makeDeps({
     getConfig: async () => cfg as any,
-    parseListUrls: () => ids.map((i) => ({ externalId: i, url: `https://x/o-ogl${i}.html` })),
+    resolveSource: () => makeSource({
+      parseList: () => ids.map((i) => ({ externalId: i, url: `https://x/o-ogl${i}.html`, source: "trojmiasto" as const })),
+    }),
   });
   const summary = await runCheck(deps);
   expect(summary.newCount).toBe(5);
@@ -171,10 +202,12 @@ test("listPages > 1 fetches and merges multiple list pages (dedup by externalId)
       if (url.includes("ogl")) return "<detail>";
       return pages[url] ?? "<list>";
     },
-    parseListUrls: (html) =>
-      html === "<list2>"
-        ? [{ externalId: "200", url: "https://x/b-ogl200.html" }]
-        : [{ externalId: "100", url: "https://x/a-ogl100.html" }],
+    resolveSource: () => makeSource({
+      parseList: (html) =>
+        html === "<list2>"
+          ? [{ externalId: "200", url: "https://x/b-ogl200.html", source: "trojmiasto" }]
+          : [{ externalId: "100", url: "https://x/a-ogl100.html", source: "trojmiasto" }],
+    }),
   });
   const summary = await runCheck(deps);
   expect(summary.newCount).toBe(2);
@@ -198,15 +231,49 @@ test("scrapes every source and dedups across sources by externalId", async () =>
       if (url.includes("ogl")) return "<detail>";
       return bySource[url] ?? "<list>";
     },
-    parseListUrls: (html) =>
-      html === "<list-b>"
-        ? [
-            { externalId: "100", url: "https://x/a-ogl100.html" }, // dup across sources
-            { externalId: "200", url: "https://x/b-ogl200.html" },
-          ]
-        : [{ externalId: "100", url: "https://x/a-ogl100.html" }],
+    resolveSource: () => makeSource({
+      parseList: (html) =>
+        html === "<list-b>"
+          ? [
+              { externalId: "100", url: "https://x/a-ogl100.html", source: "trojmiasto" }, // dup across sources
+              { externalId: "200", url: "https://x/b-ogl200.html", source: "trojmiasto" },
+            ]
+          : [{ externalId: "100", url: "https://x/a-ogl100.html", source: "trojmiasto" }],
+    }),
   });
   const summary = await runCheck(deps);
   expect(summary.listedCount).toBe(2); // 100 deduped, 200 unique
   expect(summary.newCount).toBe(2);
+});
+
+test("a list page whose parseList throws is logged as list.error and skipped, run continues", async () => {
+  const { deps, logs } = makeDeps({
+    resolveSource: () => makeSource({
+      parseList: (html: string) => {
+        if (html === "<bad>") throw new Error("bot challenge");
+        return [{ externalId: "100", url: "https://x/a-ogl100.html", source: "trojmiasto" }];
+      },
+      listPageUrls: (u: string) => [`${u}/bad`, u],
+    }),
+    fetchPage: async (url: string) => url.endsWith("/bad") ? "<bad>" : url.includes("ogl") ? "<detail>" : "<list>",
+    getConfig: async () => ({ ...baseConfig, listPages: 2 }) as any,
+  });
+  const summary = await runCheck(deps);
+  const warn = logs.find((l) => l.event === "list.error");
+  expect(warn).toBeDefined();
+  expect(warn!.level).toBe("warn");
+  expect(summary.listedCount).toBe(1); // the good page still parsed
+});
+
+test("runCheck warns and skips a searchUrl with no registered source", async () => {
+  const { deps, logs } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, searchUrls: ["https://unknown.example/x", "https://search"] }) as any,
+    resolveSource: (url: string) => (url.includes("unknown.example") ? null : makeSource()),
+  });
+  const summary = await runCheck(deps);
+  const warn = logs.find((l) => l.event === "source.unknown");
+  expect(warn).toBeDefined();
+  expect(warn!.level).toBe("warn");
+  expect((warn!.context as any).searchUrl).toContain("unknown.example");
+  expect(summary.listedCount).toBeGreaterThan(0);
 });

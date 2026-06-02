@@ -1,5 +1,6 @@
 import { resolve, sep } from "node:path";
 import type { Config } from "../db/schema";
+import { allowedHosts, normalizeHost } from "../scraper/sources/registry";
 
 const EDITABLE: (keyof Config)[] = [
   "searchUrls", "minPrice", "maxPrice", "minArea", "minRooms",
@@ -8,9 +9,8 @@ const EDITABLE: (keyof Config)[] = [
   "listPages", "maxDetailFetchesPerRun", "requestDelayMs", "concurrencyLimit",
 ];
 
-// Only trojmiasto search pages are allowed as the scrape target — searchUrl is
+// Only registered source hosts are allowed as the scrape target — searchUrl is
 // fetched server-side by the pipeline, so an arbitrary URL would be an SSRF vector.
-const ALLOWED_SEARCH_HOST = "ogloszenia.trojmiasto.pl";
 const APPRISE_SCHEME = /^[a-z][a-z0-9+.\-]*:\/\/\S+$/i;
 
 export type ValidationResult =
@@ -35,14 +35,15 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
     if (!Array.isArray(v) || !v.every((x) => typeof x === "string")) {
       return { ok: false, error: "searchUrls must be an array of strings" };
     }
+    const hosts = allowedHosts();
     for (const s of v as string[]) {
       let u: URL;
       try { u = new URL(s); } catch { return { ok: false, error: `searchUrls entry is not a valid URL: ${s.slice(0, 40)}` }; }
       if (u.protocol !== "https:" && u.protocol !== "http:") {
         return { ok: false, error: "searchUrls entries must be http(s)" };
       }
-      if (u.hostname !== ALLOWED_SEARCH_HOST) {
-        return { ok: false, error: `searchUrls host must be ${ALLOWED_SEARCH_HOST}` };
+      if (!hosts.has(normalizeHost(u.hostname))) {
+        return { ok: false, error: `searchUrls host not allowed: ${u.hostname.slice(0, 60)}` };
       }
     }
   }
