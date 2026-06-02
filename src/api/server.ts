@@ -112,7 +112,9 @@ export function createServer(port: number, opts: ServerOptions = {}) {
     },
     websocket: {
       open(ws: import("bun").ServerWebSocket<{ unsub?: () => void }>) {
-        ws.data.unsub = progressBus.subscribe((e) => ws.send(JSON.stringify(e)));
+        ws.data.unsub = progressBus.subscribe((e) => {
+          if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(e));
+        });
       },
       message() {},
       close(ws: import("bun").ServerWebSocket<{ unsub?: () => void }>) {

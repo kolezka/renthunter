@@ -129,13 +129,16 @@ test("POST /api/rescore returns 400 when deepseek disabled", async () => {
 test("GET /ws relays progressBus events to the client", async () => {
   const { progressBus } = await import("../src/pipeline/progress");
   const ws = new WebSocket(`ws://localhost:${server.port}/ws`);
-  const message = await new Promise<string>((resolve, reject) => {
-    ws.onopen = () => progressBus.emit({ type: "rescore:start", runId: "ws-test", total: 5 });
-    ws.onmessage = (ev) => resolve(String(ev.data));
-    ws.onerror = () => reject(new Error("ws error"));
-    setTimeout(() => reject(new Error("timeout")), 2000);
-  });
-  ws.close();
-  expect(JSON.parse(message)).toEqual({ type: "rescore:start", runId: "ws-test", total: 5 });
+  try {
+    const message = await new Promise<string>((resolve, reject) => {
+      const t = setTimeout(() => reject(new Error("timeout")), 2000);
+      ws.onopen = () => progressBus.emit({ type: "rescore:start", runId: "ws-test", total: 5 });
+      ws.onmessage = (ev) => { clearTimeout(t); resolve(String(ev.data)); };
+      ws.onerror = () => { clearTimeout(t); reject(new Error("ws error")); };
+    });
+    expect(JSON.parse(message)).toEqual({ type: "rescore:start", runId: "ws-test", total: 5 });
+  } finally {
+    ws.close();
+  }
 });
 
