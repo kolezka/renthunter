@@ -102,5 +102,12 @@ if (import.meta.main) {
     "https://ogloszenia.trojmiasto.pl/nieruchomosci-mam-do-wynajecia/ai,_4000,e1i,81_33_58_46_91_34_32_1_143_87_76_86_142_2_7_31_29_60_26_93,qi,40_.html";
   await ensureConfig(DEFAULT_SEARCH);
   const server = createServer(env.port);
+
+  const { startScheduler, buildSchedulerDeps } = await import("../pipeline/scheduler");
+  // Guard against bun --hot re-evaluating this module and stacking timers.
+  const g = globalThis as { __crawlScheduler?: () => void };
+  g.__crawlScheduler?.();
+  g.__crawlScheduler = startScheduler(buildSchedulerDeps(env, createRunLogger(dbLogger, "scheduler")));
+
   console.log(`API listening on http://localhost:${server.port}`);
 }
