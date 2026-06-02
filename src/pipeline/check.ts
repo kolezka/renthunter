@@ -1,6 +1,7 @@
 import type { Config, NewOffer } from "../db/schema";
 import { passesFilters } from "./filter";
 import type { ListItem, OfferDetail } from "../scraper/parse";
+import type { Logger } from "../log/logger";
 
 export interface CheckDeps {
   getConfig: () => Promise<Config>;
@@ -21,6 +22,7 @@ export interface CheckDeps {
   appriseUrl: string;
   deepseekApiKey: string;
   deepseekBaseUrl: string;
+  log: Logger;
 }
 
 export interface CheckSummary {
@@ -31,77 +33,100 @@ export interface CheckSummary {
 }
 
 export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
-  const config = await deps.getConfig();
+  await deps.log.log({ level: "info", event: "run.start", message: "check started" });
+  try {
+    const config = await deps.getConfig();
 
-  const listHtml = await deps.fetchPage(config.searchUrl);
-  const items = deps.parseListUrls(listHtml);
-  const activeIds = items.map((i) => i.externalId);
+    const listHtml = await deps.fetchPage(config.searchUrl);
+    const items = deps.parseListUrls(listHtml);
+    const activeIds = items.map((i) => i.externalId);
 
-  const known = await deps.getKnownExternalIds();
-  const fresh = items.filter((i) => !known.has(i.externalId));
+    const known = await deps.getKnownExternalIds();
+    const fresh = items.filter((i) => !known.has(i.externalId));
 
-  let notifiedCount = 0;
-  let errorCount = 0;
+    let notifiedCount = 0;
+    let errorCount = 0;
 
-  for (const item of fresh) {
-    // Isolate per-offer failures: one bad detail page must not abort the whole
-    // run (which would also skip markInactive below). Log, count, and continue.
-    try {
-      const detailHtml = await deps.fetchPage(item.url);
-      const d = deps.parseDetail(detailHtml);
+    for (const item of fresh) {
+      // Isolate per-offer failures: one bad detail page must not abort the whole
+      // run (which would also skip markInactive below). Log, count, and continue.
+      try {
+        const detailHtml = await deps.fetchPage(item.url);
+        const d = deps.parseDetail(detailHtml);
 
-      const base: NewOffer = {
-        externalId: item.externalId,
-        url: item.url,
-        title: d.title,
-        price: d.price,
-        area: d.area,
-        rooms: d.rooms,
-        district: d.district,
-        description: d.description,
-      };
+        const base: NewOffer = {
+          externalId: item.externalId,
+          url: item.url,
+          title: d.title,
+          price: d.price,
+          area: d.area,
+          rooms: d.rooms,
+          district: d.district,
+          description: d.description,
+        };
 
-      if (!passesFilters(d, config)) {
-        await deps.upsertOffer(base);
-        continue;
-      }
+        if (!passesFilters(d, config)) {
+          await deps.upsertOffer(base);
+          continue;
+        }
 
-      let score: number | null = null;
-      let reasons: string | null = null;
-      if (config.deepseekEnabled) {
-        const r = await deps.scoreOffer(
-          { description: d.description, criteria: config.aiCriteria },
-          { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl },
-        );
-        score = r.score;
-        reasons = r.reasons;
-      }
+        let score: number | null = null;
+        let reasons: string | null = null;
+        if (config.deepseekEnabled) {
+          const r = await deps.scoreOffer(
+            { description: d.description, criteria: config.aiCriteria },
+            { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl },
+          );
+          score = r.score;
+          reasons = r.reasons;
+        }
 
-      await deps.upsertOffer({ ...base, score, scoreReasons: reasons });
+        await deps.upsertOffer({ ...base, score, scoreReasons: reasons });
 
-      const meetsThreshold = config.deepseekEnabled ? (score ?? 0) >= config.scoreThreshold : true;
-      if (meetsThreshold) {
-        const title = `Nowa oferta: ${d.title}`.slice(0, 120);
-        const body =
-          `${d.price ?? "?"} zł · ${d.area ?? "?"} m² · ${d.rooms ?? "?"} pok · ${d.district ?? ""}\n` +
-          (reasons ? `AI: ${reasons}\n` : "") +
-          item.url;
-        await deps.sendNotification({
-          appriseUrl: deps.appriseUrl,
-          targets: config.appriseUrls,
-          title,
-          body,
+        const meetsThreshold = config.deepseekEnabled ? (score ?? 0) >= config.scoreThreshold : true;
+        if (meetsThreshold) {
+          const title = `Nowa oferta: ${d.title}`.slice(0, 120);
+          const body =
+            `${d.price ?? "?"} zł · ${d.area ?? "?"} m² · ${d.rooms ?? "?"} pok · ${d.district ?? ""}\n` +
+            (reasons ? `AI: ${reasons}\n` : "") +
+            item.url;
+          await deps.sendNotification({
+            appriseUrl: deps.appriseUrl,
+            targets: config.appriseUrls,
+            title,
+            body,
+          });
+          await deps.markNotified(item.externalId);
+          notifiedCount++;
+        }
+      } catch (err) {
+        errorCount++;
+        await deps.log.log({
+          level: "error",
+          event: "offer.error",
+          message: `failed processing offer ${item.externalId}`,
+          context: { externalId: item.externalId, url: item.url, error: String(err) },
         });
-        await deps.markNotified(item.externalId);
-        notifiedCount++;
       }
-    } catch (err) {
-      errorCount++;
-      console.error(`runCheck: failed processing offer ${item.externalId} (${item.url}):`, err);
     }
+
+    await deps.markInactive(activeIds);
+
+    const summary = { listedCount: items.length, newCount: fresh.length, notifiedCount, errorCount };
+    await deps.log.log({
+      level: "info",
+      event: "run.finish",
+      message: `check finished: ${summary.listedCount} listed, ${summary.newCount} new, ${summary.notifiedCount} notified, ${summary.errorCount} errors`,
+      context: summary,
+    });
+    return summary;
+  } catch (err) {
+    await deps.log.log({
+      level: "error",
+      event: "run.error",
+      message: `check aborted: ${String(err)}`,
+      context: { error: String(err) },
+    });
+    throw err;
   }
-
-  await deps.markInactive(activeIds);
-
-  return { listedCount: items.length, newCount: fresh.length, notifiedCount, errorCount };
 }

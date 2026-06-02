@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
 import { runCheck, type CheckDeps } from "../src/pipeline/check";
+import type { LogInput } from "../src/log/logger";
 
 const baseConfig = {
   id: 1, searchUrl: "https://search",
@@ -8,9 +9,10 @@ const baseConfig = {
   appriseUrls: ["json://x"], deepseekEnabled: true,
 };
 
-function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: string[]; upserts: any[] } {
+function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: string[]; upserts: any[]; logs: LogInput[] } {
   const notified: string[] = [];
   const upserts: any[] = [];
+  const logs: LogInput[] = [];
   const deps: CheckDeps = {
     getConfig: async () => baseConfig as any,
     getKnownExternalIds: async () => new Set<string>(),
@@ -24,9 +26,10 @@ function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: s
     sendNotification: async () => {},
     appriseUrl: "http://apprise:8000",
     deepseekApiKey: "k", deepseekBaseUrl: "https://api.deepseek.com",
+    log: { log: (e) => { logs.push(e); } },
     ...over,
   };
-  return { deps, notified, upserts };
+  return { deps, notified, upserts, logs };
 }
 
 test("new offer passing filters + score>=threshold gets notified", async () => {
@@ -93,4 +96,36 @@ test("a failing offer is isolated: others still process and markInactive runs", 
   expect(summary.notifiedCount).toBe(1);
   expect(notified).toEqual(["good"]);
   expect(markInactiveCalled).toBe(true);
+});
+
+test("runCheck emits run.start and run.finish log events", async () => {
+  const { deps, logs } = makeDeps();
+  await runCheck(deps);
+  expect(logs.find((l) => l.event === "run.start")).toBeDefined();
+  const finish = logs.find((l) => l.event === "run.finish");
+  expect(finish).toBeDefined();
+  expect((finish!.context as any).newCount).toBe(1);
+});
+
+test("runCheck emits offer.error when a detail fetch fails", async () => {
+  const { deps, logs } = makeDeps({
+    fetchPage: async (url) => {
+      if (url.includes("ogl")) throw new Error("detail down");
+      return "<list>";
+    },
+  });
+  const summary = await runCheck(deps);
+  expect(summary.errorCount).toBe(1);
+  const err = logs.find((l) => l.event === "offer.error");
+  expect(err).toBeDefined();
+  expect(err!.level).toBe("error");
+  expect((err!.context as any).externalId).toBe("100");
+});
+
+test("runCheck emits run.error and rethrows when the list fetch fails", async () => {
+  const { deps, logs } = makeDeps({
+    fetchPage: async () => { throw new Error("list down"); },
+  });
+  await expect(runCheck(deps)).rejects.toThrow("list down");
+  expect(logs.find((l) => l.event === "run.error")).toBeDefined();
 });
