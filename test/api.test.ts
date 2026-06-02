@@ -14,7 +14,7 @@ beforeAll(async () => {
   await ensureConfig("https://search.example");
   await appendLog({ level: "info", event: "run.start", message: "seeded" });
   server = createServer(0, {
-    runCrawler: () => ({ runId: "run-test-id", done: Promise.resolve() }),
+    runCrawler: async () => ({ runId: "run-test-id", done: Promise.resolve() }),
     refreshOfferById: async (externalId) =>
       externalId === "100"
         ? ({ id: 1, externalId, title: "Refreshed", price: 3000, area: 40, rooms: 2,
@@ -65,7 +65,20 @@ test("POST /api/run starts a run and reports 202", async () => {
   const res = await fetch(`${base}/api/run`, { method: "POST" });
   expect(res.status).toBe(202);
   const body = (await res.json()) as { runId: string };
-  expect(typeof body.runId).toBe("string");
+  expect(body.runId).toBe("run-test-id");
+});
+
+test("POST /api/run returns 409 when the runner reports busy", async () => {
+  const s = createServer(0, { runCrawler: async () => ({ busy: true as const }) });
+  const b = `http://localhost:${s.port}`;
+  try {
+    const res = await fetch(`${b}/api/run`, { method: "POST" });
+    expect(res.status).toBe(409);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain("in progress");
+  } finally {
+    s.stop(true);
+  }
 });
 
 test("POST /api/offers/:id/refresh returns the updated offer", async () => {
@@ -85,22 +98,3 @@ test("POST refresh returns 400 for non-numeric id", async () => {
   expect(res.status).toBe(400);
 });
 
-test("POST /api/run returns 409 while a run is still in flight", async () => {
-  let release: () => void;
-  const pending = new Promise<void>((r) => { release = r; });
-  const s = createServer(0, { runCrawler: () => ({ runId: "x", done: pending }) });
-  const b = `http://localhost:${s.port}`;
-  try {
-    const first = await fetch(`${b}/api/run`, { method: "POST" });
-    expect(first.status).toBe(202);
-    const second = await fetch(`${b}/api/run`, { method: "POST" });
-    expect(second.status).toBe(409);
-    release!();                       // let the run finish
-    await pending;
-    await new Promise((r) => setTimeout(r, 10)); // allow finally to clear the flag
-    const third = await fetch(`${b}/api/run`, { method: "POST" });
-    expect(third.status).toBe(202);
-  } finally {
-    s.stop(true);
-  }
-});
