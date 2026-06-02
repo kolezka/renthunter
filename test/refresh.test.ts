@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { refreshOffer, type RefreshDeps } from "../src/pipeline/refresh";
 
 const baseConfig = {
-  id: 1, searchUrl: "https://search",
+  id: 1, searchUrls: ["https://search"],
   minPrice: null, maxPrice: null, minArea: null, minRooms: null,
   maxArea: null, maxRooms: null,
   aiCriteria: "blisko SKM", scoreThreshold: 70, pollIntervalMin: 5,

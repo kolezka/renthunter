@@ -18,11 +18,11 @@ test("ensureConfig seeds a single default row", async () => {
   await ensureConfig("https://example.com/search");
   const c = await getConfig();
   expect(c.id).toBe(1);
-  expect(c.searchUrl).toBe("https://example.com/search");
+  expect(c.searchUrls).toEqual(["https://example.com/search"]);
   expect(c.scoreThreshold).toBe(70);
   await ensureConfig("https://other");
   const c2 = await getConfig();
-  expect(c2.searchUrl).toBe("https://example.com/search");
+  expect(c2.searchUrls).toEqual(["https://example.com/search"]);
 });
 
 test("updateConfig changes editable fields", async () => {
