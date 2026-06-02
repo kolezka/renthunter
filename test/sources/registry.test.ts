@@ -6,6 +6,7 @@ test("resolveSource dispatches trojmiasto by host", () => {
 });
 
 test("resolveSource tolerates www. prefix and returns null for unknown host", () => {
+  expect(resolveSource("https://www.ogloszenia.trojmiasto.pl/x.html")?.id).toBe("trojmiasto");
   expect(resolveSource("https://www.unknown.example/x")).toBeNull();
 });
 
