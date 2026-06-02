@@ -1,5 +1,5 @@
 import {
-  pgTable, serial, integer, text, doublePrecision, boolean, timestamp,
+  pgTable, serial, integer, text, doublePrecision, boolean, timestamp, jsonb,
 } from "drizzle-orm/pg-core";
 
 export const offers = pgTable("offers", {
@@ -37,3 +37,16 @@ export const config = pgTable("config", {
 export type Offer = typeof offers.$inferSelect;
 export type NewOffer = typeof offers.$inferInsert;
 export type Config = typeof config.$inferSelect;
+
+export const logs = pgTable("logs", {
+  id: serial("id").primaryKey(),
+  ts: timestamp("ts", { withTimezone: true }).notNull().defaultNow(),
+  runId: text("run_id"),
+  level: text("level").notNull(),
+  event: text("event").notNull(),
+  message: text("message").notNull().default(""),
+  context: jsonb("context"),
+});
+
+export type LogRow = typeof logs.$inferSelect;
+export type NewLogRow = typeof logs.$inferInsert;
