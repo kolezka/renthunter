@@ -14,7 +14,12 @@
     "db:migrate": "bunx drizzle-kit migrate",
     "db:studio": "bunx drizzle-kit studio",
     "trigger:dev": "bunx trigger.dev@latest dev",
-    "trigger:deploy": "bunx trigger.dev@latest deploy"
+    "trigger:deploy": "bunx trigger.dev@latest deploy",
+    "compose:dev": "docker compose -f docker-compose.dev.yml up",
+    "compose:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "compose:prod": "docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build",
+    "compose:prod:down": "docker compose --env-file .env.production -f docker-compose.prod.yml down",
+    "compose:prod:logs": "docker compose --env-file .env.production -f docker-compose.prod.yml logs -f"
   },
   "devDependencies": {
     "@types/bun": "latest",
