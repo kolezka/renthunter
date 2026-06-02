@@ -1,4 +1,4 @@
-# Crawler Scheduler (in-process) — Design Spec
+# Crawler Scheduler (in-process) + Multi-source — Design Spec
 
 **Date:** 2026-06-02
 **Status:** Approved
@@ -97,6 +97,50 @@ const stop = startScheduler(buildSchedulerDeps(env));
 Zabezpieczenie przed podwójnym startem przy `bun --hot`: poprzedni `stop`
 przechowywany na `globalThis` i wywołany przed startem nowego (hot-reload
 re-ewaluuje moduł, proces żyje dalej — bez tego mnożylibyśmy timery).
+
+## Wiele źródeł (multi-source)
+
+Pojedyncze `config.searchUrl` zastępuje **lista źródeł** — kilka linków z
+trojmiasto. Spójnie z istniejącym `appriseUrls`, używamy kolumny tablicowej.
+
+### Schema / migracja
+- `src/db/schema.ts`: `searchUrl: text(...).notNull()` → `searchUrls:
+  text("search_urls").array().notNull().default([])`.
+- Migracja Drizzle: dodać `search_urls text[]`, **backfill** z istniejącego
+  `search_url` (`UPDATE config SET search_urls = ARRAY[search_url] WHERE search_url
+  IS NOT NULL AND search_url <> ''`), następnie `DROP COLUMN search_url`. Backfill
+  dopisać ręcznie do wygenerowanego pliku migracji (drizzle-kit nie zrobi tego sam),
+  by nie zgubić skonfigurowanego wyszukiwania.
+
+### Pipeline (`src/pipeline/check.ts`)
+`runCheck` iteruje po **wszystkich** źródłach: dla każdego `searchUrl` w
+`config.searchUrls` buduje strony przez `listPageUrls(searchUrl, listPages)`,
+pobiera i wrzuca do wspólnej `Map<externalId, ListItem>` (dedup ponad źródłami i
+stronami — istniejący mechanizm). `requestDelayMs` stosowany przed każdym
+pobraniem strony listy, jak dziś. `activeIds` = unia `externalId` ze wszystkich
+źródeł → `markInactive(activeIds)` bez zmian semantyki.
+
+### Walidacja (`src/api/validate.ts`)
+`searchUrls` musi być tablicą stringów. Każdy element: niepusty, parsowalny jako
+URL, protokół http(s), **host = `ogloszenia.trojmiasto.pl`** — zachowujemy obecną
+ochronę SSRF z pojedynczego `searchUrl` (URL jest pobierany server-side, dowolny
+host byłby wektorem SSRF). Pusta tablica dozwolona (brak źródeł = nic do
+skanowania; przebieg kończy się 0 ofert). Stara gałąź walidacji `searchUrl`
+zostaje zastąpiona przez `searchUrls`; `searchUrl` znika z listy `EDITABLE`.
+
+### UI (`web/Config.svelte`)
+Pojedynczy `<textarea>` „Search URL" → **textarea „Adresy wyszukiwania · jeden na
+linię"**, dokładnie wzorem `appriseUrls`: stan `searchUrlsText`, przy zapisie
+`split("\n").map(trim).filter(Boolean)` → tablica; przy ładowaniu/odrzuceniu
+`cfg.searchUrls.join("\n")`. Bez dynamicznych wierszy — spójnie z istniejącym
+panelem.
+
+### Seed (`src/api/server.ts`)
+`ensureConfig` seeduje `searchUrls` jako `[DEFAULT_SEARCH]` zamiast pojedynczego
+stringa (dostosować sygnaturę `ensureConfig`).
+
+### Klient web (`web/lib/api.ts`)
+Typ `Config`: `searchUrl: string` → `searchUrls: string[]`.
 
 ## Konfiguracja / walidacja
 
