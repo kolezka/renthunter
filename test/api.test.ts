@@ -21,6 +21,7 @@ beforeAll(async () => {
              district: "X", url: "https://x/a-ogl100.html", score: 80, scoreReasons: "ok",
              status: "active", notified: false, firstSeen: "", lastSeen: "" } as any)
         : null,
+    runRescore: async () => ({ runId: "rescore-test-id", done: Promise.resolve() }),
   });
   base = `http://localhost:${server.port}`;
 });
@@ -96,5 +97,48 @@ test("POST refresh returns 404 for unknown offer", async () => {
 test("POST refresh returns 400 for non-numeric id", async () => {
   const res = await fetch(`${base}/api/offers/abc/refresh`, { method: "POST" });
   expect(res.status).toBe(400);
+});
+
+test("POST /api/rescore returns 202 with a runId", async () => {
+  const res = await fetch(`${base}/api/rescore`, { method: "POST" });
+  expect(res.status).toBe(202);
+  const body = (await res.json()) as { runId: string };
+  expect(body.runId).toBe("rescore-test-id");
+});
+
+test("POST /api/rescore returns 409 when busy", async () => {
+  const s = createServer(0, { runRescore: async () => ({ busy: true as const }) });
+  const b = `http://localhost:${s.port}`;
+  try {
+    const res = await fetch(`${b}/api/rescore`, { method: "POST" });
+    expect(res.status).toBe(409);
+  } finally { s.stop(true); }
+});
+
+test("POST /api/rescore returns 400 when deepseek disabled", async () => {
+  const s = createServer(0, { runRescore: async () => ({ disabled: true as const }) });
+  const b = `http://localhost:${s.port}`;
+  try {
+    const res = await fetch(`${b}/api/rescore`, { method: "POST" });
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: string };
+    expect(body.error.toLowerCase()).toContain("deepseek");
+  } finally { s.stop(true); }
+});
+
+test("GET /ws relays progressBus events to the client", async () => {
+  const { progressBus } = await import("../src/pipeline/progress");
+  const ws = new WebSocket(`ws://localhost:${server.port}/ws`);
+  try {
+    const message = await new Promise<string>((resolve, reject) => {
+      const t = setTimeout(() => reject(new Error("timeout")), 2000);
+      ws.onopen = () => progressBus.emit({ type: "rescore:start", runId: "ws-test", total: 5 });
+      ws.onmessage = (ev) => { clearTimeout(t); resolve(String(ev.data)); };
+      ws.onerror = () => { clearTimeout(t); reject(new Error("ws error")); };
+    });
+    expect(JSON.parse(message)).toEqual({ type: "rescore:start", runId: "ws-test", total: 5 });
+  } finally {
+    ws.close();
+  }
 });
 

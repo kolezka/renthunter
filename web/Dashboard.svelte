@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { getOffers, runCrawler, refreshOffer, SOURCE_LABEL, type Offer } from "./lib/api";
+  import { onMount, onDestroy } from "svelte";
+  import { getOffers, runCrawler, refreshOffer, rescoreAll, SOURCE_LABEL, type Offer, type RescoreEvent } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
   import OfferDetail from "./OfferDetail.svelte";
 
@@ -10,6 +10,11 @@
   let toast = $state("");
   let refreshingIds = $state(new Set<string>());
   let selected = $state<Offer | null>(null);
+  let rescoring = $state(false);
+  let ws: WebSocket | null = null;
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  let rescoreSafetyTimer: ReturnType<typeof setTimeout> | null = null;
+  let wsRetry = 0;
 
   // Client-side source filter over already-loaded offers (no server param).
   let sourceFilter = $state("all");
@@ -66,6 +71,55 @@
     }
   }
 
+  function handleEvent(e: RescoreEvent) {
+    if (e.type === "rescore:start") {
+      rescoring = true;
+    } else if (e.type === "rescore:scored") {
+      offers = offers.map((o) =>
+        o.externalId === e.externalId ? { ...o, score: e.score, scoreReasons: e.reasons } : o,
+      );
+      if (selected && selected.externalId === e.externalId) {
+        selected = { ...selected, score: e.score, scoreReasons: e.reasons };
+      }
+    } else if (e.type === "rescore:done") {
+      if (rescoreSafetyTimer) { clearTimeout(rescoreSafetyTimer); rescoreSafetyTimer = null; }
+      rescoring = false;
+      flash(`Przeliczono ${e.summary.scored} ofert`);
+      getOffers().then((o) => (offers = o)); // reconcile anything missed
+    }
+  }
+
+  function connectWs() {
+    if (ws && ws.readyState < WebSocket.CLOSING) return; // already open or connecting
+    const proto = location.protocol === "https:" ? "wss:" : "ws:";
+    ws = new WebSocket(`${proto}//${location.host}/ws`);
+    ws.onopen = () => { wsRetry = 0; };
+    ws.onmessage = (ev) => {
+      let e: RescoreEvent;
+      try { e = JSON.parse(ev.data) as RescoreEvent; } catch { return; }
+      handleEvent(e);
+    };
+    ws.onclose = () => {
+      ws = null;
+      wsRetry = Math.min(wsRetry + 1, 30);
+      reconnectTimer = setTimeout(connectWs, 1000 * wsRetry); // linear backoff, capped 30s
+    };
+  }
+
+  async function onRescore() {
+    if (rescoring) return;
+    rescoring = true; // optimistic; the start event will confirm
+    try {
+      await rescoreAll();
+      flash("Przeliczanie ocen uruchomione…");
+      if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
+      rescoreSafetyTimer = setTimeout(() => { rescoring = false; }, 5 * 60 * 1000); // safety net if rescore:done is missed
+    } catch (e) {
+      rescoring = false;
+      flash(e instanceof Error ? e.message : "Nie udało się przeliczyć ocen");
+    }
+  }
+
   // Persisted table/cards preference.
   const STORE_KEY = "tw:offers-view";
   let view: "cards" | "table" = $state(
@@ -79,6 +133,13 @@
   onMount(async () => {
     offers = await getOffers();
     loading = false;
+    connectWs();
+  });
+
+  onDestroy(() => {
+    if (reconnectTimer) clearTimeout(reconnectTimer);
+    if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
+    if (ws) { ws.onclose = null; ws.close(); } // null onclose so teardown doesn't reconnect
   });
 
   const spring = "ease-[cubic-bezier(0.22,1.18,0.36,1)]";
@@ -98,6 +159,15 @@
   </div>
 
   <div class="flex items-center gap-3">
+    <button
+      onclick={onRescore}
+      disabled={rescoring}
+      title="Przelicz oceny AI dla aktywnych ofert wg bieżących kryteriów"
+      class="inline-flex items-center gap-[7px] rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] px-[16px] py-[8px] text-[0.85rem] font-semibold text-ink shadow-[var(--inset-sheen)] transition-[transform,background,filter] duration-300 ease-[cubic-bezier(0.22,1.18,0.36,1)] hover:bg-[rgba(47,109,255,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={rescoring ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+      {rescoring ? "Przeliczanie…" : "Przelicz oceny"}
+    </button>
     <button
       onclick={onRun}
       disabled={running}

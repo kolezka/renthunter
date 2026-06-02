@@ -6,6 +6,7 @@ import {
   ensureConfig, getConfig, updateConfig,
   getKnownExternalIds, upsertOffer, markNotified, markInactive, listOffers,
   appendLog, listLogs, pruneLogs, getOfferByExternalId,
+  getActiveScorableOffers, updateOfferScore,
 } from "../src/db/queries";
 
 beforeEach(async () => {
@@ -108,4 +109,32 @@ test("getOfferByExternalId returns the row or null", async () => {
   const found = await getOfferByExternalId("ext-1");
   expect(found?.externalId).toBe("ext-1");
   expect(await getOfferByExternalId("nope")).toBeNull();
+});
+
+test("getActiveScorableOffers excludes inactive and null-description rows", async () => {
+  await upsertOffer({ externalId: "a", url: "u", title: "t", description: "ma opis" });
+  await upsertOffer({ externalId: "b", url: "u", title: "t" }); // active but null description
+  await upsertOffer({ externalId: "c", url: "u", title: "t", description: "też opis" });
+  await markInactive(["b", "c"]); // a -> inactive; b and c stay active
+  const rows = await getActiveScorableOffers();
+  // a excluded by status; b excluded by null description; only c qualifies
+  expect(rows.map((r) => r.externalId)).toEqual(["c"]);
+});
+
+test("updateOfferScore changes only score columns, leaves status/title", async () => {
+  await upsertOffer({ externalId: "x", url: "u", title: "Tytuł", description: "d", score: 10, scoreReasons: "old" });
+  await updateOfferScore("x", 88, "świetna");
+  const o = await getOfferByExternalId("x");
+  expect(o?.score).toBe(88);
+  expect(o?.scoreReasons).toBe("świetna");
+  expect(o?.title).toBe("Tytuł");   // untouched
+  expect(o?.status).toBe("active"); // untouched
+});
+
+test("updateOfferScore can clear a score back to null", async () => {
+  await upsertOffer({ externalId: "y", url: "u", title: "t", description: "d", score: 55, scoreReasons: "stare" });
+  await updateOfferScore("y", null, null);
+  const o = await getOfferByExternalId("y");
+  expect(o?.score).toBeNull();
+  expect(o?.scoreReasons).toBeNull();
 });
