@@ -1,4 +1,4 @@
-import { eq, notInArray, sql, desc, lt } from "drizzle-orm";
+import { eq, notInArray, sql, desc, lt, and, isNotNull } from "drizzle-orm";
 import { db } from "./client";
 import { offers, config, logs, runLock, type Config, type NewOffer, type Offer, type LogRow } from "./schema";
 
@@ -101,6 +101,28 @@ export async function pruneLogs(): Promise<void> {
 export async function getOfferByExternalId(externalId: string): Promise<Offer | null> {
   const rows = await db.select().from(offers).where(eq(offers.externalId, externalId)).limit(1);
   return rows[0] ?? null;
+}
+
+/** Active offers that have a description to score. Re-score reuses the stored
+ *  description (no re-fetch); offers without one can't be scored. */
+export async function getActiveScorableOffers(): Promise<Offer[]> {
+  return db
+    .select()
+    .from(offers)
+    .where(and(eq(offers.status, "active"), isNotNull(offers.description)));
+}
+
+/** Narrow update of just the AI score columns. Unlike upsertOffer this does NOT
+ *  touch status, lastSeen, or any scraped field. */
+export async function updateOfferScore(
+  externalId: string,
+  score: number | null,
+  reasons: string | null,
+): Promise<void> {
+  await db
+    .update(offers)
+    .set({ score, scoreReasons: reasons })
+    .where(eq(offers.externalId, externalId));
 }
 
 /**
