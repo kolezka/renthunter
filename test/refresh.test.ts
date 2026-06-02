@@ -16,7 +16,7 @@ function makeDeps(over: Partial<RefreshDeps> = {}): { deps: RefreshDeps; upserts
     getConfig: async () => baseConfig as any,
     getOffer: async () => ({ externalId: "100", url: "https://x/a-ogl100.html" } as any),
     fetchPage: async () => "<detail>",
-    parseDetail: () => ({ title: "Re 2pok", price: 3400, area: 48, rooms: 2, district: "Oliwa", description: "blisko SKM" }),
+    parseDetail: () => ({ title: "Re 2pok", price: 3400, area: 48, rooms: 2, district: "Oliwa", description: "blisko SKM", images: ["https://img/a.jpg"] }),
     scoreOffer: async () => ({ score: 91, reasons: "świetna" }),
     upsertOffer: async (o) => { upserts.push(o); },
     deepseekApiKey: "k", deepseekBaseUrl: "https://api.deepseek.com",
@@ -48,4 +48,10 @@ test("refreshOffer skips scoring when deepseek disabled", async () => {
 test("refreshOffer throws OfferNotFound for an unknown id", async () => {
   const { deps } = makeDeps({ getOffer: async () => null });
   await expect(refreshOffer("404", deps)).rejects.toThrow("offer not found");
+});
+
+test("refreshOffer persists images", async () => {
+  const { deps, upserts } = makeDeps();
+  await refreshOffer("100", deps);
+  expect(upserts[0].images).toEqual(["https://img/a.jpg"]);
 });
