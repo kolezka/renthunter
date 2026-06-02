@@ -5,6 +5,7 @@ export interface Offer {
   scoreReasons: string | null; status: string; notified: boolean;
   firstSeen: string; lastSeen: string;
   images: string[]; description: string | null;
+  source: string;
 }
 export interface Config {
   searchUrls: string[]; minPrice: number | null; maxPrice: number | null;
@@ -58,7 +59,7 @@ export async function runCrawler(): Promise<{ runId: string }> {
 }
 
 export async function refreshOffer(externalId: string): Promise<Offer> {
-  const res = await fetch(`/api/offers/${externalId}/refresh`, { method: "POST" });
+  const res = await fetch(`/api/offers/${encodeURIComponent(externalId)}/refresh`, { method: "POST" });
   const data = await res.json();
   if (!res.ok) throw new Error((data as { error?: string }).error ?? `Refresh failed (HTTP ${res.status})`);
   return data as Offer;
