@@ -31,7 +31,12 @@
 
   --radius-glass: 26px;
 
-  --animate-rise: rise 0.5s cubic-bezier(0.22, 1.18, 0.36, 1) both;
+  /* `backwards` (not `both`): we need the pre-start hidden state for the fade-in,
+     but must NOT retain the end transform. `both` keeps `translateY(0)` applied
+     forever, and any non-`none` transform turns the element into the containing
+     block for `position: fixed` descendants — which traps modals rendered inside
+     <main> (e.g. OfferDetail) so they size to <main> instead of the viewport. */
+  --animate-rise: rise 0.5s cubic-bezier(0.22, 1.18, 0.36, 1) backwards;
   --animate-shimmer: shimmer 1.4s linear infinite;
   --animate-pop: pop 0.4s cubic-bezier(0.22, 1.18, 0.36, 1) both;
   --animate-fade: fade 0.3s ease both;

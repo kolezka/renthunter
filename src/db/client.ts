@@ -3,10 +3,9 @@ import postgres from "postgres";
 import { loadConfig } from "../config";
 import * as schema from "./schema";
 
-// postgres-js (not Bun.sql): the same client must run under both the Bun API
-// AND trigger.dev's Node worker. Bun.sql (`drizzle-orm/bun-sql`) imports the
-// `bun` builtin, which trigger.dev's esbuild bundle can't resolve. postgres-js
-// runs in both runtimes.
+// postgres-js (not Bun.sql `drizzle-orm/bun-sql`): the runtime db client. Tests
+// don't reach this path — they run on an injected in-memory PGlite (see getDb()
+// and test/setup.ts), which is why drizzle-orm/pglite is also a dependency.
 function createDb() {
   const client = postgres(loadConfig().databaseUrl);
   return drizzle(client, { schema });
