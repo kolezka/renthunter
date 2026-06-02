@@ -1,3 +1,5 @@
+import { metaContent, firstJsonLd, ldImages } from "./html";
+
 export interface ListItem {
   externalId: string;
   url: string;
@@ -16,26 +18,6 @@ export interface OfferDetail {
 export function extractExternalId(url: string): string | null {
   const m = url.match(/-ogl(\d+)\.html/);
   return m ? m[1]! : null;
-}
-
-function metaContent(html: string, prop: string): string | null {
-  const re = new RegExp(
-    `<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']+)["']`,
-    "i"
-  );
-  return html.match(re)?.[1] ?? null;
-}
-
-function firstJsonLd(html: string): Record<string, unknown> | null {
-  const re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-  for (const m of html.matchAll(re)) {
-    try {
-      return JSON.parse(m[1]!.trim()) as Record<string, unknown>;
-    } catch {
-      /* try next */
-    }
-  }
-  return null;
 }
 
 /** Extract the value from a trojmiasto xogField block by CSS modifier class name */
@@ -138,21 +120,7 @@ export function parseDetail(html: string): OfferDetail {
   }
 
   // Images: JSON-LD `image` array (full gallery), fallback to og:image.
-  let images: string[] = [];
-  const ldImage = ld?.image;
-  if (Array.isArray(ldImage)) {
-    images = ldImage
-      .map((x) =>
-        typeof x === "string"
-          ? x
-          : x && typeof x === "object"
-            ? String((x as Record<string, unknown>).url ?? (x as Record<string, unknown>).contentUrl ?? "")
-            : "",
-      )
-      .filter(Boolean);
-  } else if (typeof ldImage === "string") {
-    images = [ldImage];
-  }
+  let images: string[] = ldImages(ld);
   if (images.length === 0) {
     const og = metaContent(html, "og:image");
     if (og) images = [og];

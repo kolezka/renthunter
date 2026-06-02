@@ -10,6 +10,7 @@ export const offers = pgTable("offers", {
   area: doublePrecision("area"),
   rooms: integer("rooms"),
   district: text("district"),
+  source: text("source").notNull().default("trojmiasto"),
   url: text("url").notNull(),
   description: text("description"),
   images: text("images").array().notNull().default([]),

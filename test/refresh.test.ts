@@ -14,9 +14,14 @@ function makeDeps(over: Partial<RefreshDeps> = {}): { deps: RefreshDeps; upserts
   const upserts: any[] = [];
   const deps: RefreshDeps = {
     getConfig: async () => baseConfig as any,
-    getOffer: async () => ({ externalId: "100", url: "https://x/a-ogl100.html" } as any),
+    getOffer: async () => ({ externalId: "100", url: "https://x/a-ogl100.html", source: "trojmiasto" } as any),
     fetchPage: async () => "<detail>",
-    parseDetail: () => ({ title: "Re 2pok", price: 3400, area: 48, rooms: 2, district: "Oliwa", description: "blisko SKM", images: ["https://img/a.jpg"] }),
+    resolveSource: () => ({
+      id: "trojmiasto", hosts: ["x"],
+      listPageUrls: (u: string) => [u],
+      parseList: () => [],
+      parseDetail: () => ({ title: "Re 2pok", price: 3400, area: 48, rooms: 2, district: "Oliwa", description: "blisko SKM", images: ["https://img/a.jpg"] }),
+    }),
     scoreOffer: async () => ({ score: 91, reasons: "świetna" }),
     upsertOffer: async (o) => { upserts.push(o); },
     deepseekApiKey: "k", deepseekBaseUrl: "https://api.deepseek.com",
@@ -30,6 +35,7 @@ test("refreshOffer re-scrapes, re-scores and upserts", async () => {
   const { deps, upserts } = makeDeps();
   const updated = await refreshOffer("100", deps);
   expect(upserts[0].score).toBe(91);
+  expect(upserts[0].source).toBe("trojmiasto");
   expect(updated.title).toBe("Re 2pok");
   expect(updated.score).toBe(91);
 });

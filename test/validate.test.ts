@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
 import { validateConfigPatch, safeStaticPath } from "../src/api/validate";
+import { allowedHosts } from "../src/scraper/sources/registry";
 import { resolve } from "node:path";
 
 test("accepts a valid patch and whitelists unknown keys", () => {
@@ -76,6 +77,20 @@ test("accepts new crawl-control fields within range", () => {
   });
   expect(r.ok).toBe(true);
   if (r.ok) expect(r.patch.concurrencyLimit).toBe(8);
+});
+
+test("searchUrls validation uses the registry allow-list", () => {
+  expect(allowedHosts().size).toBeGreaterThan(0); // guard against vacuous pass
+  for (const host of allowedHosts()) {
+    expect(validateConfigPatch({ searchUrls: [`https://${host}/x`] }).ok).toBe(true);
+  }
+  expect(allowedHosts().has("evil.example")).toBe(false);
+  expect(validateConfigPatch({ searchUrls: ["https://evil.example/x"] }).ok).toBe(false);
+});
+
+test("searchUrls accepts the www. form of a registered host", () => {
+  const host = [...allowedHosts()][0]!;
+  expect(validateConfigPatch({ searchUrls: [`https://www.${host}/x`] }).ok).toBe(true);
 });
 
 test("rejects out-of-range crawl-control fields", () => {

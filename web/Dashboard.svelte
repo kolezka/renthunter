@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getOffers, runCrawler, refreshOffer, type Offer } from "./lib/api";
+  import { getOffers, runCrawler, refreshOffer, SOURCE_LABEL, type Offer } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
   import OfferDetail from "./OfferDetail.svelte";
 
@@ -10,6 +10,25 @@
   let toast = $state("");
   let refreshingIds = $state(new Set<string>());
   let selected = $state<Offer | null>(null);
+
+  // Client-side source filter over already-loaded offers (no server param).
+  let sourceFilter = $state("all");
+  const visible = $derived(
+    sourceFilter === "all" ? offers : offers.filter((o) => o.source === sourceFilter),
+  );
+
+  const SOURCE_CLASS: Record<string, string> = {
+    trojmiasto: "border-[rgba(56,189,248,0.35)] bg-[rgba(56,189,248,0.12)] text-[#7dd3fc]",
+    olx: "border-[rgba(52,211,153,0.35)] bg-[rgba(52,211,153,0.12)] text-[#6ee7b7]",
+    otodom: "border-[rgba(168,139,250,0.38)] bg-[rgba(168,139,250,0.14)] text-[#c4b5fd]",
+  };
+  const sourceLabel = (s: string) => SOURCE_LABEL[s] ?? s;
+  const sourceClass = (s: string) =>
+    SOURCE_CLASS[s] ?? "border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2";
+  const SOURCE_FILTERS = [
+    { value: "all", label: "Wszystkie" },
+    ...Object.entries(SOURCE_LABEL).map(([value, label]) => ({ value, label })),
+  ];
   function openDetail(o: Offer) { selected = o; }
   function closeDetail() { selected = null; }
 
@@ -74,7 +93,7 @@
   <div class="flex items-baseline gap-3">
     <h1 class="m-0 font-display text-[clamp(1.6rem,4vw,2.3rem)] font-extrabold tracking-[-0.03em]">Oferty</h1>
     {#if !loading}
-      <span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-[11px] py-[3px] text-[0.85rem] font-bold text-ink-2 [font-variant-numeric:tabular-nums]">{offers.length}</span>
+      <span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-[11px] py-[3px] text-[0.85rem] font-bold text-ink-2 [font-variant-numeric:tabular-nums]">{visible.length}</span>
     {/if}
   </div>
 
@@ -104,6 +123,20 @@
   <div class="mb-4 animate-rise rounded-[12px] border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-4 py-3 text-[0.88rem] text-ink-2">{toast}</div>
 {/if}
 
+{#if !loading && offers.length > 0}
+  <div class="mb-[18px] flex flex-wrap gap-[8px]" role="group" aria-label="Filtr źródła">
+    {#each SOURCE_FILTERS as f (f.value)}
+      <button
+        onclick={() => (sourceFilter = f.value)}
+        aria-pressed={sourceFilter === f.value}
+        class="rounded-full border px-[14px] py-[6px] text-[0.8rem] font-semibold transition-colors duration-200 {sourceFilter === f.value
+          ? 'border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] text-ink shadow-[var(--inset-sheen)]'
+          : 'border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-3 hover:text-ink'}"
+      >{f.label}</button>
+    {/each}
+  </div>
+{/if}
+
 {#if loading}
   <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
     {#each Array(6) as _, i (i)}
@@ -125,9 +158,18 @@
     <p class="m-0 text-ink-3">Gdy monitor znajdzie pasujące mieszkania, pojawią się tutaj.</p>
   </div>
 
+{:else if visible.length === 0}
+  <div class="glass animate-rise rounded-[var(--radius-glass)] px-6 py-16 text-center">
+    <div class="mx-auto mb-[18px] grid h-16 w-16 place-items-center rounded-[18px] border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] text-ink-2" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    </div>
+    <h3 class="m-0 mb-[6px] font-display text-[1.2rem] font-bold">Brak ofert dla tego źródła</h3>
+    <p class="m-0 text-ink-3">Zmień filtr źródła, aby zobaczyć pozostałe oferty.</p>
+  </div>
+
 {:else if view === "cards"}
   <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
-    {#each offers as o, i (o.id)}
+    {#each visible as o, i (o.id)}
       <article
         class="glass relative flex cursor-pointer flex-col gap-3 rounded-[var(--radius-glass)] p-5 animate-rise transition-[transform,border-color,background] duration-[400ms] {spring} hover:-translate-y-[5px] hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-fill-strong)]"
         style="animation-delay:{Math.min(i, 12) * 45}ms"
@@ -147,7 +189,10 @@
             {o.score ?? "–"}
             <small class="mt-[3px] font-sans text-[0.55rem] font-semibold uppercase tracking-[0.12em] opacity-70">score</small>
           </span>
-          {#if o.notified}<span class="rounded-full border border-good/30 bg-good/10 px-[9px] py-1 text-[0.66rem] font-bold uppercase tracking-[0.06em] text-good" title="Powiadomienie wysłane">powiadomiono</span>{/if}
+          <div class="flex items-center gap-[7px]">
+            <span class="rounded-full border px-[9px] py-1 text-[0.66rem] font-bold uppercase tracking-[0.06em] {sourceClass(o.source)}" title="Źródło: {sourceLabel(o.source)}">{sourceLabel(o.source)}</span>
+            {#if o.notified}<span class="rounded-full border border-good/30 bg-good/10 px-[9px] py-1 text-[0.66rem] font-bold uppercase tracking-[0.06em] text-good" title="Powiadomienie wysłane">powiadomiono</span>{/if}
+          </div>
         </header>
 
         <h2 class="m-0 line-clamp-2 text-[0.98rem] font-semibold leading-[1.4] text-ink" title={o.title}>{o.title}</h2>
@@ -187,12 +232,12 @@
     <table class="w-full border-collapse">
       <thead>
         <tr class="[&>th]:border-b [&>th]:border-[var(--glass-border)] [&>th]:bg-white/[0.03] [&>th]:px-4 [&>th]:py-[14px] [&>th]:text-left [&>th]:text-[0.72rem] [&>th]:font-bold [&>th]:uppercase [&>th]:tracking-[0.07em] [&>th]:text-ink-3">
-          <th></th><th>Score</th><th>Tytuł</th><th class="!text-right">Cena</th><th class="!text-right">m²</th>
+          <th></th><th>Score</th><th>Tytuł</th><th>Źródło</th><th class="!text-right">Cena</th><th class="!text-right">m²</th>
           <th class="!text-right">Pok.</th><th>Dzielnica</th><th>AI</th><th>Dodano</th><th>Powiad.</th><th>Status</th><th></th>
         </tr>
       </thead>
       <tbody class="[&_tr:last-child>td]:border-0 [&>tr>td]:border-b [&>tr>td]:border-white/[0.06] [&>tr>td]:px-4 [&>tr>td]:py-[13px] [&>tr>td]:text-[0.9rem] [&>tr>td]:text-ink-2">
-        {#each offers as o (o.id)}
+        {#each visible as o (o.id)}
           <tr class="cursor-pointer transition-colors hover:bg-white/[0.04] {o.notified ? 'shadow-[inset_3px_0_0_0_var(--color-good)]' : ''}" onclick={() => openDetail(o)}>
             <td>
               {#if o.images?.length}
@@ -203,6 +248,7 @@
             </td>
             <td><span class="inline-grid min-w-[38px] place-items-center rounded-[9px] border px-2 py-1 text-[0.85rem] font-extrabold [font-variant-numeric:tabular-nums] {tierClass[tier(o.score)]}">{o.score ?? "–"}</span></td>
             <td class="max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap !text-ink" title={o.title}>{o.title}</td>
+            <td><span class="rounded-full border px-[8px] py-[2px] text-[0.66rem] font-bold uppercase tracking-[0.04em] {sourceClass(o.source)}">{sourceLabel(o.source)}</span></td>
             <td class="text-right font-semibold !text-ink [font-variant-numeric:tabular-nums]">{fmtPln(o.price)} zł</td>
             <td class="text-right [font-variant-numeric:tabular-nums]">{o.area ?? "–"}</td>
             <td class="text-right [font-variant-numeric:tabular-nums]">{o.rooms ?? "–"}</td>
