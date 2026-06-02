@@ -48,7 +48,7 @@
     <fieldset class={panel}>
       <legend class={legend}>Wyszukiwanie</legend>
       <label class="mt-3 grid gap-[7px]">
-        <span class={labelSpan}>Adresy wyszukiwania <em class="font-medium not-italic text-ink-3">· jeden na linię</em></span>
+        <span class={labelSpan}>Adresy wyszukiwania <em class="font-medium not-italic text-ink-3">· jeden na linię · OLX / Otodom / trójmiasto</em></span>
         <textarea bind:value={searchUrlsText} rows="3" placeholder="https://ogloszenia.trojmiasto.pl/…" class="{control} resize-y leading-normal"></textarea>
       </label>
     </fieldset>
