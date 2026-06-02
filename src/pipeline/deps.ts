@@ -8,7 +8,7 @@ import {
   getOfferByExternalId, acquireRunLock, releaseRunLock,
 } from "../db/queries";
 import { fetchPage } from "../scraper/fetch";
-import { parseListUrls, parseDetail } from "../scraper/parse";
+import { resolveSource } from "../scraper/sources/registry";
 import { scoreOffer } from "../scorer/deepseek";
 import { sendNotification } from "../notify/apprise";
 import { runCheck } from "./check";
@@ -19,7 +19,7 @@ export function buildCheckDeps(env: AppConfig, logger: Logger): CheckDeps {
   return withLogging(
     {
       getConfig, getKnownExternalIds, upsertOffer, markNotified, markInactive,
-      fetchPage, parseListUrls, parseDetail, scoreOffer, sendNotification,
+      fetchPage, resolveSource, scoreOffer, sendNotification,
       appriseUrl: env.appriseUrl,
       deepseekApiKey: env.deepseekApiKey,
       deepseekBaseUrl: env.deepseekBaseUrl,
@@ -35,7 +35,7 @@ export function buildRefreshDeps(env: AppConfig, logger: Logger): RefreshDeps {
     getConfig,
     getOffer: getOfferByExternalId,
     fetchPage,
-    parseDetail,
+    resolveSource,
     scoreOffer,
     upsertOffer,
     deepseekApiKey: env.deepseekApiKey,

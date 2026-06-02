@@ -1,7 +1,6 @@
 import type { Config, NewOffer } from "../db/schema";
 import { passesFilters } from "./filter";
-import type { ListItem, OfferDetail } from "../scraper/parse";
-import { listPageUrls } from "../scraper/parse";
+import type { ListItem, OfferDetail, Source } from "../scraper/sources/types";
 import { runPool } from "./pool";
 import type { Logger } from "../log/logger";
 
@@ -12,8 +11,7 @@ export interface CheckDeps {
   markNotified: (externalId: string) => Promise<void>;
   markInactive: (activeExternalIds: string[]) => Promise<void>;
   fetchPage: (url: string) => Promise<string>;
-  parseListUrls: (html: string) => ListItem[];
-  parseDetail: (html: string) => OfferDetail;
+  resolveSource: (url: string) => Source | null;
   scoreOffer: (
     input: { description: string; criteria: string },
     opts: { apiKey: string; baseUrl: string },
@@ -58,13 +56,16 @@ export async function processOffer(
   deps: CheckDeps,
 ): Promise<{ notified: boolean; error: boolean }> {
   try {
+    const src = deps.resolveSource(item.url);
+    if (!src) throw new Error(`no parser for ${item.url}`);
     await sleep(config.requestDelayMs);
     const detailHtml = await deps.fetchPage(item.url);
-    const d = deps.parseDetail(detailHtml);
+    const d = src.parseDetail(detailHtml);
 
     const base: NewOffer = {
       externalId: item.externalId,
       url: item.url,
+      source: item.source,
       title: d.title,
       price: d.price,
       area: d.area,
@@ -114,14 +115,19 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
     await deps.log.log({ level: "info", event: "run.start", message: "check started" });
     const config = await deps.getConfig();
 
-    // Fetch + merge every page of every configured source. parseListUrls dedups
+    // Fetch + merge every page of every configured source. parseList dedups
     // per page; the Map dedups across pages AND across sources by externalId.
     const merged = new Map<string, ListItem>();
-    for (const source of config.searchUrls) {
-      for (const pageUrl of listPageUrls(source, config.listPages)) {
+    for (const searchUrl of config.searchUrls) {
+      const src = deps.resolveSource(searchUrl);
+      if (!src) {
+        await deps.log.log({ level: "warn", event: "source.unknown", message: `no parser for ${searchUrl}`, context: { searchUrl } });
+        continue;
+      }
+      for (const pageUrl of src.listPageUrls(searchUrl, config.listPages)) {
         await sleep(config.requestDelayMs);
         const html = await deps.fetchPage(pageUrl);
-        for (const it of deps.parseListUrls(html)) {
+        for (const it of src.parseList(html)) {
           if (!merged.has(it.externalId)) merged.set(it.externalId, it);
         }
       }
