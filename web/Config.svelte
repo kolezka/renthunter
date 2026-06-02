@@ -56,6 +56,8 @@
         <label class="grid gap-[7px]"><span class={labelSpan}>Max cena</span><input type="number" bind:value={cfg.maxPrice} class={control} /></label>
         <label class="grid gap-[7px]"><span class={labelSpan}>Min metraż</span><input type="number" bind:value={cfg.minArea} class={control} /></label>
         <label class="grid gap-[7px]"><span class={labelSpan}>Min pokoje</span><input type="number" bind:value={cfg.minRooms} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Max metraż</span><input type="number" min="0" bind:value={cfg.maxArea} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Max pokoje</span><input type="number" min="0" bind:value={cfg.maxRooms} class={control} /></label>
       </div>
     </fieldset>
 
@@ -76,6 +78,16 @@
         </span>
         <span class="text-[0.92rem] font-semibold">DeepSeek scoring</span>
       </label>
+    </fieldset>
+
+    <fieldset class={panel}>
+      <legend class={legend}>Wydajność</legend>
+      <div class="mt-3 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[14px]">
+        <label class="grid gap-[7px]"><span class={labelSpan}>Workers (równolegle)</span><input type="number" min="1" max="16" bind:value={cfg.concurrencyLimit} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Strony listy</span><input type="number" min="1" max="10" bind:value={cfg.listPages} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Max pobrań / przebieg</span><input type="number" min="1" max="500" bind:value={cfg.maxDetailFetchesPerRun} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Opóźnienie (ms)</span><input type="number" min="0" max="10000" bind:value={cfg.requestDelayMs} class={control} /></label>
+      </div>
     </fieldset>
 
     <fieldset class={panel}>

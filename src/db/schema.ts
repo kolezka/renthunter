@@ -27,11 +27,17 @@ export const config = pgTable("config", {
   maxPrice: integer("max_price"),
   minArea: doublePrecision("min_area"),
   minRooms: integer("min_rooms"),
+  maxArea: doublePrecision("max_area"),
+  maxRooms: integer("max_rooms"),
   aiCriteria: text("ai_criteria").notNull().default(""),
   scoreThreshold: integer("score_threshold").notNull().default(70),
   pollIntervalMin: integer("poll_interval_min").notNull().default(5),
   appriseUrls: text("apprise_urls").array().notNull().default([]),
   deepseekEnabled: boolean("deepseek_enabled").notNull().default(true),
+  listPages: integer("list_pages").notNull().default(1),
+  maxDetailFetchesPerRun: integer("max_detail_fetches_per_run").notNull().default(30),
+  requestDelayMs: integer("request_delay_ms").notNull().default(0),
+  concurrencyLimit: integer("concurrency_limit").notNull().default(1),
 });
 
 export type Offer = typeof offers.$inferSelect;
@@ -50,3 +56,12 @@ export const logs = pgTable("logs", {
 
 export type LogRow = typeof logs.$inferSelect;
 export type NewLogRow = typeof logs.$inferInsert;
+
+export const runLock = pgTable("run_lock", {
+  id: integer("id").primaryKey().default(1),
+  holder: text("holder"),
+  source: text("source"),
+  acquiredAt: timestamp("acquired_at", { withTimezone: true }),
+});
+
+export type RunLock = typeof runLock.$inferSelect;

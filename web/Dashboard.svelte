@@ -1,9 +1,45 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getOffers, type Offer } from "./lib/api";
+  import { getOffers, runCrawler, refreshOffer, type Offer } from "./lib/api";
 
   let offers: Offer[] = $state([]);
   let loading = $state(true);
+  let running = $state(false);
+  let toast = $state("");
+  let refreshingIds = $state(new Set<string>());
+
+  function flash(msg: string) {
+    toast = msg;
+    setTimeout(() => (toast = ""), 2500);
+  }
+
+  async function onRun() {
+    if (running) return;
+    running = true;
+    try {
+      await runCrawler();
+      flash("Crawler uruchomiony — wyniki pojawią się w logach.");
+    } catch (e) {
+      flash(e instanceof Error ? e.message : "Nie udało się uruchomić");
+    } finally {
+      running = false;
+    }
+  }
+
+  async function onRefresh(o: Offer) {
+    if (refreshingIds.has(o.externalId)) return;
+    refreshingIds = new Set(refreshingIds).add(o.externalId);
+    try {
+      const updated = await refreshOffer(o.externalId);
+      offers = offers.map((x) => (x.id === updated.id ? updated : x));
+    } catch (e) {
+      flash(e instanceof Error ? e.message : "Nie udało się odświeżyć");
+    } finally {
+      const next = new Set(refreshingIds);
+      next.delete(o.externalId);
+      refreshingIds = next;
+    }
+  }
 
   // Persisted table/cards preference.
   const STORE_KEY = "tw:offers-view";
@@ -53,17 +89,31 @@
     {/if}
   </div>
 
-  <div class="glass inline-flex gap-[2px] rounded-full p-1" role="group" aria-label="Widok ofert">
-    <button class="{vt} {view === 'cards' ? vtActive : vtIdle}" onclick={() => setView("cards")} aria-pressed={view === "cards"}>
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-      Karty
+  <div class="flex items-center gap-3">
+    <button
+      onclick={onRun}
+      disabled={running}
+      class="inline-flex items-center gap-[7px] rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] px-[16px] py-[8px] text-[0.85rem] font-semibold text-ink shadow-[var(--inset-sheen)] transition-[transform,background,filter] duration-300 ease-[cubic-bezier(0.22,1.18,0.36,1)] hover:bg-[rgba(47,109,255,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={running ? "animate-spin" : ""}><path d="M5 3v4M3 5h4"/><path d="M12 5a7 7 0 1 1-7 7"/></svg>
+      {running ? "Uruchamianie…" : "Uruchom crawler"}
     </button>
-    <button class="{vt} {view === 'table' ? vtActive : vtIdle}" onclick={() => setView("table")} aria-pressed={view === "table"}>
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      Tabela
-    </button>
+    <div class="glass inline-flex gap-[2px] rounded-full p-1" role="group" aria-label="Widok ofert">
+      <button class="{vt} {view === 'cards' ? vtActive : vtIdle}" onclick={() => setView("cards")} aria-pressed={view === "cards"}>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Karty
+      </button>
+      <button class="{vt} {view === 'table' ? vtActive : vtIdle}" onclick={() => setView("table")} aria-pressed={view === "table"}>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        Tabela
+      </button>
+    </div>
   </div>
 </section>
+
+{#if toast}
+  <div class="mb-4 animate-rise rounded-[12px] border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-4 py-3 text-[0.88rem] text-ink-2">{toast}</div>
+{/if}
 
 {#if loading}
   <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
@@ -117,10 +167,21 @@
 
         <footer class="mt-auto flex items-center justify-between gap-[10px] pt-[6px]">
           <span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span>
-          <a class={openBtn} href={o.url} target="_blank" rel="noreferrer">
-            Otwórz
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-          </a>
+          <div class="flex items-center gap-[8px]">
+            <button
+              onclick={() => onRefresh(o)}
+              disabled={refreshingIds.has(o.externalId)}
+              title="Odśwież i przelicz ocenę"
+              aria-label="Odśwież ofertę"
+              class="grid h-9 w-9 place-items-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2 transition-colors hover:text-ink disabled:opacity-50"
+            >
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={refreshingIds.has(o.externalId) ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+            </button>
+            <a class={openBtn} href={o.url} target="_blank" rel="noreferrer">
+              Otwórz
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </a>
+          </div>
         </footer>
       </article>
     {/each}
@@ -145,7 +206,18 @@
             <td class="text-right [font-variant-numeric:tabular-nums]">{o.rooms ?? "–"}</td>
             <td>{o.district ?? "–"}</td>
             <td><span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span></td>
-            <td><a class="font-semibold text-ink no-underline hover:text-[var(--color-aurora-indigo)]" href={o.url} target="_blank" rel="noreferrer">otwórz ↗</a></td>
+            <td>
+              <button
+                onclick={() => onRefresh(o)}
+                disabled={refreshingIds.has(o.externalId)}
+                title="Odśwież"
+                aria-label="Odśwież ofertę"
+                class="mr-3 align-middle text-ink-3 transition-colors hover:text-ink disabled:opacity-50"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline {refreshingIds.has(o.externalId) ? 'animate-spin' : ''}"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+              </button>
+              <a class="font-semibold text-ink no-underline hover:text-[var(--color-aurora-indigo)]" href={o.url} target="_blank" rel="noreferrer">otwórz ↗</a>
+            </td>
           </tr>
         {/each}
       </tbody>
