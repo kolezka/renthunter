@@ -1,10 +1,10 @@
 # Production stack — self-contained, no trigger.dev / no cloud dependency.
 #   docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 #
-# The scheduled crawl runs via the `scheduler` sidecar, which POSTs the
-# lock-guarded /api/run endpoint on an interval — so the app does the crawl
-# in-process and Postgres never needs to be exposed off the host. Put a reverse
-# proxy / TLS (Caddy, Traefik, nginx) in front of the app on a dedicated server.
+# The scheduled crawl runs IN-PROCESS inside the app (src/pipeline/scheduler.ts),
+# driven by config.pollIntervalMin from the DB (editable in the panel; 0 = off).
+# No sidecar, no external trigger. Postgres is never exposed off the host. Put a
+# reverse proxy / TLS (Caddy, Traefik, nginx) in front of the app.
 name: trojmiasto-wynajem-prod
 
 services:
@@ -53,32 +53,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
-
-  scheduler:
-    image: curlimages/curl:latest
-    restart: unless-stopped
-    depends_on:
-      app:
-        condition: service_healthy
-    environment:
-      CRAWL_INTERVAL_MIN: ${CRAWL_INTERVAL_MIN:-5}
-    # Self-contained cron: trigger an in-process crawl via the lock-guarded endpoint.
-    # The run lock makes overlapping/duplicate triggers harmless. `$$` escapes the
-    # `$` so the container shell (not Compose) does the arithmetic/expansion.
-    entrypoint:
-      - sh
-      - -c
-      - |
-        : "$${CRAWL_INTERVAL_MIN:=5}"
-        echo "scheduler: POST /api/run every $${CRAWL_INTERVAL_MIN} min"
-        while true; do
-          sleep "$$(( CRAWL_INTERVAL_MIN * 60 ))"
-          if curl -fsS -X POST http://app:3000/api/run >/dev/null; then
-            echo "scheduler: triggered crawl"
-          else
-            echo "scheduler: trigger failed"
-          fi
-        done
 
 volumes:
   pgdata:
