@@ -35,6 +35,7 @@ test("refreshOffer re-scrapes, re-scores and upserts", async () => {
   const { deps, upserts } = makeDeps();
   const updated = await refreshOffer("100", deps);
   expect(upserts[0].score).toBe(91);
+  expect(upserts[0].source).toBe("trojmiasto");
   expect(updated.title).toBe("Re 2pok");
   expect(updated.score).toBe(91);
 });

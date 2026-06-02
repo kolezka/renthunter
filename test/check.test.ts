@@ -63,6 +63,7 @@ test("new offer passing filters + score>=threshold gets notified", async () => {
   expect(summary.notifiedCount).toBe(1);
   expect(notified).toEqual(["100"]);
   expect(upserts[0].score).toBe(88);
+  expect(upserts[0].source).toBe("trojmiasto");
 });
 
 test("known offer is not re-processed as new", async () => {
@@ -243,4 +244,17 @@ test("scrapes every source and dedups across sources by externalId", async () =>
   const summary = await runCheck(deps);
   expect(summary.listedCount).toBe(2); // 100 deduped, 200 unique
   expect(summary.newCount).toBe(2);
+});
+
+test("runCheck warns and skips a searchUrl with no registered source", async () => {
+  const { deps, logs } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, searchUrls: ["https://unknown.example/x", "https://search"] }) as any,
+    resolveSource: (url: string) => (url.includes("unknown.example") ? null : makeSource()),
+  });
+  const summary = await runCheck(deps);
+  const warn = logs.find((l) => l.event === "source.unknown");
+  expect(warn).toBeDefined();
+  expect(warn!.level).toBe("warn");
+  expect((warn!.context as any).searchUrl).toContain("unknown.example");
+  expect(summary.listedCount).toBeGreaterThan(0);
 });
