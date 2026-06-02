@@ -5,7 +5,7 @@ import { offers, config, logs } from "../src/db/schema";
 import {
   ensureConfig, getConfig, updateConfig,
   getKnownExternalIds, upsertOffer, markNotified, markInactive, listOffers,
-  appendLog, listLogs, pruneLogs,
+  appendLog, listLogs, pruneLogs, getOfferByExternalId,
 } from "../src/db/queries";
 
 beforeEach(async () => {
@@ -101,4 +101,11 @@ test("pruneLogs deletes entries older than 7 days", async () => {
   const rows = await listLogs();
   expect(rows.length).toBe(1);
   expect(rows[0]!.event).toBe("fresh");
+});
+
+test("getOfferByExternalId returns the row or null", async () => {
+  await upsertOffer({ externalId: "ext-1", url: "https://x/a-ogl1.html", title: "T" });
+  const found = await getOfferByExternalId("ext-1");
+  expect(found?.externalId).toBe("ext-1");
+  expect(await getOfferByExternalId("nope")).toBeNull();
 });

@@ -1,18 +1,71 @@
 import { resolve } from "node:path";
-import { listOffers, getConfig, updateConfig, listLogs } from "../db/queries";
+import { listOffers, getConfig, updateConfig, listLogs, acquireRunLock, releaseRunLock } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
+import type { Offer } from "../db/schema";
+import { loadConfig } from "../config";
+import { runCheck } from "../pipeline/check";
+import { refreshOffer } from "../pipeline/refresh";
+import { buildCheckDeps, buildRefreshDeps } from "../pipeline/deps";
+import { dbLogger, createRunLogger } from "../log/logger";
+import { RUN_LOCK_STALE_MS } from "../pipeline/run-lock";
+
+export interface ServerOptions {
+  runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
+  refreshOfferById?: (externalId: string) => Promise<Offer | null>;
+}
+
+// Default in-process crawl: acquire DB lock, build logged deps and run the pipeline.
+async function defaultRunCrawler(): Promise<{ runId: string; done: Promise<void> } | { busy: true }> {
+  const env = loadConfig();
+  const runId = crypto.randomUUID();
+  const acquired = await acquireRunLock(runId, "manual", RUN_LOCK_STALE_MS);
+  if (!acquired) return { busy: true };
+  const logger = createRunLogger(dbLogger, runId);
+  const done = runCheck(buildCheckDeps(env, logger))
+    .then(() => {})
+    .catch((err) => { console.error("manual runCheck failed:", err); })
+    .finally(() => releaseRunLock(runId));
+  return { runId, done };
+}
+
+function defaultRefresh(externalId: string): Promise<Offer | null> {
+  const env = loadConfig();
+  const logger = createRunLogger(dbLogger, crypto.randomUUID());
+  return refreshOffer(externalId, buildRefreshDeps(env, logger)).catch((err) => {
+    if (String(err).includes("offer not found")) return null;
+    throw err;
+  });
+}
 
 const DIST = resolve(import.meta.dir, "../../web/dist");
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json" } });
 
-export function createServer(port: number) {
+export function createServer(port: number, opts: ServerOptions = {}) {
+  const runCrawler = opts.runCrawler ?? defaultRunCrawler;
+  const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
+
   return Bun.serve({
     port,
     async fetch(req) {
       const url = new URL(req.url);
       const path = url.pathname;
+
+      if (path === "/api/run" && req.method === "POST") {
+        const r = await runCrawler();
+        if ("busy" in r) return json({ error: "a run is already in progress" }, 409);
+        return json({ runId: r.runId }, 202);
+      }
+
+      const refreshMatch = path.match(/^\/api\/offers\/([^/]+)\/refresh$/);
+      if (refreshMatch && req.method === "POST") {
+        const externalId = decodeURIComponent(refreshMatch[1]!);
+        if (!/^\d+$/.test(externalId)) return json({ error: "invalid offer id" }, 400);
+        const updated = await refreshOfferById(externalId);
+        if (!updated) return json({ error: "offer not found" }, 404);
+        return json(updated);
+      }
 
       if (path === "/api/offers" && req.method === "GET") {
         return json(await listOffers());

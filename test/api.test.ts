@@ -13,7 +13,15 @@ beforeAll(async () => {
   await db.delete(logs);
   await ensureConfig("https://search.example");
   await appendLog({ level: "info", event: "run.start", message: "seeded" });
-  server = createServer(0);
+  server = createServer(0, {
+    runCrawler: async () => ({ runId: "run-test-id", done: Promise.resolve() }),
+    refreshOfferById: async (externalId) =>
+      externalId === "100"
+        ? ({ id: 1, externalId, title: "Refreshed", price: 3000, area: 40, rooms: 2,
+             district: "X", url: "https://x/a-ogl100.html", score: 80, scoreReasons: "ok",
+             status: "active", notified: false, firstSeen: "", lastSeen: "" } as any)
+        : null,
+  });
   base = `http://localhost:${server.port}`;
 });
 
@@ -52,3 +60,41 @@ test("GET /api/logs returns entries newest-first", async () => {
   expect(rows.length).toBeGreaterThanOrEqual(1);
   expect(rows[0]!.event).toBe("run.start");
 });
+
+test("POST /api/run starts a run and reports 202", async () => {
+  const res = await fetch(`${base}/api/run`, { method: "POST" });
+  expect(res.status).toBe(202);
+  const body = (await res.json()) as { runId: string };
+  expect(body.runId).toBe("run-test-id");
+});
+
+test("POST /api/run returns 409 when the runner reports busy", async () => {
+  const s = createServer(0, { runCrawler: async () => ({ busy: true as const }) });
+  const b = `http://localhost:${s.port}`;
+  try {
+    const res = await fetch(`${b}/api/run`, { method: "POST" });
+    expect(res.status).toBe(409);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toContain("in progress");
+  } finally {
+    s.stop(true);
+  }
+});
+
+test("POST /api/offers/:id/refresh returns the updated offer", async () => {
+  const res = await fetch(`${base}/api/offers/100/refresh`, { method: "POST" });
+  expect(res.status).toBe(200);
+  const o = (await res.json()) as Record<string, unknown>;
+  expect(o.title).toBe("Refreshed");
+});
+
+test("POST refresh returns 404 for unknown offer", async () => {
+  const res = await fetch(`${base}/api/offers/999/refresh`, { method: "POST" });
+  expect(res.status).toBe(404);
+});
+
+test("POST refresh returns 400 for non-numeric id", async () => {
+  const res = await fetch(`${base}/api/offers/abc/refresh`, { method: "POST" });
+  expect(res.status).toBe(400);
+});
+
