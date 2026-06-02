@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { listOffers, getConfig, updateConfig } from "../db/queries";
+import { listOffers, getConfig, updateConfig, listLogs } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
 
 const DIST = resolve(import.meta.dir, "../../web/dist");
@@ -16,6 +16,11 @@ export function createServer(port: number) {
 
       if (path === "/api/offers" && req.method === "GET") {
         return json(await listOffers());
+      }
+      if (path === "/api/logs" && req.method === "GET") {
+        const limitParam = url.searchParams.get("limit");
+        const limit = limitParam ? Math.min(Math.max(parseInt(limitParam, 10) || 300, 1), 1000) : 300;
+        return json(await listLogs({ limit }));
       }
       if (path === "/api/config" && req.method === "GET") {
         return json(await getConfig());
