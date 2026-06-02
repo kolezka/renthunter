@@ -4,17 +4,23 @@ import { validateConfigPatch, safeStaticPath } from "./validate";
 import type { Offer } from "../db/schema";
 import { loadConfig } from "../config";
 import { refreshOffer } from "../pipeline/refresh";
-import { buildRefreshDeps, runCrawlGuarded } from "../pipeline/deps";
+import { buildRefreshDeps, runCrawlGuarded, runRescoreGuarded } from "../pipeline/deps";
+import { progressBus } from "../pipeline/progress";
 import { dbLogger, createRunLogger } from "../log/logger";
 
 export interface ServerOptions {
   runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
   refreshOfferById?: (externalId: string) => Promise<Offer | null>;
+  runRescore?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true } | { disabled: true }>;
 }
 
 // Default in-process crawl, triggered by POST /api/run (source "manual").
 function defaultRunCrawler(): Promise<{ runId: string; done: Promise<void> } | { busy: true }> {
   return runCrawlGuarded(loadConfig(), "manual");
+}
+
+function defaultRunRescore() {
+  return runRescoreGuarded(loadConfig());
 }
 
 function defaultRefresh(externalId: string): Promise<Offer | null> {
@@ -34,12 +40,25 @@ const json = (data: unknown, status = 200) =>
 export function createServer(port: number, opts: ServerOptions = {}) {
   const runCrawler = opts.runCrawler ?? defaultRunCrawler;
   const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
+  const runRescore = opts.runRescore ?? defaultRunRescore;
 
   return Bun.serve({
     port,
-    async fetch(req) {
+    async fetch(req, server) {
       const url = new URL(req.url);
       const path = url.pathname;
+
+      if (path === "/ws") {
+        if (server.upgrade(req, { data: {} as { unsub?: () => void } })) return undefined;
+        return new Response("expected a websocket upgrade", { status: 426 });
+      }
+
+      if (path === "/api/rescore" && req.method === "POST") {
+        const r = await runRescore();
+        if ("disabled" in r) return json({ error: "DeepSeek scoring is disabled" }, 400);
+        if ("busy" in r) return json({ error: "a run is already in progress" }, 409);
+        return json({ runId: r.runId }, 202);
+      }
 
       if (path === "/api/run" && req.method === "POST") {
         const r = await runCrawler();
@@ -90,6 +109,17 @@ export function createServer(port: number, opts: ServerOptions = {}) {
       if (await index.exists()) return new Response(index);
 
       return new Response("Not found", { status: 404 });
+    },
+    websocket: {
+      open(ws: import("bun").ServerWebSocket<{ unsub?: () => void }>) {
+        ws.data.unsub = progressBus.subscribe((e) => {
+          if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(e));
+        });
+      },
+      message() {},
+      close(ws: import("bun").ServerWebSocket<{ unsub?: () => void }>) {
+        ws.data.unsub?.();
+      },
     },
   });
 }
