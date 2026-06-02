@@ -1,6 +1,15 @@
 import { test, expect } from "bun:test";
 import { runRescore, type RescoreDeps } from "../src/pipeline/rescore";
 import type { RescoreEvent } from "../src/pipeline/progress";
+import { db } from "../src/db/client";
+import { offers, config, runLock } from "../src/db/schema";
+import { ensureConfig, updateConfig, acquireRunLock } from "../src/db/queries";
+import { runRescoreGuarded } from "../src/pipeline/deps";
+
+const env = {
+  port: 0, appriseUrl: "http://apprise",
+  deepseekApiKey: "k", deepseekBaseUrl: "https://api.deepseek.com",
+} as any;
 
 const baseConfig = {
   id: 1, searchUrls: ["https://search"],
@@ -80,4 +89,28 @@ test("runRescore never re-fetches detail pages", async () => {
   const { deps } = makeDeps({ scoreOffer: async (i) => { seen.push(i.description); return { score: 1, reasons: "" }; } });
   await runRescore(deps);
   expect(seen.sort()).toEqual(["opis A", "opis B"]);
+});
+
+test("runRescoreGuarded returns { disabled } when deepseek is off", async () => {
+  await db.delete(runLock); await db.delete(offers); await db.delete(config);
+  await ensureConfig("https://search.example");
+  await updateConfig({ deepseekEnabled: false });
+  const r = await runRescoreGuarded(env);
+  expect(r).toEqual({ disabled: true });
+});
+
+test("runRescoreGuarded returns { busy } when the lock is held", async () => {
+  await db.delete(runLock); await db.delete(offers); await db.delete(config);
+  await ensureConfig("https://search.example"); // deepseekEnabled defaults true
+  expect(await acquireRunLock("someone-else", "manual", 15 * 60 * 1000)).toBe(true);
+  const r = await runRescoreGuarded(env);
+  expect(r).toEqual({ busy: true });
+});
+
+test("runRescoreGuarded acquires the lock and returns a runId", async () => {
+  await db.delete(runLock); await db.delete(offers); await db.delete(config);
+  await ensureConfig("https://search.example");
+  const r = await runRescoreGuarded(env);
+  expect("runId" in r).toBe(true);
+  if ("runId" in r) await r.done; // let it settle + release the lock
 });
