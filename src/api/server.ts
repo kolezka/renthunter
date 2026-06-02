@@ -42,14 +42,14 @@ export function createServer(port: number, opts: ServerOptions = {}) {
   const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
   const runRescore = opts.runRescore ?? defaultRunRescore;
 
-  return Bun.serve({
+  return Bun.serve<{ unsub?: () => void }>({
     port,
     async fetch(req, server) {
       const url = new URL(req.url);
       const path = url.pathname;
 
       if (path === "/ws") {
-        if (server.upgrade(req, { data: {} as { unsub?: () => void } })) return undefined;
+        if (server.upgrade(req, { data: {} })) return undefined;
         return new Response("expected a websocket upgrade", { status: 426 });
       }
 
@@ -111,13 +111,13 @@ export function createServer(port: number, opts: ServerOptions = {}) {
       return new Response("Not found", { status: 404 });
     },
     websocket: {
-      open(ws: import("bun").ServerWebSocket<{ unsub?: () => void }>) {
+      open(ws) {
         ws.data.unsub = progressBus.subscribe((e) => {
           if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(e));
         });
       },
       message() {},
-      close(ws: import("bun").ServerWebSocket<{ unsub?: () => void }>) {
+      close(ws) {
         ws.data.unsub?.();
       },
     },
