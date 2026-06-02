@@ -50,8 +50,10 @@ export const checkOffers = schedules.task({
       });
       return summary;
     } finally {
-      // Retention: drop entries older than 7 days, once per run.
-      await pruneLogs();
+      // Retention: drop entries older than 7 days, once per run. Swallow prune
+      // failures so they can't replace a runCheck error in this finally block
+      // (mirrors dbLogger's never-throw guarantee).
+      await pruneLogs().catch((err) => console.error("pruneLogs failed:", err));
     }
   },
 });
