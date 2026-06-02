@@ -7,9 +7,13 @@ export interface Offer {
 }
 export interface Config {
   searchUrl: string; minPrice: number | null; maxPrice: number | null;
-  minArea: number | null; minRooms: number | null; aiCriteria: string;
+  minArea: number | null; minRooms: number | null;
+  maxArea: number | null; maxRooms: number | null;
+  aiCriteria: string;
   scoreThreshold: number; pollIntervalMin: number;
   appriseUrls: string[]; deepseekEnabled: boolean;
+  listPages: number; maxDetailFetchesPerRun: number;
+  requestDelayMs: number; concurrencyLimit: number;
 }
 
 export async function getOffers(): Promise<Offer[]> {
@@ -43,4 +47,18 @@ export interface LogEntry {
 
 export async function getLogs(limit = 300): Promise<LogEntry[]> {
   return (await fetch(`/api/logs?limit=${limit}`)).json();
+}
+
+export async function runCrawler(): Promise<{ runId: string }> {
+  const res = await fetch("/api/run", { method: "POST" });
+  const data = await res.json();
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? `Run failed (HTTP ${res.status})`);
+  return data as { runId: string };
+}
+
+export async function refreshOffer(externalId: string): Promise<Offer> {
+  const res = await fetch(`/api/offers/${externalId}/refresh`, { method: "POST" });
+  const data = await res.json();
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? `Refresh failed (HTTP ${res.status})`);
+  return data as Offer;
 }
