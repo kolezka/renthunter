@@ -3,7 +3,10 @@
 .DEFAULT_GOAL := help
 .PHONY: help install build typecheck test check dev start \
         db-push db-generate db-migrate db-studio \
-        up down prod prod-down prod-logs trigger-dev
+        up up-fresh down lan-ip prod prod-down prod-logs trigger-dev
+
+# Best-effort LAN IP of this host (macOS en0/en1, then Linux fallback).
+LAN_IP := $(shell ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || hostname -I 2>/dev/null | awk '{print $$1}')
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -41,8 +44,16 @@ db-migrate: ## Apply pending Drizzle migrations
 db-studio: ## Open Drizzle Studio
 	bun run db:studio
 
-up: ## Start the dev stack (docker compose, hot reload)
+up: ## Start the dev stack, reachable on the LAN (docker compose, hot reload)
+	@echo "Dev app → http://localhost:3000  and  http://$(LAN_IP):3000 (other devices on your network)"
 	bun run compose:dev
+
+up-fresh: ## Reset the DB volume, then start the dev stack (run once after the push→migrate switch)
+	docker compose -f docker-compose.dev.yml down -v
+	@$(MAKE) up
+
+lan-ip: ## Print this host's LAN IP (where other devices reach the app)
+	@echo "$(LAN_IP)"
 
 down: ## Stop the dev stack
 	bun run compose:dev:down
