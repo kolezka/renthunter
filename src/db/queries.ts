@@ -96,3 +96,8 @@ export async function listLogs(opts: { limit?: number } = {}): Promise<LogRow[]>
 export async function pruneLogs(): Promise<void> {
   await db.delete(logs).where(lt(logs.ts, sql`now() - interval '7 days'`));
 }
+
+export async function getOfferByExternalId(externalId: string): Promise<Offer | null> {
+  const rows = await db.select().from(offers).where(eq(offers.externalId, externalId)).limit(1);
+  return rows[0] ?? null;
+}
