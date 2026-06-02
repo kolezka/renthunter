@@ -30,3 +30,17 @@ export async function saveConfig(patch: Partial<Config>): Promise<Config> {
   if (!res.ok) throw new Error((data as { error?: string }).error ?? `Save failed (HTTP ${res.status})`);
   return data as Config;
 }
+
+export interface LogEntry {
+  id: number;
+  ts: string;
+  runId: string | null;
+  level: "info" | "warn" | "error";
+  event: string;
+  message: string;
+  context: Record<string, unknown> | null;
+}
+
+export async function getLogs(limit = 300): Promise<LogEntry[]> {
+  return (await fetch(`/api/logs?limit=${limit}`)).json();
+}
