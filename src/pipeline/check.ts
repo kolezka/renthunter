@@ -127,7 +127,14 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
       for (const pageUrl of src.listPageUrls(searchUrl, config.listPages)) {
         await sleep(config.requestDelayMs);
         const html = await deps.fetchPage(pageUrl);
-        for (const it of src.parseList(html)) {
+        let listed: ListItem[];
+        try {
+          listed = src.parseList(html);
+        } catch (err) {
+          await deps.log.log({ level: "warn", event: "list.error", message: `failed parsing list ${pageUrl}`, context: { url: pageUrl, error: String(err) } });
+          continue;
+        }
+        for (const it of listed) {
           if (!merged.has(it.externalId)) merged.set(it.externalId, it);
         }
       }
