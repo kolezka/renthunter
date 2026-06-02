@@ -1,5 +1,5 @@
 import type { Config, NewOffer, Offer } from "../db/schema";
-import type { OfferDetail } from "../scraper/parse";
+import type { Source } from "../scraper/sources/types";
 import { maybeScore } from "./check";
 import type { Logger } from "../log/logger";
 
@@ -7,7 +7,7 @@ export interface RefreshDeps {
   getConfig: () => Promise<Config>;
   getOffer: (externalId: string) => Promise<Offer | null>;
   fetchPage: (url: string) => Promise<string>;
-  parseDetail: (html: string) => OfferDetail;
+  resolveSource: (url: string) => Source | null;
   scoreOffer: (
     input: { description: string; criteria: string },
     opts: { apiKey: string; baseUrl: string },
@@ -26,12 +26,15 @@ export async function refreshOffer(externalId: string, deps: RefreshDeps): Promi
 
   const config = await deps.getConfig();
   const html = await deps.fetchPage(existing.url);
-  const d = deps.parseDetail(html);
+  const src = deps.resolveSource(existing.url);
+  if (!src) throw new Error(`no parser for ${existing.url}`);
+  const d = src.parseDetail(html);
   const { score, reasons } = await maybeScore(d, config, deps);
 
   const row: NewOffer = {
     externalId,
     url: existing.url,
+    source: existing.source,
     title: d.title,
     price: d.price,
     area: d.area,
