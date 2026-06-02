@@ -1,2 +1,8 @@
 [serve.static]
 plugins = ["bun-plugin-svelte", "bun-plugin-tailwind"]
+
+[test]
+# Isolate tests on an in-memory PGlite db (see test/setup.ts). Without this preload,
+# src/db/client.ts refuses to run under NODE_ENV=test — so tests can never wipe the
+# real dev/prod database.
+preload = ["./test/setup.ts"]

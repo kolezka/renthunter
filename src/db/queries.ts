@@ -110,16 +110,19 @@ export async function getOfferByExternalId(externalId: string): Promise<Offer | 
  */
 export async function acquireRunLock(holder: string, source: string, staleMs: number): Promise<boolean> {
   const staleSeconds = staleMs / 1000;
-  const rows = await db.execute(sql`
+  const result = await db.execute(sql`
     INSERT INTO run_lock (id, holder, source, acquired_at)
     VALUES (1, ${holder}, ${source}, now())
     ON CONFLICT (id) DO UPDATE
       SET holder = ${holder}, source = ${source}, acquired_at = now()
       WHERE run_lock.holder IS NULL
-         OR run_lock.acquired_at < now() - make_interval(secs => ${staleSeconds})
+         OR run_lock.acquired_at <= now() - make_interval(secs => ${staleSeconds})
     RETURNING holder
   `);
-  return (rows as unknown as unknown[]).length === 1;
+  // Result envelope differs by driver: postgres-js returns a bare row array,
+  // drizzle-pglite returns { rows: [...] }. Normalize before counting.
+  const rows = Array.isArray(result) ? result : ((result as { rows?: unknown[] }).rows ?? []);
+  return rows.length === 1;
 }
 
 /** Release the lock only if `holder` still owns it (a stolen, expired lease is left alone). */

@@ -31,7 +31,7 @@ test("GET /api/config returns seeded config", async () => {
   const res = await fetch(`${base}/api/config`);
   expect(res.status).toBe(200);
   const c = (await res.json()) as Record<string, unknown>;
-  expect(c.searchUrl).toBe("https://search.example");
+  expect(c.searchUrls).toEqual(["https://search.example"]);
 });
 
 test("PUT /api/config updates fields", async () => {
