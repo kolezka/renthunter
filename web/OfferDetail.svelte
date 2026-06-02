@@ -11,9 +11,26 @@
 
   let idx = $state(0);
   let broken = $state(new Set<number>());
-  const images = $derived((offer.images ?? []).filter((_, i) => !broken.has(i)));
-  function markBroken(i: number) { broken = new Set(broken).add(i); if (idx >= images.length) idx = 0; }
-  function go(n: number) { const len = (offer.images ?? []).length; if (len) idx = (n + len) % len; }
+
+  // Reset gallery state whenever the offer changes (e.g. a refresh returning a
+  // different image set) so idx can't point past the new array.
+  $effect(() => {
+    offer.id; offer.images;
+    idx = 0;
+    broken = new Set<number>();
+  });
+
+  // Next non-broken index from `from` (wraps). If all are broken it returns a
+  // broken index, but the markup renders a placeholder there — no onerror loop.
+  function nextLive(from: number): number {
+    const all = offer.images ?? [];
+    if (!all.length) return 0;
+    let next = ((from % all.length) + all.length) % all.length;
+    for (let tries = all.length; broken.has(next) && tries > 0; tries--) next = (next + 1) % all.length;
+    return next;
+  }
+  function markBroken(i: number) { broken = new Set(broken).add(i); idx = nextLive(idx); }
+  function go(n: number) { if ((offer.images ?? []).length) idx = nextLive(n); }
 
   // Same scaffolding as the Config modal: freeze the aurora + lock scroll while open.
   $effect(() => {
@@ -48,7 +65,11 @@
       <div class="relative mb-4 overflow-hidden rounded-[16px] border border-[var(--glass-border)] bg-black/30">
         {#each offer.images as src, i (src)}
           {#if i === idx}
-            <img {src} alt={offer.title} loading="lazy" class="h-[clamp(220px,42vh,460px)] w-full object-cover" onerror={() => markBroken(i)} />
+            {#if broken.has(i)}
+              <div class="grid h-[clamp(220px,42vh,460px)] w-full place-items-center text-ink-3">Obraz niedostępny</div>
+            {:else}
+              <img {src} alt={offer.title} loading="lazy" class="h-[clamp(220px,42vh,460px)] w-full object-cover" onerror={() => markBroken(i)} />
+            {/if}
           {/if}
         {/each}
         {#if offer.images.length > 1}
@@ -60,9 +81,11 @@
       {#if offer.images.length > 1}
         <div class="mb-4 flex gap-2 overflow-x-auto pb-1">
           {#each offer.images as src, i (src)}
-            <button class="h-14 w-20 flex-shrink-0 overflow-hidden rounded-[10px] border-2 {i === idx ? 'border-[var(--color-aurora-indigo)]' : 'border-transparent'}" onclick={() => (idx = i)} aria-label={`Zdjęcie ${i + 1}`}>
-              <img {src} alt="" loading="lazy" class="h-full w-full object-cover" />
-            </button>
+            {#if !broken.has(i)}
+              <button class="h-14 w-20 flex-shrink-0 overflow-hidden rounded-[10px] border-2 {i === idx ? 'border-[var(--color-aurora-indigo)]' : 'border-transparent'}" onclick={() => (idx = i)} aria-label={`Zdjęcie ${i + 1}`}>
+                <img {src} alt="" loading="lazy" class="h-full w-full object-cover" onerror={() => markBroken(i)} />
+              </button>
+            {/if}
           {/each}
         </div>
       {/if}
