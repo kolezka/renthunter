@@ -3,7 +3,7 @@ import { runCheck, type CheckDeps } from "../src/pipeline/check";
 import type { LogInput } from "../src/log/logger";
 
 const baseConfig = {
-  id: 1, searchUrl: "https://search",
+  id: 1, searchUrls: ["https://search"],
   minPrice: null, maxPrice: 4000, minArea: 30, minRooms: 2,
   maxArea: null, maxRooms: null,
   aiCriteria: "blisko SKM", scoreThreshold: 70, pollIntervalMin: 5,
@@ -185,4 +185,28 @@ test("images from parseDetail are persisted on the upserted offer", async () => 
   const { deps, upserts } = makeDeps();
   await runCheck(deps);
   expect(upserts[0].images).toEqual(["https://img/1.jpg", "https://img/2.jpg"]);
+});
+
+test("scrapes every source and dedups across sources by externalId", async () => {
+  const bySource: Record<string, string> = {
+    "https://search-a": "<list-a>",
+    "https://search-b": "<list-b>",
+  };
+  const { deps } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, searchUrls: ["https://search-a", "https://search-b"] }) as any,
+    fetchPage: async (url) => {
+      if (url.includes("ogl")) return "<detail>";
+      return bySource[url] ?? "<list>";
+    },
+    parseListUrls: (html) =>
+      html === "<list-b>"
+        ? [
+            { externalId: "100", url: "https://x/a-ogl100.html" }, // dup across sources
+            { externalId: "200", url: "https://x/b-ogl200.html" },
+          ]
+        : [{ externalId: "100", url: "https://x/a-ogl100.html" }],
+  });
+  const summary = await runCheck(deps);
+  expect(summary.listedCount).toBe(2); // 100 deduped, 200 unique
+  expect(summary.newCount).toBe(2);
 });

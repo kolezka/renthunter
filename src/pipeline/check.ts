@@ -114,14 +114,16 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
     await deps.log.log({ level: "info", event: "run.start", message: "check started" });
     const config = await deps.getConfig();
 
-    // Fetch + merge every configured list page; parseListUrls dedups per page,
-    // the Map below dedups across pages by externalId.
+    // Fetch + merge every page of every configured source. parseListUrls dedups
+    // per page; the Map dedups across pages AND across sources by externalId.
     const merged = new Map<string, ListItem>();
-    for (const pageUrl of listPageUrls(config.searchUrl, config.listPages)) {
-      await sleep(config.requestDelayMs);
-      const html = await deps.fetchPage(pageUrl);
-      for (const it of deps.parseListUrls(html)) {
-        if (!merged.has(it.externalId)) merged.set(it.externalId, it);
+    for (const source of config.searchUrls) {
+      for (const pageUrl of listPageUrls(source, config.listPages)) {
+        await sleep(config.requestDelayMs);
+        const html = await deps.fetchPage(pageUrl);
+        for (const it of deps.parseListUrls(html)) {
+          if (!merged.has(it.externalId)) merged.set(it.externalId, it);
+        }
       }
     }
     const items = [...merged.values()];
