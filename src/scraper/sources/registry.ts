@@ -4,7 +4,7 @@ import { trojmiasto } from "./trojmiasto";
 export const SOURCES: Source[] = [trojmiasto];
 
 /** Strip a leading "www." so "www.olx.pl" and "olx.pl" both match. */
-function normalizeHost(host: string): string {
+export function normalizeHost(host: string): string {
   return host.replace(/^www\./i, "").toLowerCase();
 }
 
@@ -19,5 +19,5 @@ export function resolveSource(url: string): Source | null {
 }
 
 export function allowedHosts(): Set<string> {
-  return new Set(SOURCES.flatMap((s) => s.hosts));
+  return new Set(SOURCES.flatMap((s) => s.hosts.map(normalizeHost)));
 }
