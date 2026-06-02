@@ -4,6 +4,7 @@ export interface Offer {
   district: string | null; url: string; score: number | null;
   scoreReasons: string | null; status: string; notified: boolean;
   firstSeen: string; lastSeen: string;
+  images: string[]; description: string | null;
 }
 export interface Config {
   searchUrl: string; minPrice: number | null; maxPrice: number | null;
