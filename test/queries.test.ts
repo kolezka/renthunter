@@ -1,14 +1,17 @@
 import { test, expect, beforeEach } from "bun:test";
+import { sql } from "drizzle-orm";
 import { db } from "../src/db/client";
-import { offers, config } from "../src/db/schema";
+import { offers, config, logs } from "../src/db/schema";
 import {
   ensureConfig, getConfig, updateConfig,
   getKnownExternalIds, upsertOffer, markNotified, markInactive, listOffers,
+  appendLog, listLogs, pruneLogs,
 } from "../src/db/queries";
 
 beforeEach(async () => {
   await db.delete(offers);
   await db.delete(config);
+  await db.delete(logs);
 });
 
 test("ensureConfig seeds a single default row", async () => {
@@ -67,4 +70,35 @@ test("listOffers sorts scored offers above unscored (NULLS LAST)", async () => {
   await upsertOffer({ externalId: "high", url: "u", title: "t", score: 90 });
   const ids = (await listOffers()).map((o) => o.externalId);
   expect(ids).toEqual(["high", "low", "none"]);
+});
+
+test("appendLog inserts a row; listLogs returns newest-first", async () => {
+  await appendLog({ level: "info", event: "run.start", message: "started", runId: "r1" });
+  await appendLog({ level: "error", event: "fetch", message: "boom", runId: "r1", context: { url: "u" } });
+  const rows = await listLogs();
+  expect(rows.length).toBe(2);
+  expect(rows[0]!.event).toBe("fetch"); // newest first
+  expect(rows[0]!.context).toEqual({ url: "u" });
+  expect(rows[1]!.event).toBe("run.start");
+  expect(rows[0]!.runId).toBe("r1");
+});
+
+test("listLogs honors limit", async () => {
+  for (let i = 0; i < 5; i++) {
+    await appendLog({ level: "info", event: "fetch", message: `m${i}` });
+  }
+  const rows = await listLogs({ limit: 3 });
+  expect(rows.length).toBe(3);
+});
+
+test("pruneLogs deletes entries older than 7 days", async () => {
+  await db.insert(logs).values({
+    level: "info", event: "old", message: "stale",
+    ts: sql`now() - interval '8 days'`,
+  });
+  await appendLog({ level: "info", event: "fresh", message: "keep" });
+  await pruneLogs();
+  const rows = await listLogs();
+  expect(rows.length).toBe(1);
+  expect(rows[0]!.event).toBe("fresh");
 });
