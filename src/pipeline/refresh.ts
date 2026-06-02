@@ -38,6 +38,7 @@ export async function refreshOffer(externalId: string, deps: RefreshDeps): Promi
     rooms: d.rooms,
     district: d.district,
     description: d.description,
+    images: d.images,
     score,
     scoreReasons: reasons,
   };

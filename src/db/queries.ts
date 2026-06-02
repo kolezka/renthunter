@@ -37,6 +37,7 @@ export async function upsertOffer(o: NewOffer): Promise<void> {
         url: o.url,
         district: o.district ?? sql`${offers.district}`,
         description: o.description ?? sql`${offers.description}`,
+        images: o.images ?? sql`${offers.images}`,
         score: o.score ?? sql`${offers.score}`,
         scoreReasons: o.scoreReasons ?? sql`${offers.scoreReasons}`,
         status: "active",

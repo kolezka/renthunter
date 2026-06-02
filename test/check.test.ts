@@ -23,7 +23,7 @@ function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: s
     markInactive: async () => {},
     fetchPage: async (url) => url.includes("ogl") ? "<detail>" : "<list>",
     parseListUrls: () => [{ externalId: "100", url: "https://x/a-ogl100.html" }],
-    parseDetail: () => ({ title: "Ładne 2pok", price: 3500, area: 50, rooms: 2, district: "Wrzeszcz", description: "blisko SKM" }),
+    parseDetail: () => ({ title: "Ładne 2pok", price: 3500, area: 50, rooms: 2, district: "Wrzeszcz", description: "blisko SKM", images: ["https://img/1.jpg", "https://img/2.jpg"] }),
     scoreOffer: async () => ({ score: 88, reasons: "blisko SKM" }),
     sendNotification: async () => {},
     appriseUrl: "http://apprise:8000",
@@ -59,7 +59,7 @@ test("offer below score threshold is saved but not notified", async () => {
 
 test("offer failing hard filters is skipped (no detail score, no notify)", async () => {
   const { deps, notified } = makeDeps({
-    parseDetail: () => ({ title: "1pok", price: 3500, area: 50, rooms: 1, district: "X", description: "" }),
+    parseDetail: () => ({ title: "1pok", price: 3500, area: 50, rooms: 1, district: "X", description: "", images: [] }),
   });
   const summary = await runCheck(deps);
   expect(summary.notifiedCount).toBe(0);
@@ -87,7 +87,7 @@ test("a failing offer is isolated: others still process and markInactive runs", 
     ],
     parseDetail: (html) => {
       if (html === "boom") throw new Error("malformed detail page");
-      return { title: "OK 2pok", price: 3500, area: 50, rooms: 2, district: "W", description: "blisko SKM" };
+      return { title: "OK 2pok", price: 3500, area: 50, rooms: 2, district: "W", description: "blisko SKM", images: [] };
     },
     fetchPage: async (url) =>
       url.includes("bad") ? "boom" : url.includes("ogl") ? "<detail>" : "<list>",
@@ -179,4 +179,10 @@ test("listPages > 1 fetches and merges multiple list pages (dedup by externalId)
   const summary = await runCheck(deps);
   expect(summary.newCount).toBe(2);
   expect(fetched.some((u) => u.includes("strona=2"))).toBe(true);
+});
+
+test("images from parseDetail are persisted on the upserted offer", async () => {
+  const { deps, upserts } = makeDeps();
+  await runCheck(deps);
+  expect(upserts[0].images).toEqual(["https://img/1.jpg", "https://img/2.jpg"]);
 });

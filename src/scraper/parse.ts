@@ -10,6 +10,7 @@ export interface OfferDetail {
   rooms: number | null;
   district: string | null;
   description: string;
+  images: string[];
 }
 
 export function extractExternalId(url: string): string | null {
@@ -136,7 +137,29 @@ export function parseDetail(html: string): OfferDetail {
     district = metaContent(html, "og:locality") ?? null;
   }
 
-  return { title, price, area, rooms, district, description };
+  // Images: JSON-LD `image` array (full gallery), fallback to og:image.
+  let images: string[] = [];
+  const ldImage = ld?.image;
+  if (Array.isArray(ldImage)) {
+    images = ldImage
+      .map((x) =>
+        typeof x === "string"
+          ? x
+          : x && typeof x === "object"
+            ? String((x as Record<string, unknown>).url ?? (x as Record<string, unknown>).contentUrl ?? "")
+            : "",
+      )
+      .filter(Boolean);
+  } else if (typeof ldImage === "string") {
+    images = [ldImage];
+  }
+  if (images.length === 0) {
+    const og = metaContent(html, "og:image");
+    if (og) images = [og];
+  }
+  images = [...new Set(images)].slice(0, 12);
+
+  return { title, price, area, rooms, district, description, images };
 }
 
 export function parseListUrls(html: string): ListItem[] {
