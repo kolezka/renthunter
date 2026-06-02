@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { listOffers, getConfig, updateConfig, listLogs } from "../db/queries";
+import { listOffers, getConfig, updateConfig, listLogs, acquireRunLock, releaseRunLock } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
 import type { Offer } from "../db/schema";
 import { loadConfig } from "../config";
@@ -7,20 +7,24 @@ import { runCheck } from "../pipeline/check";
 import { refreshOffer } from "../pipeline/refresh";
 import { buildCheckDeps, buildRefreshDeps } from "../pipeline/deps";
 import { dbLogger, createRunLogger } from "../log/logger";
+import { RUN_LOCK_STALE_MS } from "../pipeline/run-lock";
 
 export interface ServerOptions {
-  runCrawler?: () => { runId: string; done: Promise<void> };
+  runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
   refreshOfferById?: (externalId: string) => Promise<Offer | null>;
 }
 
-// Default in-process crawl: build logged deps and run the pipeline, returning a runId.
-function defaultRunCrawler(): { runId: string; done: Promise<void> } {
+// Default in-process crawl: acquire DB lock, build logged deps and run the pipeline.
+async function defaultRunCrawler(): Promise<{ runId: string; done: Promise<void> } | { busy: true }> {
   const env = loadConfig();
   const runId = crypto.randomUUID();
+  const acquired = await acquireRunLock(runId, "manual", RUN_LOCK_STALE_MS);
+  if (!acquired) return { busy: true };
   const logger = createRunLogger(dbLogger, runId);
   const done = runCheck(buildCheckDeps(env, logger))
     .then(() => {})
-    .catch((err) => { console.error("manual runCheck failed:", err); });
+    .catch((err) => { console.error("manual runCheck failed:", err); })
+    .finally(() => releaseRunLock(runId));
   return { runId, done };
 }
 
@@ -41,7 +45,6 @@ const json = (data: unknown, status = 200) =>
 export function createServer(port: number, opts: ServerOptions = {}) {
   const runCrawler = opts.runCrawler ?? defaultRunCrawler;
   const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
-  let runInFlight = false;
 
   return Bun.serve({
     port,
@@ -50,11 +53,9 @@ export function createServer(port: number, opts: ServerOptions = {}) {
       const path = url.pathname;
 
       if (path === "/api/run" && req.method === "POST") {
-        if (runInFlight) return json({ error: "a run is already in progress" }, 409);
-        runInFlight = true;
-        const { runId, done } = runCrawler();
-        void done.finally(() => { runInFlight = false; });
-        return json({ runId }, 202);
+        const r = await runCrawler();
+        if ("busy" in r) return json({ error: "a run is already in progress" }, 409);
+        return json({ runId: r.runId }, 202);
       }
 
       const refreshMatch = path.match(/^\/api\/offers\/([^/]+)\/refresh$/);
