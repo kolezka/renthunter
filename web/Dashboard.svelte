@@ -13,6 +13,7 @@
   let rescoring = $state(false);
   let ws: WebSocket | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  let rescoreSafetyTimer: ReturnType<typeof setTimeout> | null = null;
   let wsRetry = 0;
 
   // Client-side source filter over already-loaded offers (no server param).
@@ -81,6 +82,7 @@
         selected = { ...selected, score: e.score, scoreReasons: e.reasons };
       }
     } else if (e.type === "rescore:done") {
+      if (rescoreSafetyTimer) { clearTimeout(rescoreSafetyTimer); rescoreSafetyTimer = null; }
       rescoring = false;
       flash(`Przeliczono ${e.summary.scored} ofert`);
       getOffers().then((o) => (offers = o)); // reconcile anything missed
@@ -88,14 +90,19 @@
   }
 
   function connectWs() {
+    if (ws && ws.readyState < WebSocket.CLOSING) return; // already open or connecting
     const proto = location.protocol === "https:" ? "wss:" : "ws:";
     ws = new WebSocket(`${proto}//${location.host}/ws`);
     ws.onopen = () => { wsRetry = 0; };
-    ws.onmessage = (ev) => handleEvent(JSON.parse(ev.data) as RescoreEvent);
+    ws.onmessage = (ev) => {
+      let e: RescoreEvent;
+      try { e = JSON.parse(ev.data) as RescoreEvent; } catch { return; }
+      handleEvent(e);
+    };
     ws.onclose = () => {
       ws = null;
-      wsRetry = Math.min(wsRetry + 1, 6);
-      reconnectTimer = setTimeout(connectWs, 1000 * wsRetry); // backoff, capped ~6s
+      wsRetry = Math.min(wsRetry + 1, 30);
+      reconnectTimer = setTimeout(connectWs, 1000 * wsRetry); // linear backoff, capped 30s
     };
   }
 
@@ -105,6 +112,8 @@
     try {
       await rescoreAll();
       flash("Przeliczanie ocen uruchomione…");
+      if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
+      rescoreSafetyTimer = setTimeout(() => { rescoring = false; }, 5 * 60 * 1000); // safety net if rescore:done is missed
     } catch (e) {
       rescoring = false;
       flash(e instanceof Error ? e.message : "Nie udało się przeliczyć ocen");
@@ -129,6 +138,7 @@
 
   onDestroy(() => {
     if (reconnectTimer) clearTimeout(reconnectTimer);
+    if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
     if (ws) { ws.onclose = null; ws.close(); } // null onclose so teardown doesn't reconnect
   });
 
