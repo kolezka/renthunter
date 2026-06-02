@@ -34,6 +34,26 @@ export interface CheckSummary {
 
 const sleep = (ms: number) => (ms > 0 ? new Promise((r) => setTimeout(r, ms)) : Promise.resolve());
 
+/** Round-robin items by source so a single per-run fetch cap is shared fairly
+ *  across sources. Without this, sources are concatenated in config order, so
+ *  the last source is starved whenever earlier sources already fill the cap with
+ *  unknown listings (e.g. listPages high). Preserves per-source order; source
+ *  groups follow first-appearance order. */
+function interleaveBySource(items: ListItem[]): ListItem[] {
+  const groups = new Map<string, ListItem[]>();
+  for (const it of items) {
+    const g = groups.get(it.source);
+    if (g) g.push(it); else groups.set(it.source, [it]);
+  }
+  const queues = [...groups.values()];
+  const maxLen = Math.max(0, ...queues.map((q) => q.length));
+  const out: ListItem[] = [];
+  for (let i = 0; i < maxLen; i++) {
+    for (const q of queues) if (i < q.length) out.push(q[i]!);
+  }
+  return out;
+}
+
 /** Score a detail page if DeepSeek is enabled, else return nulls. */
 export async function maybeScore(
   detail: OfferDetail,
@@ -143,7 +163,8 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
     const activeIds = items.map((i) => i.externalId);
 
     const known = await deps.getKnownExternalIds();
-    const fresh = items.filter((i) => !known.has(i.externalId)).slice(0, config.maxDetailFetchesPerRun);
+    const fresh = interleaveBySource(items.filter((i) => !known.has(i.externalId)))
+      .slice(0, config.maxDetailFetchesPerRun);
 
     let notifiedCount = 0;
     let errorCount = 0;
