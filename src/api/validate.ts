@@ -3,7 +3,9 @@ import type { Config } from "../db/schema";
 
 const EDITABLE: (keyof Config)[] = [
   "searchUrl", "minPrice", "maxPrice", "minArea", "minRooms",
+  "maxArea", "maxRooms",
   "aiCriteria", "scoreThreshold", "pollIntervalMin", "appriseUrls", "deepseekEnabled",
+  "listPages", "maxDetailFetchesPerRun", "requestDelayMs", "concurrencyLimit",
 ];
 
 // Only trojmiasto search pages are allowed as the scrape target — searchUrl is
@@ -53,7 +55,7 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
     }
   }
 
-  for (const k of ["minPrice", "maxPrice", "minArea", "minRooms"] as const) {
+  for (const k of ["minPrice", "maxPrice", "minArea", "minRooms", "maxArea", "maxRooms"] as const) {
     if (k in patch && !isNonNegNumberOrNull(patch[k])) {
       return { ok: false, error: `${k} must be a non-negative number or null` };
     }
@@ -81,6 +83,21 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
 
   if ("deepseekEnabled" in patch && typeof patch.deepseekEnabled !== "boolean") {
     return { ok: false, error: "deepseekEnabled must be a boolean" };
+  }
+
+  const intRanges: Record<string, [number, number]> = {
+    listPages: [1, 10],
+    maxDetailFetchesPerRun: [1, 500],
+    requestDelayMs: [0, 10000],
+    concurrencyLimit: [1, 16],
+  };
+  for (const [k, [lo, hi]] of Object.entries(intRanges)) {
+    if (k in patch) {
+      const v = patch[k];
+      if (typeof v !== "number" || !Number.isInteger(v) || v < lo || v > hi) {
+        return { ok: false, error: `${k} must be an integer ${lo}-${hi}` };
+      }
+    }
   }
 
   return { ok: true, patch: patch as Partial<Config> };

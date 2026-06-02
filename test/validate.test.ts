@@ -49,3 +49,24 @@ test("safeStaticPath confines to root and blocks traversal", () => {
   expect(safeStaticPath(root, "/..%2f..%2fetc/passwd")).toBeNull();
   expect(safeStaticPath(root, "/a\0b")).toBeNull();
 });
+
+test("accepts new crawl-control fields within range", () => {
+  const r = validateConfigPatch({
+    maxArea: 80, maxRooms: 4, listPages: 3,
+    maxDetailFetchesPerRun: 50, requestDelayMs: 250, concurrencyLimit: 8,
+  });
+  expect(r.ok).toBe(true);
+  if (r.ok) expect(r.patch.concurrencyLimit).toBe(8);
+});
+
+test("rejects out-of-range crawl-control fields", () => {
+  expect(validateConfigPatch({ concurrencyLimit: 0 }).ok).toBe(false);
+  expect(validateConfigPatch({ concurrencyLimit: 17 }).ok).toBe(false);
+  expect(validateConfigPatch({ listPages: 0 }).ok).toBe(false);
+  expect(validateConfigPatch({ listPages: 11 }).ok).toBe(false);
+  expect(validateConfigPatch({ maxDetailFetchesPerRun: 0 }).ok).toBe(false);
+  expect(validateConfigPatch({ requestDelayMs: -1 }).ok).toBe(false);
+  expect(validateConfigPatch({ requestDelayMs: 10001 }).ok).toBe(false);
+  expect(validateConfigPatch({ maxArea: -1 }).ok).toBe(false);
+  expect(validateConfigPatch({ maxArea: null }).ok).toBe(true);
+});
