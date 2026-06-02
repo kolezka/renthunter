@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
 import { validateConfigPatch, safeStaticPath } from "../src/api/validate";
+import { allowedHosts } from "../src/scraper/sources/registry";
 import { resolve } from "node:path";
 
 test("accepts a valid patch and whitelists unknown keys", () => {
@@ -76,6 +77,14 @@ test("accepts new crawl-control fields within range", () => {
   });
   expect(r.ok).toBe(true);
   if (r.ok) expect(r.patch.concurrencyLimit).toBe(8);
+});
+
+test("searchUrls validation uses the registry allow-list", () => {
+  const host = [...allowedHosts()][0]!;
+  const ok = validateConfigPatch({ searchUrls: [`https://${host}/x`] });
+  expect(ok.ok).toBe(true);
+  const bad = validateConfigPatch({ searchUrls: ["https://evil.example/x"] });
+  expect(bad.ok).toBe(false);
 });
 
 test("rejects out-of-range crawl-control fields", () => {
