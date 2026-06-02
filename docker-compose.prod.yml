@@ -1,0 +1,84 @@
+# Production stack — self-contained, no trigger.dev / no cloud dependency.
+#   docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+#
+# The scheduled crawl runs via the `scheduler` sidecar, which POSTs the
+# lock-guarded /api/run endpoint on an interval — so the app does the crawl
+# in-process and Postgres never needs to be exposed off the host. Put a reverse
+# proxy / TLS (Caddy, Traefik, nginx) in front of the app on a dedicated server.
+name: trojmiasto-wynajem-prod
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wynajem
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+      POSTGRES_DB: wynajem
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wynajem"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No host port: Postgres is reachable only on the internal compose network.
+
+  apprise:
+    image: caronc/apprise:latest
+    restart: unless-stopped
+    # Internal-only: no host port; only the app reaches it over the compose network.
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://wynajem:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}@db:5432/wynajem
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      APPRISE_URL: http://apprise:8000
+      PORT: "3000"
+    ports:
+      # Bind to the host; front it with a reverse proxy for TLS on a dedicated server.
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      apprise:
+        condition: service_started
+    healthcheck:
+      # The slim image has no curl/wget; use bun itself to probe the API.
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/api/config').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  scheduler:
+    image: curlimages/curl:latest
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      CRAWL_INTERVAL_MIN: ${CRAWL_INTERVAL_MIN:-5}
+    # Self-contained cron: trigger an in-process crawl via the lock-guarded endpoint.
+    # The run lock makes overlapping/duplicate triggers harmless. `$$` escapes the
+    # `$` so the container shell (not Compose) does the arithmetic/expansion.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        : "$${CRAWL_INTERVAL_MIN:=5}"
+        echo "scheduler: POST /api/run every $${CRAWL_INTERVAL_MIN} min"
+        while true; do
+          sleep "$$(( CRAWL_INTERVAL_MIN * 60 ))"
+          if curl -fsS -X POST http://app:3000/api/run >/dev/null; then
+            echo "scheduler: triggered crawl"
+          else
+            echo "scheduler: trigger failed"
+          fi
+        done
+
+volumes:
+  pgdata:
