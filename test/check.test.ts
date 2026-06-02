@@ -5,8 +5,10 @@ import type { LogInput } from "../src/log/logger";
 const baseConfig = {
   id: 1, searchUrl: "https://search",
   minPrice: null, maxPrice: 4000, minArea: 30, minRooms: 2,
+  maxArea: null, maxRooms: null,
   aiCriteria: "blisko SKM", scoreThreshold: 70, pollIntervalMin: 5,
   appriseUrls: ["json://x"], deepseekEnabled: true,
+  listPages: 1, maxDetailFetchesPerRun: 30, requestDelayMs: 0, concurrencyLimit: 1,
 };
 
 function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: string[]; upserts: any[]; logs: LogInput[] } {
@@ -128,4 +130,53 @@ test("runCheck emits run.error and rethrows when the list fetch fails", async ()
   });
   await expect(runCheck(deps)).rejects.toThrow("list down");
   expect(logs.find((l) => l.event === "run.error")).toBeDefined();
+});
+
+test("maxDetailFetchesPerRun caps how many fresh offers are processed", async () => {
+  const cfg = { ...baseConfig, maxDetailFetchesPerRun: 1 };
+  const { deps, upserts } = makeDeps({
+    getConfig: async () => cfg as any,
+    parseListUrls: () => [
+      { externalId: "1", url: "https://x/a-ogl1.html" },
+      { externalId: "2", url: "https://x/b-ogl2.html" },
+    ],
+  });
+  const summary = await runCheck(deps);
+  expect(summary.newCount).toBe(1);
+  expect(upserts.length).toBe(1);
+});
+
+test("concurrencyLimit > 1 still processes every fresh offer once", async () => {
+  const cfg = { ...baseConfig, concurrencyLimit: 4, maxDetailFetchesPerRun: 30 };
+  const ids = ["1", "2", "3", "4", "5"];
+  const { deps, upserts } = makeDeps({
+    getConfig: async () => cfg as any,
+    parseListUrls: () => ids.map((i) => ({ externalId: i, url: `https://x/o-ogl${i}.html` })),
+  });
+  const summary = await runCheck(deps);
+  expect(summary.newCount).toBe(5);
+  expect(upserts.length).toBe(5);
+});
+
+test("listPages > 1 fetches and merges multiple list pages (dedup by externalId)", async () => {
+  const pages: Record<string, string> = {
+    "https://search": "<list1>",
+    "https://search/?strona=2": "<list2>",
+  };
+  const fetched: string[] = [];
+  const { deps } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, listPages: 2 }) as any,
+    fetchPage: async (url) => {
+      fetched.push(url);
+      if (url.includes("ogl")) return "<detail>";
+      return pages[url] ?? "<list>";
+    },
+    parseListUrls: (html) =>
+      html === "<list2>"
+        ? [{ externalId: "200", url: "https://x/b-ogl200.html" }]
+        : [{ externalId: "100", url: "https://x/a-ogl100.html" }],
+  });
+  const summary = await runCheck(deps);
+  expect(summary.newCount).toBe(2);
+  expect(fetched.some((u) => u.includes("strona=2"))).toBe(true);
 });
