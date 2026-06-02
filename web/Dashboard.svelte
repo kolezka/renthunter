@@ -6,7 +6,7 @@
   let loading = $state(true);
   let running = $state(false);
   let toast = $state("");
-  let refreshingId = $state<string | null>(null);
+  let refreshingIds = $state(new Set<string>());
 
   function flash(msg: string) {
     toast = msg;
@@ -27,15 +27,17 @@
   }
 
   async function onRefresh(o: Offer) {
-    if (refreshingId) return;
-    refreshingId = o.externalId;
+    if (refreshingIds.has(o.externalId)) return;
+    refreshingIds = new Set(refreshingIds).add(o.externalId);
     try {
       const updated = await refreshOffer(o.externalId);
       offers = offers.map((x) => (x.id === updated.id ? updated : x));
     } catch (e) {
       flash(e instanceof Error ? e.message : "Nie udało się odświeżyć");
     } finally {
-      refreshingId = null;
+      const next = new Set(refreshingIds);
+      next.delete(o.externalId);
+      refreshingIds = next;
     }
   }
 
@@ -168,12 +170,12 @@
           <div class="flex items-center gap-[8px]">
             <button
               onclick={() => onRefresh(o)}
-              disabled={refreshingId === o.externalId}
+              disabled={refreshingIds.has(o.externalId)}
               title="Odśwież i przelicz ocenę"
               aria-label="Odśwież ofertę"
               class="grid h-9 w-9 place-items-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2 transition-colors hover:text-ink disabled:opacity-50"
             >
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={refreshingId === o.externalId ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={refreshingIds.has(o.externalId) ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
             </button>
             <a class={openBtn} href={o.url} target="_blank" rel="noreferrer">
               Otwórz
@@ -207,12 +209,12 @@
             <td>
               <button
                 onclick={() => onRefresh(o)}
-                disabled={refreshingId === o.externalId}
+                disabled={refreshingIds.has(o.externalId)}
                 title="Odśwież"
                 aria-label="Odśwież ofertę"
                 class="mr-3 align-middle text-ink-3 transition-colors hover:text-ink disabled:opacity-50"
               >
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline {refreshingId === o.externalId ? 'animate-spin' : ''}"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline {refreshingIds.has(o.externalId) ? 'animate-spin' : ''}"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
               </button>
               <a class="font-semibold text-ink no-underline hover:text-[var(--color-aurora-indigo)]" href={o.url} target="_blank" rel="noreferrer">otwórz ↗</a>
             </td>
