@@ -1,18 +1,76 @@
 import { resolve } from "node:path";
 import { listOffers, getConfig, updateConfig, listLogs } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
+import type { Offer } from "../db/schema";
+import { loadConfig } from "../config";
+import { runCheck } from "../pipeline/check";
+import { refreshOffer } from "../pipeline/refresh";
+import { buildCheckDeps, buildRefreshDeps } from "../pipeline/deps";
+import { dbLogger, createRunLogger } from "../log/logger";
+
+export interface ServerOptions {
+  runCrawler?: () => Promise<string>;
+  refreshOfferById?: (externalId: string) => Promise<Offer | null>;
+}
+
+// Default in-process crawl: build logged deps and run the pipeline, returning a runId.
+function defaultRunCrawler(): Promise<string> {
+  const env = loadConfig();
+  const runId = crypto.randomUUID();
+  const logger = createRunLogger(dbLogger, runId);
+  // Fire-and-forget: the caller gets the runId immediately; progress lands in logs.
+  void runCheck(buildCheckDeps(env, logger)).catch((err) =>
+    console.error("manual runCheck failed:", err),
+  );
+  return Promise.resolve(runId);
+}
+
+function defaultRefresh(externalId: string): Promise<Offer | null> {
+  const env = loadConfig();
+  const logger = createRunLogger(dbLogger, crypto.randomUUID());
+  return refreshOffer(externalId, buildRefreshDeps(env, logger)).catch((err) => {
+    if (String(err).includes("offer not found")) return null;
+    throw err;
+  });
+}
 
 const DIST = resolve(import.meta.dir, "../../web/dist");
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json" } });
 
-export function createServer(port: number) {
+export function createServer(port: number, opts: ServerOptions = {}) {
+  const runCrawler = opts.runCrawler ?? defaultRunCrawler;
+  const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
+  let runInFlight = false;
+
   return Bun.serve({
     port,
     async fetch(req) {
       const url = new URL(req.url);
       const path = url.pathname;
+
+      if (path === "/api/run" && req.method === "POST") {
+        if (runInFlight) return json({ error: "a run is already in progress" }, 409);
+        runInFlight = true;
+        try {
+          const runId = await runCrawler();
+          return json({ runId }, 202);
+        } finally {
+          // For the default fire-and-forget runner the pipeline keeps going in the
+          // background; the flag only debounces rapid double-clicks at trigger time.
+          runInFlight = false;
+        }
+      }
+
+      const refreshMatch = path.match(/^\/api\/offers\/([^/]+)\/refresh$/);
+      if (refreshMatch && req.method === "POST") {
+        const externalId = decodeURIComponent(refreshMatch[1]!);
+        if (!/^\d+$/.test(externalId)) return json({ error: "invalid offer id" }, 400);
+        const updated = await refreshOfferById(externalId);
+        if (!updated) return json({ error: "offer not found" }, 404);
+        return json(updated);
+      }
 
       if (path === "/api/offers" && req.method === "GET") {
         return json(await listOffers());
