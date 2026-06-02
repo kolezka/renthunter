@@ -8,6 +8,7 @@ import { fetchPage } from "../src/scraper/fetch";
 import { parseListUrls, parseDetail } from "../src/scraper/parse";
 import { scoreOffer } from "../src/scorer/deepseek";
 import { sendNotification } from "../src/notify/apprise";
+import { dbLogger } from "../src/log/logger";
 
 // Static 5-minute cron. config.pollIntervalMin is informational for now;
 // dynamic schedules land once trigger.dev is self-hosted (see spec).
@@ -30,6 +31,7 @@ export const checkOffers = schedules.task({
       appriseUrl: env.appriseUrl,
       deepseekApiKey: env.deepseekApiKey,
       deepseekBaseUrl: env.deepseekBaseUrl,
+      log: dbLogger,
     });
     logger.info("check-offers done", {
       listedCount: summary.listedCount,
