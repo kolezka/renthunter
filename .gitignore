@@ -35,3 +35,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Svelte SPA build artifact
 web/dist
+
+# trigger.dev local build/runtime artifacts
+.trigger

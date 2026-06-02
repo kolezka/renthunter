@@ -1,11 +1,12 @@
 import { SveltePlugin } from "bun-plugin-svelte";
+import tailwind from "bun-plugin-tailwind";
 
 const result = await Bun.build({
   entrypoints: ["web/index.html"],
   outdir: "web/dist",
   target: "browser",
   minify: true,
-  plugins: [SveltePlugin({ development: false })],
+  plugins: [SveltePlugin({ development: false }), tailwind],
 });
 
 if (!result.success) {

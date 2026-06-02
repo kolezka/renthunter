@@ -1,0 +1,191 @@
+/* ============================================================
+   Trójmiasto Wynajem — Liquid Glass design system (2026)
+   Tailwind v4 + custom glass tokens & aurora backdrop.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* Scan Svelte components for utility classes. */
+@source "./*.svelte";
+@source "./**/*.svelte";
+
+/* ——— Design tokens exposed as Tailwind utilities ——— */
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+
+  --color-ink: rgba(255, 255, 255, 0.95);
+  --color-ink-2: rgba(232, 235, 255, 0.66);
+  --color-ink-3: rgba(220, 225, 255, 0.42);
+
+  --color-good: #34d399;
+  --color-mid: #fbbf24;
+  --color-bad: #fb7185;
+
+  /* Palette: electric blue ramp + warm orange accent. */
+  --color-aurora-indigo: #2f6dff; /* primary blue */
+  --color-aurora-violet: #5a9bff; /* light blue (mid gradient stop) */
+  --color-aurora-magenta: #ff8a1e; /* orange accent (gradient end / center glow) */
+  --color-aurora-teal: #1e54e6; /* deep cobalt (backdrop balance) */
+
+  --radius-glass: 26px;
+
+  --animate-rise: rise 0.5s cubic-bezier(0.22, 1.18, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-pop: pop 0.4s cubic-bezier(0.22, 1.18, 0.36, 1) both;
+  --animate-fade: fade 0.3s ease both;
+}
+
+/* ——— Plain CSS custom properties (used in gradients / backdrop) ——— */
+:root {
+  --bg-0: #07070c;
+  --bg-1: #0b0b14;
+  --glass-fill: rgba(255, 255, 255, 0.055);
+  --glass-fill-strong: rgba(255, 255, 255, 0.09);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-strong: rgba(255, 255, 255, 0.22);
+  --glass-blur: blur(22px) saturate(165%);
+  --ease-spring: cubic-bezier(0.22, 1.18, 0.36, 1);
+  --shadow-lift: 0 24px 60px -22px rgba(0, 0, 0, 0.75), 0 4px 14px -6px rgba(0, 0, 0, 0.6);
+  --inset-sheen: inset 0 1px 0 0 rgba(255, 255, 255, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+  }
+  body {
+    background: var(--bg-0);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-aurora-indigo);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection { background: rgba(47, 109, 255, 0.4); }
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.24); background-clip: content-box; }
+}
+
+/* ——— Reusable glass primitive ——— */
+@utility glass {
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lift), var(--inset-sheen);
+}
+
+/* ——— Aurora backdrop: three drifting blobs + grain ——— */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 800px at 50% -10%, rgba(47, 109, 255, 0.12), transparent 60%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-0));
+}
+.backdrop::before,
+.backdrop::after {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.backdrop::before {
+  top: -18vmax;
+  left: -10vmax;
+  background: radial-gradient(circle at 30% 30%, var(--color-aurora-violet), transparent 60%);
+  animation: drift-a 26s var(--ease-spring) infinite alternate;
+}
+.backdrop::after {
+  bottom: -22vmax;
+  right: -12vmax;
+  background: radial-gradient(circle at 60% 60%, var(--color-aurora-teal), transparent 60%);
+  animation: drift-b 32s var(--ease-spring) infinite alternate;
+}
+.backdrop > .blob {
+  position: absolute;
+  top: 35%;
+  left: 55%;
+  width: 34vmax;
+  height: 34vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-aurora-magenta), transparent 62%);
+  filter: blur(70px);
+  opacity: 0.32;
+  will-change: transform;
+  animation: drift-c 22s ease-in-out infinite alternate;
+}
+.backdrop > .grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes drift-a {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(12vmax, 8vmax, 0) scale(1.15); }
+}
+@keyframes drift-b {
+  0% { transform: translate3d(0, 0, 0) scale(1.1); }
+  100% { transform: translate3d(-10vmax, -6vmax, 0) scale(0.95); }
+}
+@keyframes drift-c {
+  0% { transform: translate3d(-6vmax, 4vmax, 0) scale(0.9); }
+  100% { transform: translate3d(8vmax, -8vmax, 0) scale(1.2); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -480px 0; }
+  100% { background-position: 480px 0; }
+}
+@keyframes pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* While a modal is open, freeze the animated aurora so the modal's single
+   backdrop blur composites a STATIC scene (cacheable) instead of re-blurring
+   moving content every frame — this is what kills modal lag. */
+.modal-open .backdrop::before,
+.modal-open .backdrop::after,
+.modal-open .backdrop > .blob {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
