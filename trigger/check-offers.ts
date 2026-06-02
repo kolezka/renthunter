@@ -4,6 +4,7 @@ import { loadConfig } from "../src/config";
 import { pruneLogs } from "../src/db/queries";
 import { dbLogger, createRunLogger } from "../src/log/logger";
 import { buildCheckDeps } from "../src/pipeline/deps";
+import { withRunLock } from "../src/pipeline/run-lock";
 
 export const checkOffers = schedules.task({
   id: "check-offers",
@@ -18,7 +19,13 @@ export const checkOffers = schedules.task({
     const deps = buildCheckDeps(env, logger);
 
     try {
-      const summary = await runCheck(deps);
+      const outcome = await withRunLock(runId, "scheduled", () => runCheck(deps));
+      if (!outcome.ran) {
+        await logger.log({ level: "info", event: "run.skipped", message: "skipped: another run in progress" });
+        triggerLogger.info("check-offers skipped: another run in progress");
+        return { skipped: true as const };
+      }
+      const summary = outcome.result;
       triggerLogger.info("check-offers done", {
         listedCount: summary.listedCount,
         newCount: summary.newCount,
