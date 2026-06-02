@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Offer } from "./lib/api";
+  import { SOURCE_LABEL, type Offer } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
 
   let { offer, onClose, onRefresh, refreshing = false }: {
@@ -132,7 +132,7 @@
           {refreshing ? "Odświeżanie…" : "Odśwież"}
         </button>
         <a class="inline-flex items-center gap-2 rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] px-4 py-2 text-[0.85rem] font-semibold text-ink no-underline" href={offer.url} target="_blank" rel="noreferrer">
-          Otwórz w trojmiasto
+          Otwórz w {SOURCE_LABEL[offer.source] ?? offer.source}
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
         </a>
       </div>

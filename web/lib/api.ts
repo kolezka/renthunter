@@ -1,3 +1,10 @@
+export type Source = "trojmiasto" | "olx" | "otodom";
+export const SOURCE_LABEL: Record<Source, string> = {
+  trojmiasto: "trójmiasto",
+  olx: "OLX",
+  otodom: "Otodom",
+};
+
 export interface Offer {
   id: number; externalId: string; title: string;
   price: number | null; area: number | null; rooms: number | null;
@@ -5,7 +12,7 @@ export interface Offer {
   scoreReasons: string | null; status: string; notified: boolean;
   firstSeen: string; lastSeen: string;
   images: string[]; description: string | null;
-  source: string;
+  source: Source;
 }
 export interface Config {
   searchUrls: string[]; minPrice: number | null; maxPrice: number | null;
