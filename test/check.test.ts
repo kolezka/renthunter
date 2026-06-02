@@ -277,3 +277,31 @@ test("runCheck warns and skips a searchUrl with no registered source", async () 
   expect((warn!.context as any).searchUrl).toContain("unknown.example");
   expect(summary.listedCount).toBeGreaterThan(0);
 });
+
+test("fresh selection interleaves sources so a later source is not starved by the per-run cap", async () => {
+  // Two sources, 10 fresh items each, cap of 4. Without interleaving, the merge
+  // order (source A first) means fresh = first 4 = all A, starving source B.
+  const srcA = makeSource({
+    id: "trojmiasto", hosts: ["a"],
+    parseList: () => Array.from({ length: 10 }, (_, i) => ({
+      externalId: `a${i}`, url: `https://a/a${i}-ogl.html`, source: "trojmiasto" as const,
+    })),
+  });
+  const srcB = makeSource({
+    id: "otodom", hosts: ["b"],
+    parseList: () => Array.from({ length: 10 }, (_, i) => ({
+      externalId: `b${i}`, url: `https://b/b${i}-ogl.html`, source: "otodom" as const,
+    })),
+  });
+  const { deps, upserts } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, searchUrls: ["https://a", "https://b"], maxDetailFetchesPerRun: 4 }) as any,
+    resolveSource: (url: string) => {
+      try { return new URL(url).hostname === "a" ? srcA : srcB; } catch { return null; }
+    },
+  });
+  await runCheck(deps);
+  const sources = new Set(upserts.map((u) => u.source));
+  expect(upserts.length).toBe(4);                 // cap respected
+  expect(sources.has("trojmiasto")).toBe(true);
+  expect(sources.has("otodom")).toBe(true);       // the later source is NOT starved
+});
