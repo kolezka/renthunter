@@ -1,6 +1,6 @@
-import { eq, notInArray, sql, desc } from "drizzle-orm";
+import { eq, notInArray, sql, desc, lt } from "drizzle-orm";
 import { db } from "./client";
-import { offers, config, type Config, type NewOffer, type Offer } from "./schema";
+import { offers, config, logs, type Config, type NewOffer, type Offer, type LogRow } from "./schema";
 
 export async function ensureConfig(defaultSearchUrl: string): Promise<void> {
   await db.insert(config).values({ id: 1, searchUrl: defaultSearchUrl }).onConflictDoNothing();
@@ -67,4 +67,32 @@ export async function listOffers(): Promise<Offer[]> {
     .select()
     .from(offers)
     .orderBy(sql`${offers.score} desc nulls last`, desc(offers.lastSeen));
+}
+
+export async function appendLog(entry: {
+  level: string;
+  event: string;
+  message: string;
+  context?: unknown;
+  runId?: string | null;
+}): Promise<void> {
+  await db.insert(logs).values({
+    level: entry.level,
+    event: entry.event,
+    message: entry.message,
+    context: entry.context ?? null,
+    runId: entry.runId ?? null,
+  });
+}
+
+export async function listLogs(opts: { limit?: number } = {}): Promise<LogRow[]> {
+  return db
+    .select()
+    .from(logs)
+    .orderBy(desc(logs.ts), desc(logs.id))
+    .limit(opts.limit ?? 300);
+}
+
+export async function pruneLogs(): Promise<void> {
+  await db.delete(logs).where(lt(logs.ts, sql`now() - interval '7 days'`));
 }
