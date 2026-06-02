@@ -18,6 +18,9 @@ export async function withRunLock<T>(
     const result = await fn();
     return { ran: true, result };
   } finally {
-    await releaseRunLock(holder);
+    // Swallow release failures so they can't replace a real error thrown by fn
+    // (mirrors the trigger task's pruneLogs guard). A leaked lease self-heals via
+    // the stale timeout.
+    await releaseRunLock(holder).catch((err) => console.error("releaseRunLock failed:", err));
   }
 }
