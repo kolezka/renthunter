@@ -5,10 +5,12 @@
   let saved = $state(false);
   let error = $state("");
   let appriseText = $state("");
+  let searchUrlsText = $state("");
 
   onMount(async () => {
     cfg = await getConfig();
     appriseText = cfg.appriseUrls.join("\n");
+    searchUrlsText = cfg.searchUrls.join("\n");
   });
 
   async function submit(e: Event) {
@@ -17,11 +19,13 @@
     error = "";
     const patch: Partial<Config> = {
       ...cfg,
+      searchUrls: searchUrlsText.split("\n").map((s) => s.trim()).filter(Boolean),
       appriseUrls: appriseText.split("\n").map((s) => s.trim()).filter(Boolean),
     };
     try {
       cfg = await saveConfig(patch);
       appriseText = cfg.appriseUrls.join("\n");
+      searchUrlsText = cfg.searchUrls.join("\n");
       saved = true;
       setTimeout(() => (saved = false), 1500);
     } catch (err) {
@@ -44,8 +48,8 @@
     <fieldset class={panel}>
       <legend class={legend}>Wyszukiwanie</legend>
       <label class="mt-3 grid gap-[7px]">
-        <span class={labelSpan}>Search URL</span>
-        <textarea bind:value={cfg.searchUrl} rows="2" placeholder="https://…" class="{control} resize-y leading-normal"></textarea>
+        <span class={labelSpan}>Adresy wyszukiwania <em class="font-medium not-italic text-ink-3">· jeden na linię</em></span>
+        <textarea bind:value={searchUrlsText} rows="3" placeholder="https://ogloszenia.trojmiasto.pl/…" class="{control} resize-y leading-normal"></textarea>
       </label>
     </fieldset>
 
@@ -69,7 +73,7 @@
       </label>
       <div class="mt-3 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[14px]">
         <label class="grid gap-[7px]"><span class={labelSpan}>Próg score (0–100)</span><input type="number" min="0" max="100" bind:value={cfg.scoreThreshold} class={control} /></label>
-        <label class="grid gap-[7px]"><span class={labelSpan}>Interwał (min)</span><input type="number" min="1" bind:value={cfg.pollIntervalMin} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Interwał (min) <em class="font-medium not-italic text-ink-3">· 0 = off</em></span><input type="number" min="0" bind:value={cfg.pollIntervalMin} class={control} /></label>
       </div>
       <label class="mt-[18px] flex cursor-pointer select-none items-center gap-3">
         <input type="checkbox" bind:checked={cfg.deepseekEnabled} class="peer pointer-events-none absolute opacity-0" />

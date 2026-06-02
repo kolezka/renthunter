@@ -7,7 +7,7 @@ export interface Offer {
   images: string[]; description: string | null;
 }
 export interface Config {
-  searchUrl: string; minPrice: number | null; maxPrice: number | null;
+  searchUrls: string[]; minPrice: number | null; maxPrice: number | null;
   minArea: number | null; minRooms: number | null;
   maxArea: number | null; maxRooms: number | null;
   aiCriteria: string;
