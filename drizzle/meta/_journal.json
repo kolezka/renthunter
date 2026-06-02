@@ -15,6 +15,13 @@
       "when": 1780400378207,
       "tag": "0001_simple_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780409740443,
+      "tag": "0002_fixed_tenebrous",
+      "breakpoints": true
     }
   ]
 }
