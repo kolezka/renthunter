@@ -246,6 +246,25 @@ test("scrapes every source and dedups across sources by externalId", async () =>
   expect(summary.newCount).toBe(2);
 });
 
+test("a list page whose parseList throws is logged as list.error and skipped, run continues", async () => {
+  const { deps, logs } = makeDeps({
+    resolveSource: () => makeSource({
+      parseList: (html: string) => {
+        if (html === "<bad>") throw new Error("bot challenge");
+        return [{ externalId: "100", url: "https://x/a-ogl100.html", source: "trojmiasto" }];
+      },
+      listPageUrls: (u: string) => [`${u}/bad`, u],
+    }),
+    fetchPage: async (url: string) => url.endsWith("/bad") ? "<bad>" : url.includes("ogl") ? "<detail>" : "<list>",
+    getConfig: async () => ({ ...baseConfig, listPages: 2 }) as any,
+  });
+  const summary = await runCheck(deps);
+  const warn = logs.find((l) => l.event === "list.error");
+  expect(warn).toBeDefined();
+  expect(warn!.level).toBe("warn");
+  expect(summary.listedCount).toBe(1); // the good page still parsed
+});
+
 test("runCheck warns and skips a searchUrl with no registered source", async () => {
   const { deps, logs } = makeDeps({
     getConfig: async () => ({ ...baseConfig, searchUrls: ["https://unknown.example/x", "https://search"] }) as any,

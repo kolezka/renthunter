@@ -60,6 +60,12 @@ function toNumber(v: string | null): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+function toInt(v: string | null): number | null {
+  if (v == null) return null;
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
 export function parseDetail(html: string): OfferDetail {
   // Otodom detail data lives under props.pageProps.ad. Prefer the structured
   // `characteristics` rows (price/m/rooms_num) for numeric fields; fall back to
@@ -77,7 +83,7 @@ export function parseDetail(html: string): OfferDetail {
 
   const price = toNumber(charValue(characteristics, "price"));
   const area = toNumber(charValue(characteristics, "m"));
-  const rooms = toNumber(charValue(characteristics, "rooms_num"));
+  const rooms = toInt(charValue(characteristics, "rooms_num"));
 
   // District: the location entry whose locationLevel === "district".
   let district: string | null = null;
