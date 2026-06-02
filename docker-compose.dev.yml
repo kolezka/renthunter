@@ -33,7 +33,9 @@ services:
     working_dir: /app
     # `bun run dev` = build the SPA once, then `bun --hot` the API (server reload).
     # NOTE: frontend (web/) edits need a re-run of the build; only the server hot-reloads.
-    command: sh -c "bun install --frozen-lockfile && bunx drizzle-kit push && bun run dev"
+    # `migrate` (not `push`) applies versioned migrations idempotently — it tracks
+    # what's applied and never recreates tables, so DB data survives restarts.
+    command: sh -c "bun install --frozen-lockfile && bunx drizzle-kit migrate && bun run dev"
     environment:
       # Compose `environment:` wins over the bind-mounted host .env — verified: Bun
       # gives real env vars precedence over .env file values. So this `db` host (not
@@ -44,7 +46,9 @@ services:
       APPRISE_URL: http://apprise:8000
       PORT: "3000"
     ports:
-      - "127.0.0.1:3000:3000"
+      # Bind to all interfaces so other devices on the LAN can reach the app
+      # (e.g. http://<your-host-LAN-ip>:3000). DB/apprise below stay loopback-only.
+      - "0.0.0.0:3000:3000"
     volumes:
       - .:/app
       # Anonymous volume: keep the container's linux node_modules, don't share the

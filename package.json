@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun run build && bun --hot src/api/server.ts",
     "start": "bun run src/api/server.ts",
-    "start:prod": "bunx drizzle-kit push && bun run src/api/server.ts",
+    "start:prod": "bunx drizzle-kit migrate && bun run src/api/server.ts",
     "build": "bun run web/build.ts",
     "test": "bun test",
     "db:push": "bunx drizzle-kit push",
