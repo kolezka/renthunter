@@ -9,20 +9,19 @@ import { buildCheckDeps, buildRefreshDeps } from "../pipeline/deps";
 import { dbLogger, createRunLogger } from "../log/logger";
 
 export interface ServerOptions {
-  runCrawler?: () => Promise<string>;
+  runCrawler?: () => { runId: string; done: Promise<void> };
   refreshOfferById?: (externalId: string) => Promise<Offer | null>;
 }
 
 // Default in-process crawl: build logged deps and run the pipeline, returning a runId.
-function defaultRunCrawler(): Promise<string> {
+function defaultRunCrawler(): { runId: string; done: Promise<void> } {
   const env = loadConfig();
   const runId = crypto.randomUUID();
   const logger = createRunLogger(dbLogger, runId);
-  // Fire-and-forget: the caller gets the runId immediately; progress lands in logs.
-  void runCheck(buildCheckDeps(env, logger)).catch((err) =>
-    console.error("manual runCheck failed:", err),
-  );
-  return Promise.resolve(runId);
+  const done = runCheck(buildCheckDeps(env, logger))
+    .then(() => {})
+    .catch((err) => { console.error("manual runCheck failed:", err); });
+  return { runId, done };
 }
 
 function defaultRefresh(externalId: string): Promise<Offer | null> {
@@ -53,14 +52,9 @@ export function createServer(port: number, opts: ServerOptions = {}) {
       if (path === "/api/run" && req.method === "POST") {
         if (runInFlight) return json({ error: "a run is already in progress" }, 409);
         runInFlight = true;
-        try {
-          const runId = await runCrawler();
-          return json({ runId }, 202);
-        } finally {
-          // For the default fire-and-forget runner the pipeline keeps going in the
-          // background; the flag only debounces rapid double-clicks at trigger time.
-          runInFlight = false;
-        }
+        const { runId, done } = runCrawler();
+        void done.finally(() => { runInFlight = false; });
+        return json({ runId }, 202);
       }
 
       const refreshMatch = path.match(/^\/api\/offers\/([^/]+)\/refresh$/);
