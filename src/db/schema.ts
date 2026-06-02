@@ -56,3 +56,12 @@ export const logs = pgTable("logs", {
 
 export type LogRow = typeof logs.$inferSelect;
 export type NewLogRow = typeof logs.$inferInsert;
+
+export const runLock = pgTable("run_lock", {
+  id: integer("id").primaryKey().default(1),
+  holder: text("holder"),
+  source: text("source"),
+  acquiredAt: timestamp("acquired_at", { withTimezone: true }),
+});
+
+export type RunLock = typeof runLock.$inferSelect;
