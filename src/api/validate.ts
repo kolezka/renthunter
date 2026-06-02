@@ -2,7 +2,7 @@ import { resolve, sep } from "node:path";
 import type { Config } from "../db/schema";
 
 const EDITABLE: (keyof Config)[] = [
-  "searchUrl", "minPrice", "maxPrice", "minArea", "minRooms",
+  "searchUrls", "minPrice", "maxPrice", "minArea", "minRooms",
   "maxArea", "maxRooms",
   "aiCriteria", "scoreThreshold", "pollIntervalMin", "appriseUrls", "deepseekEnabled",
   "listPages", "maxDetailFetchesPerRun", "requestDelayMs", "concurrencyLimit",
@@ -30,16 +30,20 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
   const patch: Record<string, unknown> = {};
   for (const k of EDITABLE) if (k in body) patch[k] = body[k];
 
-  if ("searchUrl" in patch) {
-    const v = patch.searchUrl;
-    if (typeof v !== "string") return { ok: false, error: "searchUrl must be a string" };
-    let u: URL;
-    try { u = new URL(v); } catch { return { ok: false, error: "searchUrl is not a valid URL" }; }
-    if (u.protocol !== "https:" && u.protocol !== "http:") {
-      return { ok: false, error: "searchUrl must be http(s)" };
+  if ("searchUrls" in patch) {
+    const v = patch.searchUrls;
+    if (!Array.isArray(v) || !v.every((x) => typeof x === "string")) {
+      return { ok: false, error: "searchUrls must be an array of strings" };
     }
-    if (u.hostname !== ALLOWED_SEARCH_HOST) {
-      return { ok: false, error: `searchUrl host must be ${ALLOWED_SEARCH_HOST}` };
+    for (const s of v as string[]) {
+      let u: URL;
+      try { u = new URL(s); } catch { return { ok: false, error: `searchUrls entry is not a valid URL: ${s.slice(0, 40)}` }; }
+      if (u.protocol !== "https:" && u.protocol !== "http:") {
+        return { ok: false, error: "searchUrls entries must be http(s)" };
+      }
+      if (u.hostname !== ALLOWED_SEARCH_HOST) {
+        return { ok: false, error: `searchUrls host must be ${ALLOWED_SEARCH_HOST}` };
+      }
     }
   }
 
@@ -70,8 +74,8 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
 
   if ("pollIntervalMin" in patch) {
     const v = patch.pollIntervalMin;
-    if (typeof v !== "number" || !Number.isInteger(v) || v < 1 || v > 1440) {
-      return { ok: false, error: "pollIntervalMin must be an integer 1-1440" };
+    if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > 1440) {
+      return { ok: false, error: "pollIntervalMin must be an integer 0-1440 (0 = disabled)" };
     }
   }
 

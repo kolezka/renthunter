@@ -15,16 +15,34 @@ test("accepts a valid patch and whitelists unknown keys", () => {
   }
 });
 
-test("accepts a trojmiasto searchUrl, rejects foreign host (SSRF guard)", () => {
-  expect(validateConfigPatch({ searchUrl: "https://ogloszenia.trojmiasto.pl/x.html" }).ok).toBe(true);
-  const bad = validateConfigPatch({ searchUrl: "http://169.254.169.254/latest/meta-data" });
+test("accepts an array of trojmiasto search urls", () => {
+  const r = validateConfigPatch({
+    searchUrls: [
+      "https://ogloszenia.trojmiasto.pl/a.html",
+      "https://ogloszenia.trojmiasto.pl/b.html",
+    ],
+  });
+  expect(r.ok).toBe(true);
+  if (r.ok) expect(r.patch.searchUrls?.length).toBe(2);
+});
+
+test("accepts an empty searchUrls array", () => {
+  expect(validateConfigPatch({ searchUrls: [] }).ok).toBe(true);
+});
+
+test("rejects a searchUrls entry on a foreign host (SSRF)", () => {
+  const bad = validateConfigPatch({ searchUrls: ["http://169.254.169.254/latest/meta-data"] });
   expect(bad.ok).toBe(false);
   if (!bad.ok) expect(bad.error).toContain("host");
 });
 
-test("rejects non-url and non-http searchUrl", () => {
-  expect(validateConfigPatch({ searchUrl: "not a url" }).ok).toBe(false);
-  expect(validateConfigPatch({ searchUrl: "file:///etc/passwd" }).ok).toBe(false);
+test("rejects non-url and non-http searchUrls entries", () => {
+  expect(validateConfigPatch({ searchUrls: ["not a url"] }).ok).toBe(false);
+  expect(validateConfigPatch({ searchUrls: ["file:///etc/passwd"] }).ok).toBe(false);
+});
+
+test("rejects searchUrls that is not an array of strings", () => {
+  expect(validateConfigPatch({ searchUrls: "https://ogloszenia.trojmiasto.pl/a.html" }).ok).toBe(false);
 });
 
 test("rejects malformed apprise targets", () => {
@@ -36,7 +54,8 @@ test("rejects malformed apprise targets", () => {
 test("rejects out-of-range numbers", () => {
   expect(validateConfigPatch({ scoreThreshold: 150 }).ok).toBe(false);
   expect(validateConfigPatch({ scoreThreshold: 50 }).ok).toBe(true);
-  expect(validateConfigPatch({ pollIntervalMin: 0 }).ok).toBe(false);
+  expect(validateConfigPatch({ pollIntervalMin: -1 }).ok).toBe(false);
+  expect(validateConfigPatch({ pollIntervalMin: 0 }).ok).toBe(true);
   expect(validateConfigPatch({ minPrice: -5 }).ok).toBe(false);
   expect(validateConfigPatch({ minPrice: null }).ok).toBe(true);
 });
