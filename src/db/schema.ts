@@ -1,0 +1,52 @@
+import {
+  pgTable, serial, integer, text, doublePrecision, boolean, timestamp, jsonb,
+} from "drizzle-orm/pg-core";
+
+export const offers = pgTable("offers", {
+  id: serial("id").primaryKey(),
+  externalId: text("external_id").notNull().unique(),
+  title: text("title").notNull().default(""),
+  price: integer("price"),
+  area: doublePrecision("area"),
+  rooms: integer("rooms"),
+  district: text("district"),
+  url: text("url").notNull(),
+  description: text("description"),
+  score: integer("score"),
+  scoreReasons: text("score_reasons"),
+  status: text("status").notNull().default("active"),
+  notified: boolean("notified").notNull().default(false),
+  firstSeen: timestamp("first_seen", { withTimezone: true }).notNull().defaultNow(),
+  lastSeen: timestamp("last_seen", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const config = pgTable("config", {
+  id: integer("id").primaryKey().default(1),
+  searchUrl: text("search_url").notNull(),
+  minPrice: integer("min_price"),
+  maxPrice: integer("max_price"),
+  minArea: doublePrecision("min_area"),
+  minRooms: integer("min_rooms"),
+  aiCriteria: text("ai_criteria").notNull().default(""),
+  scoreThreshold: integer("score_threshold").notNull().default(70),
+  pollIntervalMin: integer("poll_interval_min").notNull().default(5),
+  appriseUrls: text("apprise_urls").array().notNull().default([]),
+  deepseekEnabled: boolean("deepseek_enabled").notNull().default(true),
+});
+
+export type Offer = typeof offers.$inferSelect;
+export type NewOffer = typeof offers.$inferInsert;
+export type Config = typeof config.$inferSelect;
+
+export const logs = pgTable("logs", {
+  id: serial("id").primaryKey(),
+  ts: timestamp("ts", { withTimezone: true }).notNull().defaultNow(),
+  runId: text("run_id"),
+  level: text("level").notNull(),
+  event: text("event").notNull(),
+  message: text("message").notNull().default(""),
+  context: jsonb("context"),
+});
+
+export type LogRow = typeof logs.$inferSelect;
+export type NewLogRow = typeof logs.$inferInsert;
