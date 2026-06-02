@@ -33,8 +33,10 @@ export interface CheckSummary {
 }
 
 export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
-  await deps.log.log({ level: "info", event: "run.start", message: "check started" });
   try {
+    // Inside the try so that even a misbehaving Logger (one not guaranteed to
+    // swallow its own errors like dbLogger does) still surfaces a run.error.
+    await deps.log.log({ level: "info", event: "run.start", message: "check started" });
     const config = await deps.getConfig();
 
     const listHtml = await deps.fetchPage(config.searchUrl);
