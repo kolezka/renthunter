@@ -1,8 +1,8 @@
 import { test, expect, beforeAll, afterAll } from "bun:test";
 import { createServer } from "../src/api/server";
 import { db } from "../src/db/client";
-import { offers, config } from "../src/db/schema";
-import { ensureConfig } from "../src/db/queries";
+import { offers, config, logs } from "../src/db/schema";
+import { ensureConfig, appendLog } from "../src/db/queries";
 
 let server: ReturnType<typeof createServer>;
 let base: string;
@@ -10,7 +10,9 @@ let base: string;
 beforeAll(async () => {
   await db.delete(offers);
   await db.delete(config);
+  await db.delete(logs);
   await ensureConfig("https://search.example");
+  await appendLog({ level: "info", event: "run.start", message: "seeded" });
   server = createServer(0);
   base = `http://localhost:${server.port}`;
 });
@@ -40,4 +42,13 @@ test("GET /api/offers returns array", async () => {
   const res = await fetch(`${base}/api/offers`);
   expect(res.status).toBe(200);
   expect(Array.isArray(await res.json())).toBe(true);
+});
+
+test("GET /api/logs returns entries newest-first", async () => {
+  const res = await fetch(`${base}/api/logs`);
+  expect(res.status).toBe(200);
+  const rows = (await res.json()) as Array<Record<string, unknown>>;
+  expect(Array.isArray(rows)).toBe(true);
+  expect(rows.length).toBeGreaterThanOrEqual(1);
+  expect(rows[0]!.event).toBe("run.start");
 });
