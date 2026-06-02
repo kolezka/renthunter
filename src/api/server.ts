@@ -1,31 +1,20 @@
 import { resolve } from "node:path";
-import { listOffers, getConfig, updateConfig, listLogs, acquireRunLock, releaseRunLock } from "../db/queries";
+import { listOffers, getConfig, updateConfig, listLogs } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
 import type { Offer } from "../db/schema";
 import { loadConfig } from "../config";
-import { runCheck } from "../pipeline/check";
 import { refreshOffer } from "../pipeline/refresh";
-import { buildCheckDeps, buildRefreshDeps } from "../pipeline/deps";
+import { buildRefreshDeps, runCrawlGuarded } from "../pipeline/deps";
 import { dbLogger, createRunLogger } from "../log/logger";
-import { RUN_LOCK_STALE_MS } from "../pipeline/run-lock";
 
 export interface ServerOptions {
   runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
   refreshOfferById?: (externalId: string) => Promise<Offer | null>;
 }
 
-// Default in-process crawl: acquire DB lock, build logged deps and run the pipeline.
-async function defaultRunCrawler(): Promise<{ runId: string; done: Promise<void> } | { busy: true }> {
-  const env = loadConfig();
-  const runId = crypto.randomUUID();
-  const acquired = await acquireRunLock(runId, "manual", RUN_LOCK_STALE_MS);
-  if (!acquired) return { busy: true };
-  const logger = createRunLogger(dbLogger, runId);
-  const done = runCheck(buildCheckDeps(env, logger))
-    .then(() => {})
-    .catch((err) => { console.error("manual runCheck failed:", err); })
-    .finally(() => releaseRunLock(runId));
-  return { runId, done };
+// Default in-process crawl, triggered by POST /api/run (source "manual").
+function defaultRunCrawler(): Promise<{ runId: string; done: Promise<void> } | { busy: true }> {
+  return runCrawlGuarded(loadConfig(), "manual");
 }
 
 function defaultRefresh(externalId: string): Promise<Offer | null> {
