@@ -80,11 +80,17 @@ test("accepts new crawl-control fields within range", () => {
 });
 
 test("searchUrls validation uses the registry allow-list", () => {
+  expect(allowedHosts().size).toBeGreaterThan(0); // guard against vacuous pass
+  for (const host of allowedHosts()) {
+    expect(validateConfigPatch({ searchUrls: [`https://${host}/x`] }).ok).toBe(true);
+  }
+  expect(allowedHosts().has("evil.example")).toBe(false);
+  expect(validateConfigPatch({ searchUrls: ["https://evil.example/x"] }).ok).toBe(false);
+});
+
+test("searchUrls accepts the www. form of a registered host", () => {
   const host = [...allowedHosts()][0]!;
-  const ok = validateConfigPatch({ searchUrls: [`https://${host}/x`] });
-  expect(ok.ok).toBe(true);
-  const bad = validateConfigPatch({ searchUrls: ["https://evil.example/x"] });
-  expect(bad.ok).toBe(false);
+  expect(validateConfigPatch({ searchUrls: [`https://www.${host}/x`] }).ok).toBe(true);
 });
 
 test("rejects out-of-range crawl-control fields", () => {

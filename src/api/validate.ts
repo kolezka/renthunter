@@ -1,6 +1,6 @@
 import { resolve, sep } from "node:path";
 import type { Config } from "../db/schema";
-import { allowedHosts } from "../scraper/sources/registry";
+import { allowedHosts, normalizeHost } from "../scraper/sources/registry";
 
 const EDITABLE: (keyof Config)[] = [
   "searchUrls", "minPrice", "maxPrice", "minArea", "minRooms",
@@ -35,14 +35,15 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
     if (!Array.isArray(v) || !v.every((x) => typeof x === "string")) {
       return { ok: false, error: "searchUrls must be an array of strings" };
     }
+    const hosts = allowedHosts();
     for (const s of v as string[]) {
       let u: URL;
       try { u = new URL(s); } catch { return { ok: false, error: `searchUrls entry is not a valid URL: ${s.slice(0, 40)}` }; }
       if (u.protocol !== "https:" && u.protocol !== "http:") {
         return { ok: false, error: "searchUrls entries must be http(s)" };
       }
-      if (!allowedHosts().has(u.hostname)) {
-        return { ok: false, error: `searchUrls host not allowed: ${u.hostname}` };
+      if (!hosts.has(normalizeHost(u.hostname))) {
+        return { ok: false, error: `searchUrls host not allowed: ${u.hostname.slice(0, 60)}` };
       }
     }
   }
