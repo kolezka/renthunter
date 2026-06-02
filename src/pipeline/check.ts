@@ -71,6 +71,7 @@ export async function processOffer(
       rooms: d.rooms,
       district: d.district,
       description: d.description,
+      images: d.images,
     };
 
     if (!passesFilters(d, config)) {
