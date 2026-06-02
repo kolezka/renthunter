@@ -1,3 +1,5 @@
+// TODO(task-2): callers should migrate to sources/types.ListItem (adds `source`);
+// this bare {externalId,url} shape is transient until the pipeline is wired.
 export interface ListItem {
   externalId: string;
   url: string;
