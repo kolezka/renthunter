@@ -6,12 +6,18 @@
   let loading = $state(true);
   let filter: "all" | "error" = $state("all");
   let timer: ReturnType<typeof setInterval> | undefined;
+  let inflight = false;
 
   async function refresh() {
+    // Guard against overlapping polls: if a request is still in flight when the
+    // 5s tick fires, skip this round so a slow response can't write stale data.
+    if (inflight) return;
+    inflight = true;
     try {
       entries = await getLogs(300);
     } finally {
       loading = false;
+      inflight = false;
     }
   }
 
@@ -49,7 +55,7 @@
       <h2 class="m-0 font-display text-[1.5rem] font-extrabold tracking-[-0.02em]">Logi</h2>
       <p class="m-0 text-[0.9rem] text-ink-3">Strumień zdarzeń monitora · auto-odświeżanie co 5 s</p>
     </div>
-    <div class="flex gap-1 rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] p-1">
+    <div class="flex gap-1 rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] p-1" role="group" aria-label="Filtr logów">
       <button
         class="cursor-pointer rounded-full px-3 py-1 text-[0.8rem] transition-colors {filter === 'all' ? 'bg-[var(--glass-fill-strong)] text-ink' : 'text-ink-3 hover:text-ink'}"
         onclick={() => (filter = "all")}>Wszystkie</button>
