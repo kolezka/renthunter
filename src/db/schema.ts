@@ -23,7 +23,7 @@ export const offers = pgTable("offers", {
 
 export const config = pgTable("config", {
   id: integer("id").primaryKey().default(1),
-  searchUrl: text("search_url").notNull(),
+  searchUrls: text("search_urls").array().notNull().default([]),
   minPrice: integer("min_price"),
   maxPrice: integer("max_price"),
   minArea: doublePrecision("min_area"),
