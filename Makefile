@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help install build typecheck test check dev start \
         db-push db-generate db-migrate db-studio \
-        up up-fresh down lan-ip prod prod-down prod-logs trigger-dev
+        up up-fresh down lan-ip prod prod-down prod-logs
 
 # Best-effort LAN IP of this host (macOS en0/en1, then Linux fallback).
 LAN_IP := $(shell ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || hostname -I 2>/dev/null | awk '{print $$1}')
@@ -66,6 +66,3 @@ prod-down: ## Stop the prod stack
 
 prod-logs: ## Tail prod stack logs
 	bun run compose:prod:logs
-
-trigger-dev: ## Run the trigger.dev worker locally
-	bun run trigger:dev
