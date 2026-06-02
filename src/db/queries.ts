@@ -3,7 +3,7 @@ import { db } from "./client";
 import { offers, config, logs, runLock, type Config, type NewOffer, type Offer, type LogRow } from "./schema";
 
 export async function ensureConfig(defaultSearchUrl: string): Promise<void> {
-  await db.insert(config).values({ id: 1, searchUrl: defaultSearchUrl }).onConflictDoNothing();
+  await db.insert(config).values({ id: 1, searchUrls: [defaultSearchUrl] }).onConflictDoNothing();
 }
 
 export async function getConfig(): Promise<Config> {
