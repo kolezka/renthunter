@@ -71,3 +71,16 @@ export async function refreshOffer(externalId: string): Promise<Offer> {
   if (!res.ok) throw new Error((data as { error?: string }).error ?? `Refresh failed (HTTP ${res.status})`);
   return data as Offer;
 }
+
+export interface RescoreSummary { scored: number; errors: number }
+export type RescoreEvent =
+  | { type: "rescore:start"; runId: string; total: number }
+  | { type: "rescore:scored"; externalId: string; score: number | null; reasons: string | null }
+  | { type: "rescore:done"; runId: string; summary: RescoreSummary };
+
+export async function rescoreAll(): Promise<{ runId: string }> {
+  const res = await fetch("/api/rescore", { method: "POST" });
+  const data = await res.json();
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? `Rescore failed (HTTP ${res.status})`);
+  return data as { runId: string };
+}
