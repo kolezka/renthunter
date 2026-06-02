@@ -1,6 +1,6 @@
 import { eq, notInArray, sql, desc, lt } from "drizzle-orm";
 import { db } from "./client";
-import { offers, config, logs, type Config, type NewOffer, type Offer, type LogRow } from "./schema";
+import { offers, config, logs, runLock, type Config, type NewOffer, type Offer, type LogRow } from "./schema";
 
 export async function ensureConfig(defaultSearchUrl: string): Promise<void> {
   await db.insert(config).values({ id: 1, searchUrl: defaultSearchUrl }).onConflictDoNothing();
@@ -100,4 +100,30 @@ export async function pruneLogs(): Promise<void> {
 export async function getOfferByExternalId(externalId: string): Promise<Offer | null> {
   const rows = await db.select().from(offers).where(eq(offers.externalId, externalId)).limit(1);
   return rows[0] ?? null;
+}
+
+/**
+ * Atomically acquire the single-row run lock. Returns true if acquired (lock was
+ * free, stale beyond staleMs, or first use), false if currently held by a live
+ * holder. One statement — the ON CONFLICT row-lock prevents two racers winning.
+ */
+export async function acquireRunLock(holder: string, source: string, staleMs: number): Promise<boolean> {
+  const staleSeconds = staleMs / 1000;
+  const rows = await db.execute(sql`
+    INSERT INTO run_lock (id, holder, source, acquired_at)
+    VALUES (1, ${holder}, ${source}, now())
+    ON CONFLICT (id) DO UPDATE
+      SET holder = ${holder}, source = ${source}, acquired_at = now()
+      WHERE run_lock.holder IS NULL
+         OR run_lock.acquired_at < now() - make_interval(secs => ${staleSeconds})
+    RETURNING holder
+  `);
+  return (rows as unknown as unknown[]).length === 1;
+}
+
+/** Release the lock only if `holder` still owns it (a stolen, expired lease is left alone). */
+export async function releaseRunLock(holder: string): Promise<void> {
+  await db.execute(sql`
+    UPDATE run_lock SET holder = NULL, source = NULL WHERE id = 1 AND holder = ${holder}
+  `);
 }
