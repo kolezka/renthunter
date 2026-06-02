@@ -1,5 +1,5 @@
 import type { Source, ListItem, OfferDetail } from "./types";
-import { metaContent, firstJsonLd } from "../html";
+import { metaContent, findJsonLd, ldImages } from "../html";
 
 const OLX_ORIGIN = "https://www.olx.pl";
 
@@ -27,33 +27,11 @@ export function listPageUrls(searchUrl: string, pages: number): string[] {
   return urls;
 }
 
-/** Pull image URLs out of a JSON-LD `image` field (string or array of strings/objects). */
-function ldImages(ld: Record<string, unknown> | null): string[] {
-  const img = ld?.image;
-  if (Array.isArray(img)) {
-    return img
-      .map((x) =>
-        typeof x === "string"
-          ? x
-          : x && typeof x === "object"
-            ? String(
-                (x as Record<string, unknown>).url ??
-                  (x as Record<string, unknown>).contentUrl ??
-                  "",
-              )
-            : "",
-      )
-      .filter(Boolean);
-  }
-  if (typeof img === "string") return [img];
-  return [];
-}
-
 export function parseDetail(html: string): OfferDetail {
   // OLX detail pages carry a rich JSON-LD Product block (title, images, price,
   // description, locality) plus rendered "Powierzchnia: NN m²" / "Liczba pokoi: N"
   // param labels. Prefer JSON-LD; fall back to og: meta and regex.
-  const ld = firstJsonLd(html);
+  const ld = findJsonLd(html, "Product");
   const offers = ld?.offers as Record<string, unknown> | undefined;
 
   // Title: JSON-LD name, then og:title (strip the " • OLX.pl" tail).
@@ -74,11 +52,15 @@ export function parseDetail(html: string): OfferDetail {
   let price: number | null = null;
   const ldPrice = offers?.price ?? ld?.price;
   if (ldPrice !== undefined && ldPrice !== null) {
-    price = parseInt(String(ldPrice).replace(/\D/g, ""), 10) || null;
+    const n = parseInt(String(ldPrice).replace(/\D/g, ""), 10);
+    price = Number.isFinite(n) ? n : null;
   }
   if (price === null) {
     const m = html.match(/([0-9][0-9\s ]{2,})\s*z[łl]/i);
-    if (m) price = parseInt(m[1]!.replace(/[\s ]/g, ""), 10) || null;
+    if (m) {
+      const n = parseInt(m[1]!.replace(/[\s ]/g, ""), 10);
+      price = Number.isFinite(n) ? n : null;
+    }
   }
 
   // Area: rendered "Powierzchnia: NN m²" label (also "NN,N m2"). Fallback to any "NN m²".

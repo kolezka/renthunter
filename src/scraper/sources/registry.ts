@@ -19,6 +19,8 @@ export function resolveSource(url: string): Source | null {
   return null;
 }
 
+/** Set of normalized (www.-stripped, lowercased) hosts of all registered sources.
+ *  Callers comparing a URL hostname must normalizeHost() it first. */
 export function allowedHosts(): Set<string> {
   return new Set(SOURCES.flatMap((s) => s.hosts.map(normalizeHost)));
 }
