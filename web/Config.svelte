@@ -56,8 +56,8 @@
         <label class="grid gap-[7px]"><span class={labelSpan}>Max cena</span><input type="number" bind:value={cfg.maxPrice} class={control} /></label>
         <label class="grid gap-[7px]"><span class={labelSpan}>Min metraż</span><input type="number" bind:value={cfg.minArea} class={control} /></label>
         <label class="grid gap-[7px]"><span class={labelSpan}>Min pokoje</span><input type="number" bind:value={cfg.minRooms} class={control} /></label>
-        <label class="grid gap-[7px]"><span class={labelSpan}>Max metraż</span><input type="number" bind:value={cfg.maxArea} class={control} /></label>
-        <label class="grid gap-[7px]"><span class={labelSpan}>Max pokoje</span><input type="number" bind:value={cfg.maxRooms} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Max metraż</span><input type="number" min="0" bind:value={cfg.maxArea} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Max pokoje</span><input type="number" min="0" bind:value={cfg.maxRooms} class={control} /></label>
       </div>
     </fieldset>
 
