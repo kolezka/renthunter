@@ -39,3 +39,6 @@ web/dist
 
 # trigger.dev local build/runtime artifacts
 .trigger
+
+# Local DB dumps (contain real data — never commit)
+backups/
