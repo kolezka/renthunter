@@ -2,7 +2,7 @@ import { test, expect, beforeAll, afterAll } from "bun:test";
 import { createServer } from "../src/api/server";
 import { db } from "../src/db/client";
 import { offers, config, logs } from "../src/db/schema";
-import { ensureConfig, appendLog } from "../src/db/queries";
+import { ensureConfig, appendLog, upsertOffer } from "../src/db/queries";
 
 let server: ReturnType<typeof createServer>;
 let base: string;
@@ -124,6 +124,32 @@ test("POST /api/rescore returns 400 when deepseek disabled", async () => {
     const body = (await res.json()) as { error: string };
     expect(body.error.toLowerCase()).toContain("deepseek");
   } finally { s.stop(true); }
+});
+
+test("GET /api/offers/facets returns facet sets", async () => {
+  await upsertOffer({ externalId: "facet:1", url: "u", source: "trojmiasto", title: "T", kind: "mieszkanie", districtCanonical: "Gdańsk Oliwa", features: ["winda"] });
+  const res = await fetch(`${base}/api/offers/facets`);
+  expect(res.status).toBe(200);
+  const body = (await res.json()) as { kinds: string[]; districts: string[] };
+  expect(body.kinds).toContain("mieszkanie");
+  expect(body.districts).toContain("Gdańsk Oliwa");
+});
+
+test("GET /api/offers/:id/history returns snapshots", async () => {
+  await upsertOffer({ externalId: "hist:1", url: "u", source: "trojmiasto", title: "T", price: 100 });
+  await upsertOffer({ externalId: "hist:1", url: "u", source: "trojmiasto", title: "T", price: 90 });
+  const res = await fetch(`${base}/api/offers/hist%3A1/history`);
+  expect(res.status).toBe(200);
+  const body = (await res.json()) as unknown[];
+  expect(body.length).toBe(2);
+});
+
+test("GET /api/offers/search filters by district", async () => {
+  await upsertOffer({ externalId: "search:1", url: "u", source: "trojmiasto", title: "T", districtCanonical: "Gdynia Orłowo" });
+  const res = await fetch(`${base}/api/offers/search?districts=${encodeURIComponent("Gdynia Orłowo")}&sort=newest`);
+  expect(res.status).toBe(200);
+  const body = (await res.json()) as Array<{ externalId: string }>;
+  expect(body.some((o) => o.externalId === "search:1")).toBe(true);
 });
 
 test("GET /ws relays progressBus events to the client", async () => {
