@@ -7,6 +7,7 @@ const EDITABLE: (keyof Config)[] = [
   "maxArea", "maxRooms",
   "aiCriteria", "scoreThreshold", "pollIntervalMin", "appriseUrls", "deepseekEnabled",
   "listPages", "maxDetailFetchesPerRun", "requestDelayMs", "concurrencyLimit",
+  "extractEnabled", "embedEnabled",
 ];
 
 // Only registered source hosts are allowed as the scrape target — searchUrl is
@@ -88,6 +89,14 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
 
   if ("deepseekEnabled" in patch && typeof patch.deepseekEnabled !== "boolean") {
     return { ok: false, error: "deepseekEnabled must be a boolean" };
+  }
+
+  if ("extractEnabled" in patch && typeof patch.extractEnabled !== "boolean") {
+    return { ok: false, error: "extractEnabled must be a boolean" };
+  }
+
+  if ("embedEnabled" in patch && typeof patch.embedEnabled !== "boolean") {
+    return { ok: false, error: "embedEnabled must be a boolean" };
   }
 
   const intRanges: Record<string, [number, number]> = {

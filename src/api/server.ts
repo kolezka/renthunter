@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
-import { listOffers, getConfig, updateConfig, listLogs } from "../db/queries";
+import { listOffers, getConfig, updateConfig, listLogs, searchOffers, getFacets, getOfferHistory } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
+import { embed } from "../embeddings/client";
 import type { Offer } from "../db/schema";
 import { loadConfig } from "../config";
 import { refreshOffer } from "../pipeline/refresh";
@@ -73,6 +74,39 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         const updated = await refreshOfferById(externalId);
         if (!updated) return json({ error: "offer not found" }, 404);
         return json(updated);
+      }
+
+      if (path === "/api/offers/facets" && req.method === "GET") {
+        return json(await getFacets());
+      }
+
+      const historyMatch = path.match(/^\/api\/offers\/([^/]+)\/history$/);
+      if (historyMatch && req.method === "GET") {
+        const externalId = decodeURIComponent(historyMatch[1]!);
+        return json(await getOfferHistory(externalId));
+      }
+
+      if (path === "/api/offers/search" && req.method === "GET") {
+        const sp = url.searchParams;
+        const list = (k: string) => sp.get(k)?.split(",").map((s) => s.trim()).filter(Boolean) ?? [];
+        const q = sp.get("q")?.trim() || "";
+        const cfg = await getConfig();
+        let queryEmbedding: number[] | null = null;
+        if (q && cfg.embedEnabled) {
+          const env = loadConfig();
+          try {
+            queryEmbedding = await embed(q, { baseUrl: env.embedBaseUrl, apiKey: env.embedApiKey, model: env.embedModel });
+          } catch { queryEmbedding = null; }
+        }
+        const sortParam = sp.get("sort");
+        const sort = (["score", "newest", "price", "area"] as const).find((s) => s === sortParam);
+        const results = await searchOffers({
+          q, queryEmbedding,
+          districts: list("districts"), kinds: list("kinds"),
+          features: list("features"), sources: list("sources"),
+          sort,
+        });
+        return json(results);
       }
 
       if (path === "/api/offers" && req.method === "GET") {
