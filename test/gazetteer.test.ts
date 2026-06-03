@@ -34,3 +34,12 @@ test("extractKeywords matches a ł-district written in plain ASCII", () => {
   const r = extractKeywords({ district: "Gdansk Chelm", title: "Mieszkanie 2 pok" });
   expect(r.districtCanonical).toBe("Gdańsk Chełm");
 });
+
+test("extractKeywords disambiguates Gdynia vs Gdańsk Śródmieście", () => {
+  expect(extractKeywords({ district: "Gdynia Śródmieście", title: "Mieszkanie" }).districtCanonical).toBe("Gdynia Śródmieście");
+  expect(extractKeywords({ district: "Gdańsk Śródmieście", title: "Mieszkanie" }).districtCanonical).toBe("Gdańsk Śródmieście");
+});
+
+test("extractKeywords does not infer kind 'dom' from an unrelated word like Radom", () => {
+  expect(extractKeywords({ district: null, title: "Radom centrum do wynajęcia" }).kind).not.toBe("dom");
+});

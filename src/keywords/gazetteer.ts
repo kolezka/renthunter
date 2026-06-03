@@ -19,20 +19,25 @@ const DISTRICTS: string[] = [
   "Sopot",
 ];
 
-// One normalized alias per district (the dzielnica word, or the city for Sopot).
-// Generate aliases with common Polish declension suffixes (e.g., "Zaspa" -> ["zaspa", "zaspie", "zaspą"]).
-const DISTRICT_ALIASES: { canonical: string; aliases: string[] }[] = DISTRICTS.map((c) => {
+// Two-tier alias structure:
+//   - fullAlias: normalizeText(canonical) — used for specific tier matching (e.g. "gdynia srodmiescie")
+//   - bareAliases: stem aliases for the dzielnica word only — used for fallback declension matching
+//     (e.g. "zaspa","zaspi","zasp" from "Zaspa")
+const DISTRICT_ALIASES: { canonical: string; fullAlias: string | null; bareAliases: string[] }[] = DISTRICTS.map((c) => {
   const parts = c.split(" ");
   const word = parts.length > 1 ? parts.slice(1).join(" ") : parts[0]!;
   const normalized = normalizeText(word);
-  // Generate base + common inflected forms for Polish nouns
-  const aliases = new Set<string>([normalized]);
-  // Add truncated versions to handle -e, -ą, -ie endings
-  aliases.add(normalized.replace(/e$/, ""));
-  aliases.add(normalized.replace(/a$/, ""));
-  aliases.add(normalized.replace(/ie$/, ""));
-  aliases.add(normalized.replace(/ą$/, ""));
-  return { canonical: c, aliases: Array.from(aliases) };
+  // Build bare stems by stripping common Polish noun endings (-a, -e, -ie).
+  // The -ą rule is omitted because normalizeText already converts ą→a before
+  // aliases are built, so a `.replace(/ą$/, "")` rule would never fire.
+  const bareAliases = new Set<string>([normalized]);
+  bareAliases.add(normalized.replace(/e$/, ""));
+  bareAliases.add(normalized.replace(/a$/, ""));
+  bareAliases.add(normalized.replace(/ie$/, ""));
+  // fullAlias is the entire normalized canonical — only set for multi-word districts
+  // so we can distinguish e.g. "gdynia srodmiescie" vs "gdansk srodmiescie".
+  const fullAlias = parts.length > 1 ? normalizeText(c) : null;
+  return { canonical: c, fullAlias, bareAliases: Array.from(bareAliases) };
 });
 
 // kind keyword -> canonical kind. Order matters: most specific first.
@@ -46,8 +51,16 @@ const KINDS: { needle: string; kind: string }[] = [
 ];
 
 function matchDistrict(haystack: string): string | null {
-  for (const { canonical, aliases } of DISTRICT_ALIASES) {
-    for (const alias of aliases) {
+  // Tier 1 — specific: match the full normalized canonical (city + dzielnica).
+  // This disambiguates districts sharing the same dzielnica name (e.g. both
+  // Gdańsk and Gdynia have "Śródmieście").
+  for (const { canonical, fullAlias } of DISTRICT_ALIASES) {
+    if (fullAlias && haystack.includes(fullAlias)) return canonical;
+  }
+  // Tier 2 — fallback: match bare dzielnica stems (handles Polish declensions
+  // like "Zaspie" matching "zasp"). First-match-wins is an acceptable last resort.
+  for (const { canonical, bareAliases } of DISTRICT_ALIASES) {
+    for (const alias of bareAliases) {
       if (haystack.includes(alias)) return canonical;
     }
   }
@@ -55,8 +68,10 @@ function matchDistrict(haystack: string): string | null {
 }
 
 function matchKind(haystack: string): string | null {
+  // Require needle at a word-start boundary so e.g. "dom" doesn't match inside "Radom".
+  // Declension prefixes (mieszkan, kawalerk…) still work because they begin words.
   for (const { needle, kind } of KINDS) {
-    if (haystack.includes(needle)) return kind;
+    if (new RegExp(`(^|[\\s-])${needle}`).test(haystack)) return kind;
   }
   return null;
 }
