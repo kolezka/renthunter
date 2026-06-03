@@ -47,10 +47,12 @@ test("PUT /api/config updates fields", async () => {
   expect(c.appriseUrls).toEqual(["json://x"]);
 });
 
-test("GET /api/offers returns array", async () => {
+test("GET /api/offers returns a page envelope", async () => {
   const res = await fetch(`${base}/api/offers`);
   expect(res.status).toBe(200);
-  expect(Array.isArray(await res.json())).toBe(true);
+  const body = (await res.json()) as { items: unknown[]; total: number };
+  expect(Array.isArray(body.items)).toBe(true);
+  expect(typeof body.total).toBe("number");
 });
 
 test("GET /api/logs returns entries newest-first", async () => {
@@ -148,8 +150,8 @@ test("GET /api/offers/search filters by district", async () => {
   await upsertOffer({ externalId: "search:1", url: "u", source: "trojmiasto", title: "T", districtCanonical: "Gdynia Orłowo" });
   const res = await fetch(`${base}/api/offers/search?districts=${encodeURIComponent("Gdynia Orłowo")}&sort=newest`);
   expect(res.status).toBe(200);
-  const body = (await res.json()) as Array<{ externalId: string }>;
-  expect(body.some((o) => o.externalId === "search:1")).toBe(true);
+  const body = (await res.json()) as { items: Array<{ externalId: string }>; total: number };
+  expect(body.items.some((o) => o.externalId === "search:1")).toBe(true);
 });
 
 test("GET /ws relays progressBus events to the client", async () => {
@@ -166,5 +168,34 @@ test("GET /ws relays progressBus events to the client", async () => {
   } finally {
     ws.close();
   }
+});
+
+test("GET /api/offers paginates and reports total", async () => {
+  await db.delete(offers);
+  for (let i = 1; i <= 3; i++) await upsertOffer({ externalId: `pg${i}`, url: "u", title: `paged ${i}`, score: i });
+  const res = await fetch(`${base}/api/offers?limit=2&offset=0`);
+  expect(res.status).toBe(200);
+  const body = (await res.json()) as { items: unknown[]; total: number };
+  expect(body.total).toBe(3);
+  expect(body.items.length).toBe(2);
+});
+
+test("GET /api/offers clamps a huge limit and coerces a negative offset", async () => {
+  await db.delete(offers);
+  for (let i = 1; i <= 3; i++) await upsertOffer({ externalId: `pg${i}`, url: "u", title: `paged ${i}`, score: i });
+  const res = await fetch(`${base}/api/offers?limit=99999&offset=-5`);
+  const body = (await res.json()) as { items: unknown[]; total: number };
+  expect(body.items.length).toBe(3); // clamped large limit + offset 0 returns all 3
+  expect(body.total).toBe(3);
+});
+
+test("GET /api/offers/search returns a page envelope with limit/offset", async () => {
+  await db.delete(offers);
+  for (let i = 1; i <= 3; i++) await upsertOffer({ externalId: `pg${i}`, url: "u", source: "trojmiasto", title: `paged ${i}`, score: i });
+  const res = await fetch(`${base}/api/offers/search?sort=score&limit=1&offset=0`);
+  expect(res.status).toBe(200);
+  const body = (await res.json()) as { items: unknown[]; total: number };
+  expect(body.total).toBe(3);
+  expect(body.items.length).toBe(1);
 });
 

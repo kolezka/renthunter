@@ -39,7 +39,7 @@ test("updateConfig changes editable fields", async () => {
 test("upsertOffer inserts then updates lastSeen without duplicating", async () => {
   await upsertOffer({ externalId: "111", url: "u", title: "t" });
   await upsertOffer({ externalId: "111", url: "u", title: "t2" });
-  const all = await listOffers();
+  const all = (await listOffers()).items;
   expect(all.length).toBe(1);
   expect(all[0]!.title).toBe("t2");
 });
@@ -58,7 +58,7 @@ test("markNotified and markInactive", async () => {
   await upsertOffer({ externalId: "222", url: "u", title: "t" });
   await markNotified("111");
   await markInactive(["111"]);
-  const all = await listOffers();
+  const all = (await listOffers()).items;
   const o222 = all.find((o) => o.externalId === "222")!;
   const o111 = all.find((o) => o.externalId === "111")!;
   expect(o111.notified).toBe(true);
@@ -70,7 +70,7 @@ test("listOffers sorts scored offers above unscored (NULLS LAST)", async () => {
   await upsertOffer({ externalId: "low", url: "u", title: "t", score: 30 });
   await upsertOffer({ externalId: "none", url: "u", title: "t" }); // score null
   await upsertOffer({ externalId: "high", url: "u", title: "t", score: 90 });
-  const ids = (await listOffers()).map((o) => o.externalId);
+  const ids = (await listOffers()).items.map((o) => o.externalId);
   expect(ids).toEqual(["high", "low", "none"]);
 });
 
@@ -163,25 +163,25 @@ async function seedSearch() {
 
 test("searchOffers filters by district", async () => {
   await seedSearch();
-  const r = await searchOffers({ districts: ["Gdańsk Wrzeszcz"], sort: "newest" });
+  const r = (await searchOffers({ districts: ["Gdańsk Wrzeszcz"], sort: "newest" })).items;
   expect(r.map((o) => o.externalId)).toEqual(["s:1"]);
 });
 
 test("searchOffers ranks by query embedding when provided", async () => {
   await seedSearch();
-  const r = await searchOffers({ queryEmbedding: [0.9, 0.1], sort: "newest" });
+  const r = (await searchOffers({ queryEmbedding: [0.9, 0.1], sort: "newest" })).items;
   expect(r[0]!.externalId).toBe("s:1"); // closest to [1,0]
 });
 
 test("searchOffers sort=price ascending", async () => {
   await seedSearch();
-  const r = await searchOffers({ sort: "price" });
+  const r = (await searchOffers({ sort: "price" })).items;
   expect(r.map((o) => o.price)).toEqual([2000, 3000]);
 });
 
 test("searchOffers filters by features (array contains)", async () => {
   await seedSearch();
-  const r = await searchOffers({ features: ["garaż"] });
+  const r = (await searchOffers({ features: ["garaż"] })).items;
   expect(r.map((o) => o.externalId)).toEqual(["s:2"]);
 });
 
@@ -191,4 +191,49 @@ test("getFacets returns distinct districts/kinds/features", async () => {
   expect(f.districts).toContain("Gdańsk Wrzeszcz");
   expect(f.kinds.sort()).toEqual(["kawalerka", "mieszkanie"]);
   expect(f.features.sort()).toEqual(["balkon", "garaż"]);
+});
+
+test("listOffers paginates with stable order and reports total", async () => {
+  for (let i = 1; i <= 5; i++) {
+    await upsertOffer({ externalId: String(i), url: "u", title: `t${i}`, score: i });
+  }
+  const page = await listOffers({ limit: 2, offset: 0 });
+  expect(page.total).toBe(5);
+  expect(page.items.length).toBe(2);
+  // highest score first (5 then 4)
+  expect(page.items.map((o) => o.externalId)).toEqual(["5", "4"]);
+
+  const page2 = await listOffers({ limit: 2, offset: 2 });
+  expect(page2.items.map((o) => o.externalId)).toEqual(["3", "2"]);
+
+  // no overlap across pages
+  const ids = new Set([...page.items, ...page2.items].map((o) => o.externalId));
+  expect(ids.size).toBe(4);
+});
+
+test("listOffers without params returns all items with total", async () => {
+  await upsertOffer({ externalId: "1", url: "u", title: "t1" });
+  await upsertOffer({ externalId: "2", url: "u", title: "t2" });
+  const page = await listOffers();
+  expect(page.total).toBe(2);
+  expect(page.items.length).toBe(2);
+});
+
+test("searchOffers paginates after ranking and reports total", async () => {
+  for (let i = 1; i <= 4; i++) {
+    await upsertOffer({ externalId: String(i), url: "u", title: `t${i}`, price: i * 1000 });
+  }
+  const page = await searchOffers({ sort: "price" }, { limit: 2, offset: 0 });
+  expect(page.total).toBe(4);
+  expect(page.items.map((o) => o.price)).toEqual([1000, 2000]);
+  const page2 = await searchOffers({ sort: "price" }, { limit: 2, offset: 2 });
+  expect(page2.items.map((o) => o.price)).toEqual([3000, 4000]);
+});
+
+test("searchOffers slices after cosine ranking", async () => {
+  await upsertOffer({ externalId: "near", url: "u", title: "near", embedding: [1, 0] });
+  await upsertOffer({ externalId: "far", url: "u", title: "far", embedding: [0, 1] });
+  const page = await searchOffers({ queryEmbedding: [0.9, 0.1] }, { limit: 1, offset: 0 });
+  expect(page.total).toBe(2);
+  expect(page.items.map((o) => o.externalId)).toEqual(["near"]);
 });
