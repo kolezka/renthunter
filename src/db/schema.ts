@@ -1,5 +1,5 @@
 import {
-  pgTable, serial, integer, text, doublePrecision, boolean, timestamp, jsonb,
+  pgTable, serial, integer, text, doublePrecision, real, boolean, timestamp, jsonb,
 } from "drizzle-orm/pg-core";
 
 export const offers = pgTable("offers", {
@@ -10,6 +10,11 @@ export const offers = pgTable("offers", {
   area: doublePrecision("area"),
   rooms: integer("rooms"),
   district: text("district"),
+  kind: text("kind"),
+  districtCanonical: text("district_canonical"),
+  features: text("features").array().notNull().default([]),
+  embedding: real("embedding").array(),
+  embedTextHash: text("embed_text_hash"),
   source: text("source").notNull().default("trojmiasto"),
   url: text("url").notNull(),
   description: text("description"),
@@ -40,6 +45,8 @@ export const config = pgTable("config", {
   maxDetailFetchesPerRun: integer("max_detail_fetches_per_run").notNull().default(30),
   requestDelayMs: integer("request_delay_ms").notNull().default(0),
   concurrencyLimit: integer("concurrency_limit").notNull().default(1),
+  extractEnabled: boolean("extract_enabled").notNull().default(true),
+  embedEnabled: boolean("embed_enabled").notNull().default(true),
 });
 
 export type Offer = typeof offers.$inferSelect;
@@ -67,3 +74,13 @@ export const runLock = pgTable("run_lock", {
 });
 
 export type RunLock = typeof runLock.$inferSelect;
+
+export const offerSnapshots = pgTable("offer_snapshots", {
+  id: serial("id").primaryKey(),
+  offerId: integer("offer_id").notNull().references(() => offers.id, { onDelete: "cascade" }),
+  capturedAt: timestamp("captured_at", { withTimezone: true }).notNull().defaultNow(),
+  data: jsonb("data").notNull(),
+});
+
+export type OfferSnapshot = typeof offerSnapshots.$inferSelect;
+export type NewOfferSnapshot = typeof offerSnapshots.$inferInsert;
