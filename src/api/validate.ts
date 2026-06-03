@@ -5,7 +5,7 @@ import { allowedHosts, normalizeHost } from "../scraper/sources/registry";
 const EDITABLE: (keyof Config)[] = [
   "searchUrls", "minPrice", "maxPrice", "minArea", "minRooms",
   "maxArea", "maxRooms",
-  "aiCriteria", "outputLanguage", "scoreThreshold", "pollIntervalMin", "appriseUrls", "deepseekEnabled",
+  "aiCriteria", "outputLanguage", "scoreThreshold", "pollIntervalMin", "rescoreIntervalMin", "appriseUrls", "deepseekEnabled",
   "listPages", "maxDetailFetchesPerRun", "requestDelayMs", "concurrencyLimit",
   "extractEnabled", "embedEnabled",
 ];
@@ -78,6 +78,13 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
     const v = patch.pollIntervalMin;
     if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > 1440) {
       return { ok: false, error: "pollIntervalMin must be an integer 0-1440 (0 = disabled)" };
+    }
+  }
+
+  if ("rescoreIntervalMin" in patch) {
+    const v = patch.rescoreIntervalMin;
+    if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > 10080) {
+      return { ok: false, error: "rescoreIntervalMin must be an integer 0-10080 (0 = disabled)" };
     }
   }
 

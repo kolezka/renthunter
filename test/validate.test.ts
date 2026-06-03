@@ -104,3 +104,16 @@ test("rejects out-of-range crawl-control fields", () => {
   expect(validateConfigPatch({ maxArea: -1 }).ok).toBe(false);
   expect(validateConfigPatch({ maxArea: null }).ok).toBe(true);
 });
+
+test("validateConfigPatch accepts rescoreIntervalMin in range, rejects out of range", () => {
+  expect(validateConfigPatch({ rescoreIntervalMin: 0 }).ok).toBe(true);
+  expect(validateConfigPatch({ rescoreIntervalMin: 1440 }).ok).toBe(true);
+  expect(validateConfigPatch({ rescoreIntervalMin: -1 }).ok).toBe(false);
+  expect(validateConfigPatch({ rescoreIntervalMin: 10081 }).ok).toBe(false);
+  expect(validateConfigPatch({ rescoreIntervalMin: 1.5 }).ok).toBe(false);
+});
+
+test("validateConfigPatch passes rescoreIntervalMin through into the patch", () => {
+  const r = validateConfigPatch({ rescoreIntervalMin: 720 });
+  expect(r.ok && r.patch.rescoreIntervalMin).toBe(720);
+});
