@@ -26,6 +26,11 @@ function makeDeps(over: Partial<RefreshDeps> = {}): { deps: RefreshDeps; upserts
     upsertOffer: async (o) => { upserts.push(o); },
     deepseekApiKey: "k", deepseekBaseUrl: "https://api.deepseek.com",
     log: { log() {} },
+    extractFeatures: async () => [],
+    embed: async () => [0, 0],
+    embedBaseUrl: "https://e",
+    embedApiKey: "",
+    embedModel: "m",
     ...over,
   };
   return { deps, upserts };

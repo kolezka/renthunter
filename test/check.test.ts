@@ -51,6 +51,11 @@ function makeDeps(over: Partial<CheckDeps> = {}): { deps: CheckDeps; notified: s
     appriseUrl: "http://apprise:8000",
     deepseekApiKey: "k", deepseekBaseUrl: "https://api.deepseek.com",
     log: { log: (e) => { logs.push(e); } },
+    extractFeatures: async () => [],
+    embed: async () => [0, 0],
+    embedBaseUrl: "https://e",
+    embedApiKey: "",
+    embedModel: "m",
     ...over,
   };
   return { deps, notified, upserts, logs };
