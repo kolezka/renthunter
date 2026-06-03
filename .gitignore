@@ -42,3 +42,6 @@ web/dist
 
 # Local DB dumps (contain real data — never commit)
 backups/
+
+# superpowers brainstorming companion artifacts
+.superpowers/
