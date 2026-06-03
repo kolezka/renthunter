@@ -29,16 +29,28 @@
 
   let container = $state<HTMLElement | null>(null);
   let cols = $state(1);
+  // Container's distance from the top of the document, kept reactive so the
+  // virtualizer re-syncs whenever content above the list (e.g. the SearchBar
+  // facet chips loading in) shifts the list down — otherwise a stale margin
+  // would position rows up into the header.
+  let marginTop = $state(0);
 
-  // Track container width -> column count (cards only; table is always 1 column).
+  function remeasure() {
+    const el = container;
+    if (!el) return;
+    cols = mode === "table" ? 1 : columnsForWidth(el.clientWidth);
+    marginTop = el.getBoundingClientRect().top + window.scrollY;
+  }
+
   $effect(() => {
     const el = container;
     if (!el) return;
-    const ro = new ResizeObserver(() => {
-      cols = mode === "table" ? 1 : columnsForWidth(el.clientWidth);
-    });
+    // Observe the list itself (width -> column count) and the page body, so a
+    // layout shift above the list (async facets, toasts) updates marginTop too.
+    const ro = new ResizeObserver(remeasure);
     ro.observe(el);
-    cols = mode === "table" ? 1 : columnsForWidth(el.clientWidth);
+    ro.observe(document.body);
+    remeasure();
     return () => ro.disconnect();
   });
 
@@ -46,7 +58,7 @@
 
   // scroll-margin = container's distance from top of document, so window coords map correctly.
   function scrollMargin() {
-    return container ? container.getBoundingClientRect().top + window.scrollY : 0;
+    return marginTop;
   }
 
   const v = createWindowVirtualizer({

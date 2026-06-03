@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { getOffers, runCrawler, refreshOffer, rescoreAll, searchOffers, getFacets, SOURCE_LABEL, type Offer, type RescoreEvent, type Facets, type SearchQuery } from "./lib/api";
-  import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
+  import { fmtPln, tier, tierClass, relativeDate, fmtDateTime } from "./lib/format";
   import OfferDetail from "./OfferDetail.svelte";
   import SearchBar from "./SearchBar.svelte";
   import VirtualList from "./VirtualList.svelte";
@@ -313,7 +313,13 @@
           {#each o.features ?? [] as f (f)}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{f}</span>{/each}
         </div>
         <footer class="mt-auto flex items-center justify-between gap-[10px] pt-[6px]">
-          <span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span>
+          <div class="flex flex-col gap-[3px]">
+            <span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span>
+            <span class="inline-flex items-center gap-[5px] text-[0.72rem] text-ink-3 [font-variant-numeric:tabular-nums]" title="Dodano: {fmtDateTime(o.firstSeen)}">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              {relativeDate(o.firstSeen)}
+            </span>
+          </div>
           <div class="flex items-center gap-[8px]">
             <button onclick={(e) => { e.stopPropagation(); onRefresh(o); }} disabled={refreshingIds.has(o.externalId)} title="Odśwież i przelicz ocenę" aria-label="Odśwież ofertę" class="grid h-9 w-9 place-items-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2 transition-colors hover:text-ink disabled:opacity-50">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={refreshingIds.has(o.externalId) ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
@@ -346,7 +352,7 @@
       <div class="text-right [font-variant-numeric:tabular-nums]">{o.rooms ?? "–"}</div>
       <div>{o.district ?? "–"}</div>
       <div class="overflow-hidden text-ellipsis whitespace-nowrap text-ink-3 pr-3" title={o.scoreReasons ?? ""}>{o.scoreReasons ?? "–"}</div>
-      <div class="whitespace-nowrap text-ink-3">{relativeDate(o.firstSeen)}</div>
+      <div class="whitespace-nowrap text-ink-3" title="Dodano: {fmtDateTime(o.firstSeen)}">{relativeDate(o.firstSeen)}</div>
       <div>{#if o.notified}<span class="rounded-full border border-good/30 bg-good/10 px-[8px] py-[2px] text-[0.66rem] font-bold uppercase text-good">tak</span>{:else}<span class="text-ink-3">–</span>{/if}</div>
       <div><span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span></div>
       <div>

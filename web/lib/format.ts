@@ -15,15 +15,26 @@ export const tierClass: Record<Tier, string> = {
   none: "text-ink-3 bg-[var(--glass-fill)] border-[var(--glass-border)]",
 };
 
-/** Polish relative date, e.g. "dziś", "wczoraj", "3 dni temu", "2 tyg. temu". */
+/** Polish relative date. For today/yesterday it appends the time so you can see
+ *  *when* a listing was crawled, e.g. "dziś 14:32", "wczoraj 09:10",
+ *  "3 dni temu", "2 tyg. temu". */
 export function relativeDate(iso: string): string {
   if (!iso) return "–";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "–";
   const days = Math.floor((Date.now() - d.getTime()) / 86_400_000);
-  if (days <= 0) return "dziś";
-  if (days === 1) return "wczoraj";
+  const hm = d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+  if (days <= 0) return `dziś ${hm}`;
+  if (days === 1) return `wczoraj ${hm}`;
   if (days < 7) return `${days} dni temu`;
   if (days < 30) return `${Math.floor(days / 7)} tyg. temu`;
   return d.toLocaleDateString("pl-PL");
+}
+
+/** Absolute Polish date-time for tooltips, e.g. "3 cze 2026, 14:32". */
+export function fmtDateTime(iso: string): string {
+  if (!iso) return "–";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "–";
+  return d.toLocaleString("pl-PL", { dateStyle: "medium", timeStyle: "short" });
 }
