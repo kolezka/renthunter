@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { getOffers, runCrawler, refreshOffer, rescoreAll, SOURCE_LABEL, type Offer, type RescoreEvent } from "./lib/api";
+  import { getOffers, runCrawler, refreshOffer, rescoreAll, searchOffers, getFacets, SOURCE_LABEL, type Offer, type RescoreEvent, type Facets, type SearchQuery } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
   import OfferDetail from "./OfferDetail.svelte";
+  import SearchBar from "./SearchBar.svelte";
 
   let offers: Offer[] = $state([]);
   let loading = $state(true);
@@ -16,11 +17,7 @@
   let rescoreSafetyTimer: ReturnType<typeof setTimeout> | null = null;
   let wsRetry = 0;
 
-  // Client-side source filter over already-loaded offers (no server param).
-  let sourceFilter = $state("all");
-  const visible = $derived(
-    sourceFilter === "all" ? offers : offers.filter((o) => o.source === sourceFilter),
-  );
+  let facets = $state<Facets>({ districts: [], kinds: [], features: [], sources: [] });
 
   const SOURCE_CLASS: Record<string, string> = {
     trojmiasto: "border-[rgba(56,189,248,0.35)] bg-[rgba(56,189,248,0.12)] text-[#7dd3fc]",
@@ -30,10 +27,6 @@
   const sourceLabel = (s: string) => SOURCE_LABEL[s] ?? s;
   const sourceClass = (s: string) =>
     SOURCE_CLASS[s] ?? "border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2";
-  const SOURCE_FILTERS = [
-    { value: "all", label: "Wszystkie" },
-    ...Object.entries(SOURCE_LABEL).map(([value, label]) => ({ value, label })),
-  ];
   function openDetail(o: Offer) { selected = o; }
   function closeDetail() { selected = null; }
 
@@ -130,8 +123,14 @@
     localStorage.setItem(STORE_KEY, v);
   }
 
+  async function onSearch(query: SearchQuery) {
+    loading = true;
+    try { offers = await searchOffers(query); } finally { loading = false; }
+  }
+
   onMount(async () => {
     offers = await getOffers();
+    facets = await getFacets();
     loading = false;
     connectWs();
   });
@@ -154,7 +153,7 @@
   <div class="flex items-baseline gap-3">
     <h1 class="m-0 font-display text-[clamp(1.6rem,4vw,2.3rem)] font-extrabold tracking-[-0.03em]">Oferty</h1>
     {#if !loading}
-      <span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-[11px] py-[3px] text-[0.85rem] font-bold text-ink-2 [font-variant-numeric:tabular-nums]">{visible.length}</span>
+      <span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-[11px] py-[3px] text-[0.85rem] font-bold text-ink-2 [font-variant-numeric:tabular-nums]">{offers.length}</span>
     {/if}
   </div>
 
@@ -193,19 +192,7 @@
   <div class="mb-4 animate-rise rounded-[12px] border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-4 py-3 text-[0.88rem] text-ink-2">{toast}</div>
 {/if}
 
-{#if !loading && offers.length > 0}
-  <div class="mb-[18px] flex flex-wrap gap-[8px]" role="group" aria-label="Filtr źródła">
-    {#each SOURCE_FILTERS as f (f.value)}
-      <button
-        onclick={() => (sourceFilter = f.value)}
-        aria-pressed={sourceFilter === f.value}
-        class="rounded-full border px-[14px] py-[6px] text-[0.8rem] font-semibold transition-colors duration-200 {sourceFilter === f.value
-          ? 'border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] text-ink shadow-[var(--inset-sheen)]'
-          : 'border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-3 hover:text-ink'}"
-      >{f.label}</button>
-    {/each}
-  </div>
-{/if}
+<SearchBar {facets} onChange={onSearch} />
 
 {#if loading}
   <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
@@ -228,18 +215,9 @@
     <p class="m-0 text-ink-3">Gdy monitor znajdzie pasujące mieszkania, pojawią się tutaj.</p>
   </div>
 
-{:else if visible.length === 0}
-  <div class="glass animate-rise rounded-[var(--radius-glass)] px-6 py-16 text-center">
-    <div class="mx-auto mb-[18px] grid h-16 w-16 place-items-center rounded-[18px] border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] text-ink-2" aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    </div>
-    <h3 class="m-0 mb-[6px] font-display text-[1.2rem] font-bold">Brak ofert dla tego źródła</h3>
-    <p class="m-0 text-ink-3">Zmień filtr źródła, aby zobaczyć pozostałe oferty.</p>
-  </div>
-
 {:else if view === "cards"}
   <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
-    {#each visible as o, i (o.id)}
+    {#each offers as o, i (o.id)}
       <article
         class="glass relative flex cursor-pointer flex-col gap-3 rounded-[var(--radius-glass)] p-5 animate-rise transition-[transform,border-color,background] duration-[400ms] {spring} hover:-translate-y-[5px] hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-fill-strong)]"
         style="animation-delay:{Math.min(i, 12) * 45}ms"
@@ -307,7 +285,7 @@
         </tr>
       </thead>
       <tbody class="[&_tr:last-child>td]:border-0 [&>tr>td]:border-b [&>tr>td]:border-white/[0.06] [&>tr>td]:px-4 [&>tr>td]:py-[13px] [&>tr>td]:text-[0.9rem] [&>tr>td]:text-ink-2">
-        {#each visible as o (o.id)}
+        {#each offers as o (o.id)}
           <tr class="cursor-pointer transition-colors hover:bg-white/[0.04] {o.notified ? 'shadow-[inset_3px_0_0_0_var(--color-good)]' : ''}" onclick={() => openDetail(o)}>
             <td>
               {#if o.images?.length}
