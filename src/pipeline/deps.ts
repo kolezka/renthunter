@@ -12,6 +12,8 @@ import { fetchPage } from "../scraper/fetch";
 import { resolveSource } from "../scraper/sources/registry";
 import { scoreOffer } from "../scorer/deepseek";
 import { sendNotification } from "../notify/apprise";
+import { extractFeatures } from "../keywords/features";
+import { embed } from "../embeddings/client";
 import { runCheck } from "./check";
 import { runRescore, type RescoreDeps } from "./rescore";
 import { progressBus } from "./progress";
@@ -26,6 +28,8 @@ export function buildCheckDeps(env: AppConfig, logger: Logger): CheckDeps {
       appriseUrl: env.appriseUrl,
       deepseekApiKey: env.deepseekApiKey,
       deepseekBaseUrl: env.deepseekBaseUrl,
+      extractFeatures, embed,
+      embedBaseUrl: env.embedBaseUrl, embedApiKey: env.embedApiKey, embedModel: env.embedModel,
       log: logger,
     },
     logger,
@@ -43,6 +47,8 @@ export function buildRefreshDeps(env: AppConfig, logger: Logger): RefreshDeps {
     upsertOffer,
     deepseekApiKey: env.deepseekApiKey,
     deepseekBaseUrl: env.deepseekBaseUrl,
+    extractFeatures, embed,
+    embedBaseUrl: env.embedBaseUrl, embedApiKey: env.embedApiKey, embedModel: env.embedModel,
     log: logger,
   };
 }

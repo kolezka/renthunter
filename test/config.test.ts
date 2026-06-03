@@ -17,3 +17,15 @@ test("loadConfig reads required env vars", () => {
 test("loadConfig throws on missing DATABASE_URL", () => {
   expect(() => loadConfig({})).toThrow("DATABASE_URL");
 });
+
+test("loadConfig reads embedding env with defaults", () => {
+  const c = loadConfig({ DATABASE_URL: "x", EMBED_MODEL: "m", EMBED_API_KEY: "k", EMBED_BASE_URL: "https://e" });
+  expect(c.embedBaseUrl).toBe("https://e");
+  expect(c.embedApiKey).toBe("k");
+  expect(c.embedModel).toBe("m");
+});
+
+test("loadConfig embedBaseUrl defaults to OpenAI", () => {
+  const c = loadConfig({ DATABASE_URL: "x" });
+  expect(c.embedBaseUrl).toBe("https://api.openai.com/v1");
+});
