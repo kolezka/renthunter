@@ -2,6 +2,7 @@ import type { Config, Offer } from "../db/schema";
 import type { Logger } from "../log/logger";
 import type { RescoreEvent, RescoreSummary } from "./progress";
 import { runPool } from "./pool";
+import { buildOfferNotification } from "../notify/message";
 
 export interface RescoreDeps {
   runId: string;
@@ -12,6 +13,10 @@ export interface RescoreDeps {
     opts: { apiKey: string; baseUrl: string; language?: string },
   ) => Promise<{ score: number; reasons: string }>;
   updateOfferScore: (externalId: string, score: number | null, reasons: string | null) => Promise<void>;
+  sendNotification: (input: { appriseUrl: string; targets: string[]; title: string; body: string }) => Promise<void>;
+  appriseUrl: string;
+  markNotified: (externalId: string) => Promise<void>;
+  notifyOnQualify: boolean;
   emitProgress?: (e: RescoreEvent) => void;
   deepseekApiKey: string;
   deepseekBaseUrl: string;
@@ -41,6 +46,22 @@ export async function runRescore(deps: RescoreDeps): Promise<RescoreSummary> {
         { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, language: config.outputLanguage },
       );
       await deps.updateOfferScore(offer.externalId, score, reasons);
+      if (deps.notifyOnQualify && score >= config.scoreThreshold && !offer.notified) {
+        try {
+          const { title, body } = buildOfferNotification({
+            title: offer.title, price: offer.price, area: offer.area, rooms: offer.rooms,
+            district: offer.district, url: offer.url, reasons,
+          });
+          await deps.sendNotification({ appriseUrl: deps.appriseUrl, targets: config.appriseUrls, title, body });
+          await deps.markNotified(offer.externalId);
+        } catch (err) {
+          await deps.log.log({
+            level: "error", event: "notify",
+            message: "rescore notification failed",
+            context: { externalId: offer.externalId, error: String(err) },
+          });
+        }
+      }
       deps.emitProgress?.({ type: "rescore:scored", externalId: offer.externalId, score, reasons });
       scored++;
     } catch (err) {

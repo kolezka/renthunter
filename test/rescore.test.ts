@@ -20,25 +20,35 @@ const baseConfig = {
 };
 
 function makeDeps(over: Partial<RescoreDeps> = {}): {
-  deps: RescoreDeps; updates: Array<{ id: string; score: number | null; reasons: string | null }>; events: RescoreEvent[];
+  deps: RescoreDeps;
+  updates: Array<{ id: string; score: number | null; reasons: string | null }>;
+  events: RescoreEvent[];
+  notifications: Array<{ title: string; body: string; targets: string[] }>;
+  notifiedIds: string[];
 } {
   const updates: Array<{ id: string; score: number | null; reasons: string | null }> = [];
   const events: RescoreEvent[] = [];
+  const notifications: Array<{ title: string; body: string; targets: string[] }> = [];
+  const notifiedIds: string[] = [];
   const deps: RescoreDeps = {
     runId: "test-run",
     getConfig: async () => baseConfig as any,
     getActiveScorableOffers: async () => [
-      { externalId: "100", description: "opis A" } as any,
-      { externalId: "200", description: "opis B" } as any,
+      { externalId: "100", description: "opis A", title: "A", price: 1000, area: 30, rooms: 1, district: "d", url: "u100", notified: false } as any,
+      { externalId: "200", description: "opis B", title: "B", price: 2000, area: 40, rooms: 2, district: "d", url: "u200", notified: false } as any,
     ],
     scoreOffer: async (input) => ({ score: input.description === "opis A" ? 91 : 42, reasons: "bo " + input.description }),
     updateOfferScore: async (id, score, reasons) => { updates.push({ id, score, reasons }); },
     emitProgress: (e) => events.push(e),
     deepseekApiKey: "k", deepseekBaseUrl: "https://api.deepseek.com",
+    sendNotification: async (i) => { notifications.push({ title: i.title, body: i.body, targets: i.targets }); },
+    appriseUrl: "http://apprise",
+    markNotified: async (id) => { notifiedIds.push(id); },
+    notifyOnQualify: false,
     log: { log() {} },
     ...over,
   };
-  return { deps, updates, events };
+  return { deps, updates, events, notifications, notifiedIds };
 }
 
 test("runRescore scores every active offer and persists score columns", async () => {
@@ -89,6 +99,51 @@ test("runRescore never re-fetches detail pages", async () => {
   const { deps } = makeDeps({ scoreOffer: async (i) => { seen.push(i.description); return { score: 1, reasons: "" }; } });
   await runRescore(deps);
   expect(seen.sort()).toEqual(["opis A", "opis B"]);
+});
+
+test("notifyOnQualify notifies + marks offers crossing the threshold, skips the rest", async () => {
+  const { deps, notifications, notifiedIds } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, scoreThreshold: 70, appriseUrls: ["ntfy://t"] }) as any,
+    notifyOnQualify: true,
+  });
+  await runRescore(deps);
+  expect(notifiedIds).toEqual(["100"]);
+  expect(notifications.length).toBe(1);
+  expect(notifications[0]!.title).toBe("New offer: A");
+  expect(notifications[0]!.targets).toEqual(["ntfy://t"]);
+});
+
+test("notifyOnQualify does not re-notify an already-notified offer", async () => {
+  const { deps, notifications, notifiedIds } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, scoreThreshold: 70, appriseUrls: ["ntfy://t"] }) as any,
+    getActiveScorableOffers: async () => [
+      { externalId: "100", description: "opis A", title: "A", price: 1, area: 1, rooms: 1, district: "d", url: "u", notified: true } as any,
+    ],
+    notifyOnQualify: true,
+  });
+  await runRescore(deps);
+  expect(notifiedIds).toEqual([]);
+  expect(notifications.length).toBe(0);
+});
+
+test("notifyOnQualify=false never notifies (default)", async () => {
+  const { deps, notifications, notifiedIds } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, scoreThreshold: 70, appriseUrls: ["ntfy://t"] }) as any,
+  });
+  await runRescore(deps);
+  expect(notifiedIds).toEqual([]);
+  expect(notifications.length).toBe(0);
+});
+
+test("a failing notification is swallowed and does not abort scoring", async () => {
+  const { deps, updates } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, scoreThreshold: 70, appriseUrls: ["ntfy://t"] }) as any,
+    notifyOnQualify: true,
+    sendNotification: async () => { throw new Error("apprise 424"); },
+  });
+  const summary = await runRescore(deps);
+  expect(summary).toEqual({ scored: 2, errors: 0 });
+  expect(updates.length).toBe(2);
 });
 
 describe("runRescoreGuarded (DB)", () => {
