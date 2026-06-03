@@ -2,7 +2,7 @@ import type { AppConfig } from "../config";
 import type { CheckDeps } from "./check";
 import type { RefreshDeps } from "./refresh";
 import type { Logger } from "../log/logger";
-import { withLogging, dbLogger, createRunLogger } from "../log/logger";
+import { withLogging, appLogger, createRunLogger } from "../log/logger";
 import {
   getConfig, getKnownExternalIds, upsertOffer, markNotified, markInactive,
   getOfferByExternalId, acquireRunLock, releaseRunLock,
@@ -66,7 +66,7 @@ export async function runCrawlGuarded(
   const runId = crypto.randomUUID();
   const acquired = await acquireRunLock(runId, source, RUN_LOCK_STALE_MS);
   if (!acquired) return { busy: true };
-  const logger = createRunLogger(dbLogger, runId);
+  const logger = createRunLogger(appLogger, runId);
   const done = runCheck(buildCheckDeps(env, logger))
     .then(() => {})
     .catch((err) => { console.error(`${source} runCheck failed:`, err); })
@@ -104,7 +104,7 @@ export async function runRescoreGuarded(
   const runId = crypto.randomUUID();
   const acquired = await acquireRunLock(runId, "rescore", RUN_LOCK_STALE_MS);
   if (!acquired) return { busy: true };
-  const logger = createRunLogger(dbLogger, runId);
+  const logger = createRunLogger(appLogger, runId);
   const done = runRescore(buildRescoreDeps(env, logger, runId))
     .then(() => {})
     .catch((err) => { console.error("rescore failed:", err); })

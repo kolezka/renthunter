@@ -7,7 +7,7 @@ import { loadConfig } from "../config";
 import { refreshOffer } from "../pipeline/refresh";
 import { buildRefreshDeps, runCrawlGuarded, runRescoreGuarded } from "../pipeline/deps";
 import { progressBus } from "../pipeline/progress";
-import { dbLogger, createRunLogger } from "../log/logger";
+import { appLogger, createRunLogger } from "../log/logger";
 
 export interface ServerOptions {
   runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
@@ -26,7 +26,7 @@ function defaultRunRescore() {
 
 function defaultRefresh(externalId: string): Promise<Offer | null> {
   const env = loadConfig();
-  const logger = createRunLogger(dbLogger, crypto.randomUUID());
+  const logger = createRunLogger(appLogger, crypto.randomUUID());
   return refreshOffer(externalId, buildRefreshDeps(env, logger)).catch((err) => {
     if (String(err).includes("offer not found")) return null;
     throw err;
@@ -107,7 +107,7 @@ export function createServer(port: number, opts: ServerOptions = {}) {
           } catch (err) {
             // Degrade to filter+sort, but log so a misconfigured embed provider isn't silently invisible.
             queryEmbedding = null;
-            await dbLogger.log({ level: "warn", event: "search.embed.error", message: `query embedding failed: ${String(err)}` });
+            await appLogger.log({ level: "warn", event: "search.embed.error", message: `query embedding failed: ${String(err)}` });
           }
         }
         const sortParam = sp.get("sort");
@@ -183,7 +183,7 @@ if (import.meta.main) {
   // Guard against bun --hot re-evaluating this module and stacking timers.
   const g = globalThis as { __crawlScheduler?: () => void };
   g.__crawlScheduler?.();
-  g.__crawlScheduler = startScheduler(buildSchedulerDeps(env, createRunLogger(dbLogger, "scheduler")));
+  g.__crawlScheduler = startScheduler(buildSchedulerDeps(env, createRunLogger(appLogger, "scheduler")));
 
   console.log(`API listening on http://localhost:${server.port}`);
 }
