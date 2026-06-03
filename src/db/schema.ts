@@ -42,6 +42,7 @@ export const config = pgTable("config", {
   outputLanguage: text("output_language").notNull().default("Polish"),
   scoreThreshold: integer("score_threshold").notNull().default(70),
   pollIntervalMin: integer("poll_interval_min").notNull().default(5),
+  rescoreIntervalMin: integer("rescore_interval_min").notNull().default(0),
   appriseUrls: text("apprise_urls").array().notNull().default([]),
   deepseekEnabled: boolean("deepseek_enabled").notNull().default(true),
   listPages: integer("list_pages").notNull().default(1),
