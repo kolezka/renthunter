@@ -23,7 +23,7 @@ export interface Config {
   maxArea: number | null; maxRooms: number | null;
   aiCriteria: string;
   outputLanguage: string;
-  scoreThreshold: number; pollIntervalMin: number;
+  scoreThreshold: number; pollIntervalMin: number; rescoreIntervalMin: number;
   appriseUrls: string[]; deepseekEnabled: boolean;
   listPages: number; maxDetailFetchesPerRun: number;
   requestDelayMs: number; concurrencyLimit: number;

@@ -74,6 +74,7 @@
       <div class="mt-3 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[14px]">
         <label class="grid gap-[7px]"><span class={labelSpan}>Score threshold (0–100)</span><input type="number" min="0" max="100" bind:value={cfg.scoreThreshold} class={control} /></label>
         <label class="grid gap-[7px]"><span class={labelSpan}>Interval (min) <em class="font-medium not-italic text-ink-3">· 0 = off</em></span><input type="number" min="0" bind:value={cfg.pollIntervalMin} class={control} /></label>
+        <label class="grid gap-[7px]"><span class={labelSpan}>Auto-rescore interval (min) <em class="font-medium not-italic text-ink-3">· 0 = off</em></span><input type="number" min="0" max="10080" bind:value={cfg.rescoreIntervalMin} class={control} /></label>
         <label class="grid gap-[7px]"><span class={labelSpan}>Output language <em class="font-medium not-italic text-ink-3">· AI reasons &amp; features</em></span><input type="text" maxlength="40" bind:value={cfg.outputLanguage} placeholder="Polish" class={control} /></label>
       </div>
       <label class="mt-[18px] flex cursor-pointer select-none items-center gap-3">
