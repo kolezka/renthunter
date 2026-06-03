@@ -1,82 +1,136 @@
 import type { Logger } from "../log/logger";
 import type { AppConfig } from "../config";
 import { getConfig } from "../db/queries";
-import { runCrawlGuarded } from "./deps";
+import { runCrawlGuarded, runRescoreGuarded } from "./deps";
 
-/** How often to re-read config while auto-crawl is disabled (pollIntervalMin <= 0). */
+/** How often to re-read config while everything is disabled (both intervals <= 0). */
 export const IDLE_RECHECK_MS = 60_000;
 
+export interface SchedulerConfig {
+  pollIntervalMin: number;
+  rescoreIntervalMin: number;
+}
+
 export interface SchedulerDeps {
-  getConfig: () => Promise<{ pollIntervalMin: number }>;
-  runGuarded: () => Promise<{ ran: boolean }>;
+  getConfig: () => Promise<SchedulerConfig>;
+  runCrawl: () => Promise<void>;
+  runRescore: () => Promise<void>;
   setTimer: (fn: () => void, ms: number) => unknown;
   clearTimer: (handle: unknown) => void;
+  now: () => number;
   log: Logger;
 }
 
-/** Pure decision: how long to wait next, and whether that wake-up runs a crawl. */
-export function nextDelayMs(pollIntervalMin: number): { delayMs: number; willRun: boolean } {
-  if (!Number.isFinite(pollIntervalMin) || pollIntervalMin <= 0) {
-    return { delayMs: IDLE_RECHECK_MS, willRun: false };
-  }
-  return { delayMs: pollIntervalMin * 60_000, willRun: true };
+/** A job is due when enabled (interval > 0) and at least `interval` has elapsed. */
+export function isDue(now: number, last: number, intervalMin: number): boolean {
+  return Number.isFinite(intervalMin) && intervalMin > 0 && now - last >= intervalMin * 60_000;
+}
+
+/** Ms until the soonest enabled job is next due; IDLE_RECHECK_MS if none enabled.
+ *  Clamped to >= 1 so a just-run/overdue job yields a tiny delay, never 0. */
+export function nextDelayMs(
+  now: number,
+  lastCrawlAt: number, pollMin: number,
+  lastRescoreAt: number, rescoreMin: number,
+): number {
+  const cands: number[] = [];
+  if (Number.isFinite(pollMin) && pollMin > 0) cands.push(lastCrawlAt + pollMin * 60_000 - now);
+  if (Number.isFinite(rescoreMin) && rescoreMin > 0) cands.push(lastRescoreAt + rescoreMin * 60_000 - now);
+  if (cands.length === 0) return IDLE_RECHECK_MS;
+  return Math.max(1, Math.min(...cands));
 }
 
 /**
- * Start the self-scheduling crawl loop. Reads pollIntervalMin from DB each cycle
- * (so UI changes take effect on the next cycle), runs the crawl through the shared
- * run lock, and reschedules. Returns a stop() that cancels the pending timer.
+ * Start the unified self-scheduling loop. Each wake-up re-reads config (so UI
+ * changes take effect next cycle), then runs the due jobs sequentially — crawl
+ * first, then rescore — AWAITING each so runs never overlap and the shared run
+ * lock is free between them. Reschedules at the soonest upcoming due time.
  *
- * Self-scheduling (not setInterval) guarantees no overlapping runs and picks up
- * interval/disable changes live. The first run happens AFTER one interval, never on
- * boot — so bun --hot reloads and container restarts don't hammer the target.
+ * Both jobs' "last run" clocks start at boot, so the first run of each happens
+ * after one full interval, never on boot. Returns stop() to cancel the timer.
  */
 export function startScheduler(deps: SchedulerDeps): () => void {
   let stopped = false;
   let handle: unknown = null;
+  const start = deps.now();
+  let lastCrawlAt = start;
+  let lastRescoreAt = start;
 
-  async function schedule(): Promise<void> {
-    if (stopped) return;
-    let minutes = 0;
+  const idle: SchedulerConfig = { pollIntervalMin: 0, rescoreIntervalMin: 0 };
+
+  async function readConfig(): Promise<SchedulerConfig> {
     try {
-      minutes = (await deps.getConfig()).pollIntervalMin;
+      return await deps.getConfig();
     } catch (err) {
       await deps.log.log({ level: "error", event: "scheduler.config_error", message: `scheduler getConfig failed: ${String(err)}` });
+      return idle;
     }
-    if (stopped) return;
-    const { delayMs, willRun } = nextDelayMs(minutes);
-    handle = deps.setTimer(() => { void tick(willRun); }, delayMs);
   }
 
-  async function tick(willRun: boolean): Promise<void> {
+  function schedule(cfg: SchedulerConfig): void {
     if (stopped) return;
-    if (willRun) {
-      try {
-        const r = await deps.runGuarded();
-        if (!r.ran) {
-          await deps.log.log({ level: "info", event: "scheduler.skipped", message: "scheduled run skipped: another run in progress" });
-        }
-      } catch (err) {
-        await deps.log.log({ level: "error", event: "scheduler.error", message: `scheduled run failed: ${String(err)}` });
-      }
-    }
-    await schedule();
+    const delay = nextDelayMs(deps.now(), lastCrawlAt, cfg.pollIntervalMin, lastRescoreAt, cfg.rescoreIntervalMin);
+    handle = deps.setTimer(() => { void tick(); }, delay);
   }
 
-  void schedule();
+  async function tick(): Promise<void> {
+    if (stopped) return;
+    const cfg = await readConfig();
+    if (stopped) return;
+
+    if (isDue(deps.now(), lastCrawlAt, cfg.pollIntervalMin)) {
+      try { await deps.runCrawl(); }
+      catch (err) { await deps.log.log({ level: "error", event: "scheduler.error", message: `scheduled crawl failed: ${String(err)}` }); }
+      lastCrawlAt = deps.now();
+      if (stopped) return;
+    }
+
+    if (isDue(deps.now(), lastRescoreAt, cfg.rescoreIntervalMin)) {
+      try { await deps.runRescore(); }
+      catch (err) { await deps.log.log({ level: "error", event: "scheduler.error", message: `scheduled rescore failed: ${String(err)}` }); }
+      lastRescoreAt = deps.now();
+      if (stopped) return;
+    }
+
+    schedule(cfg);
+  }
+
+  void (async () => {
+    const cfg = await readConfig();
+    schedule(cfg);
+  })();
+
   return () => { stopped = true; if (handle !== null) deps.clearTimer(handle); };
 }
 
-/** Compose the real scheduler deps (DB config + lock-guarded run, source "scheduled"). */
+/** Compose the real scheduler deps: DB config + lock-guarded crawl and rescore,
+ *  each awaited to completion so the loop stays sequential. */
 export function buildSchedulerDeps(env: AppConfig, logger: Logger): SchedulerDeps {
   return {
-    getConfig,
-    runGuarded: async () => {
+    getConfig: async () => {
+      const c = await getConfig();
+      return { pollIntervalMin: c.pollIntervalMin, rescoreIntervalMin: c.rescoreIntervalMin };
+    },
+    runCrawl: async () => {
       const r = await runCrawlGuarded(env, "scheduled");
-      return { ran: !("busy" in r) };
+      if ("busy" in r) {
+        await logger.log({ level: "info", event: "scheduler.skipped", message: "scheduled crawl skipped: another run in progress" });
+        return;
+      }
+      await r.done;
+    },
+    runRescore: async () => {
+      const r = await runRescoreGuarded(env);
+      if ("busy" in r) {
+        await logger.log({ level: "info", event: "scheduler.skipped", message: "scheduled rescore skipped: another run in progress" });
+        return;
+      }
+      if ("disabled" in r) return;
+      await r.done;
     },
     setTimer: (fn, ms) => setTimeout(fn, ms),
     clearTimer: (h) => clearTimeout(h as ReturnType<typeof setTimeout>),
+    now: () => Date.now(),
     log: logger,
   };
 }
