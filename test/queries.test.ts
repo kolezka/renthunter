@@ -6,7 +6,7 @@ import {
   ensureConfig, getConfig, updateConfig,
   getKnownExternalIds, upsertOffer, markNotified, markInactive, listOffers,
   appendLog, listLogs, pruneLogs, getOfferByExternalId,
-  getActiveScorableOffers, updateOfferScore,
+  getActiveScorableOffers, updateOfferScore, getOfferHistory,
 } from "../src/db/queries";
 
 beforeEach(async () => {
@@ -137,4 +137,20 @@ test("updateOfferScore can clear a score back to null", async () => {
   const o = await getOfferByExternalId("y");
   expect(o?.score).toBeNull();
   expect(o?.scoreReasons).toBeNull();
+});
+
+test("upsertOffer writes a snapshot on first insert and on change, not on no-op", async () => {
+  const ext = "snaptest:1";
+  await upsertOffer({ externalId: ext, url: "u", source: "trojmiasto", title: "T", price: 3000 });
+  let hist = await getOfferHistory(ext);
+  expect(hist.length).toBe(1); // first insert snapshot
+
+  await upsertOffer({ externalId: ext, url: "u", source: "trojmiasto", title: "T", price: 3000 });
+  hist = await getOfferHistory(ext);
+  expect(hist.length).toBe(1); // no change -> no new snapshot
+
+  await upsertOffer({ externalId: ext, url: "u", source: "trojmiasto", title: "T", price: 2900 });
+  hist = await getOfferHistory(ext);
+  expect(hist.length).toBe(2); // price changed -> new snapshot
+  expect((hist[1]!.data as any).price).toBe(2900);
 });
