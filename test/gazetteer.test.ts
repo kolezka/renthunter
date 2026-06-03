@@ -23,3 +23,14 @@ test("extractKeywords returns nulls when nothing matches", () => {
   expect(r.districtCanonical).toBeNull();
   expect(r.kind).toBeNull();
 });
+
+test("normalizeText folds Polish ł to l", () => {
+  expect(normalizeText("Chełm")).toBe("chelm");
+  expect(normalizeText("Łostowice")).toBe("lostowice");
+  expect(normalizeText("Orłowo")).toBe("orlowo");
+});
+
+test("extractKeywords matches a ł-district written in plain ASCII", () => {
+  const r = extractKeywords({ district: "Gdansk Chelm", title: "Mieszkanie 2 pok" });
+  expect(r.districtCanonical).toBe("Gdańsk Chełm");
+});
