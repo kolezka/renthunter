@@ -16,11 +16,15 @@ export type EnrichFields = Pick<NewOffer,
   "districtCanonical" | "kind" | "features" | "embedding" | "embedTextHash">;
 
 /** Derive gazetteer keyword fields, AI features, and an embedding for a detail.
- *  Extraction/embedding failures are logged and degrade to null/[] — never throw. */
+ *  Extraction/embedding failures are logged and degrade to null/[] — never throw.
+ *  Pass `prevEmbedTextHash` (the hash stored on the existing offer row) to skip
+ *  re-embedding when the embed text is unchanged; `embedding` will be null so
+ *  upsertOffer preserves the existing vector. */
 export async function enrichOffer(
   d: OfferDetail,
   config: Pick<Config, "extractEnabled" | "embedEnabled">,
   deps: EnrichDeps,
+  prevEmbedTextHash: string | null = null,
 ): Promise<EnrichFields> {
   const { districtCanonical, kind } = extractKeywords({ district: d.district, title: d.title });
 
@@ -41,11 +45,16 @@ export async function enrichOffer(
   if (config.embedEnabled && deps.embedApiKey) {
     const text = buildEmbedText({ title: d.title, districtCanonical, kind, features, description: d.description });
     hash = embedTextHash(text);
-    try {
-      embedding = await deps.embed(text, { baseUrl: deps.embedBaseUrl, apiKey: deps.embedApiKey, model: deps.embedModel });
-    } catch (err) {
+    if (prevEmbedTextHash && prevEmbedTextHash === hash) {
+      // unchanged text — skip re-embedding; null embedding makes upsert preserve the existing vector
       embedding = null;
-      await deps.log.log({ level: "warn", event: "enrich.embed.error", message: String(err) });
+    } else {
+      try {
+        embedding = await deps.embed(text, { baseUrl: deps.embedBaseUrl, apiKey: deps.embedApiKey, model: deps.embedModel });
+      } catch (err) {
+        embedding = null;
+        await deps.log.log({ level: "warn", event: "enrich.embed.error", message: String(err) });
+      }
     }
   }
 

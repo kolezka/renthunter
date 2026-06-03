@@ -30,3 +30,30 @@ test("enrichOffer skips extraction when disabled and never throws on provider er
   expect(r.features).toEqual([]);
   expect(r.embedding).toBeNull();
 });
+
+test("enrichOffer skips embedding when the embed-text hash is unchanged", async () => {
+  let embedCalls = 0;
+  const d = { title: "Kawalerka Wrzeszcz", price: 2000, area: 30, rooms: 1, district: "Gdańsk", description: "blisko morza", images: [] };
+  const local = { ...deps, embed: async () => { embedCalls++; return [0.1, 0.2]; } };
+  const cfg = { extractEnabled: true, embedEnabled: true } as any;
+
+  const first = await enrichOffer(d, cfg, local);
+  expect(embedCalls).toBe(1);
+  expect(first.embedding).toEqual([0.1, 0.2]);
+
+  // Re-enrich with the prior hash → text unchanged → must NOT call embed again.
+  const second = await enrichOffer(d, cfg, local, first.embedTextHash);
+  expect(embedCalls).toBe(1);
+  expect(second.embedding).toBeNull();         // null => upsert preserves existing embedding
+  expect(second.embedTextHash).toBe(first.embedTextHash);
+});
+
+test("enrichOffer re-embeds when prior hash differs", async () => {
+  let embedCalls = 0;
+  const d = { title: "Kawalerka Wrzeszcz", price: 2000, area: 30, rooms: 1, district: "Gdańsk", description: "blisko morza", images: [] };
+  const local = { ...deps, embed: async () => { embedCalls++; return [0.1, 0.2]; } };
+  const cfg = { extractEnabled: true, embedEnabled: true } as any;
+  const r = await enrichOffer(d, cfg, local, "some-old-stale-hash");
+  expect(embedCalls).toBe(1);
+  expect(r.embedding).toEqual([0.1, 0.2]);
+});
