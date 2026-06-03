@@ -5,7 +5,7 @@ import { allowedHosts, normalizeHost } from "../scraper/sources/registry";
 const EDITABLE: (keyof Config)[] = [
   "searchUrls", "minPrice", "maxPrice", "minArea", "minRooms",
   "maxArea", "maxRooms",
-  "aiCriteria", "scoreThreshold", "pollIntervalMin", "appriseUrls", "deepseekEnabled",
+  "aiCriteria", "outputLanguage", "scoreThreshold", "pollIntervalMin", "appriseUrls", "deepseekEnabled",
   "listPages", "maxDetailFetchesPerRun", "requestDelayMs", "concurrencyLimit",
   "extractEnabled", "embedEnabled",
 ];
@@ -84,6 +84,13 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
   if ("aiCriteria" in patch) {
     if (typeof patch.aiCriteria !== "string" || patch.aiCriteria.length > 5000) {
       return { ok: false, error: "aiCriteria must be a string up to 5000 chars" };
+    }
+  }
+
+  if ("outputLanguage" in patch) {
+    const v = patch.outputLanguage;
+    if (typeof v !== "string" || v.trim().length === 0 || v.length > 40) {
+      return { ok: false, error: "outputLanguage must be a non-empty string up to 40 chars" };
     }
   }
 

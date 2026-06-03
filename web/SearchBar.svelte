@@ -28,15 +28,15 @@
   <div class="flex flex-wrap items-center gap-3">
     <input
       bind:value={q} oninput={onType}
-      placeholder="Znajdź oferty… &bdquo;spokojnie blisko morza&ldquo;"
+      placeholder="Find offers… &ldquo;quiet, near the sea&rdquo;"
       class="min-w-[220px] flex-1 rounded-full border border-[rgba(120,170,255,0.35)] bg-[var(--glass-fill)] px-5 py-[10px] text-[0.9rem] text-ink outline-none placeholder:text-ink-3"
     />
     <select bind:value={sort} onchange={emit}
       class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-4 py-[9px] text-[0.85rem] text-ink-2">
-      <option value="score">Trafność</option>
-      <option value="newest">Najnowsze</option>
-      <option value="price">Cena</option>
-      <option value="area">Powierzchnia</option>
+      <option value="score">Relevance</option>
+      <option value="newest">Newest</option>
+      <option value="price">Price</option>
+      <option value="area">Area</option>
     </select>
   </div>
   {#if facets.districts.length}

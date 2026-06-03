@@ -1,0 +1,1 @@
+ALTER TABLE "config" ADD COLUMN "output_language" text DEFAULT 'Polish' NOT NULL;
