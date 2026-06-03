@@ -1,6 +1,6 @@
 export type Source = "trojmiasto" | "olx" | "otodom";
 export const SOURCE_LABEL: Record<Source, string> = {
-  trojmiasto: "trójmiasto",
+  trojmiasto: "Trójmiasto",
   olx: "OLX",
   otodom: "Otodom",
 };
@@ -22,6 +22,7 @@ export interface Config {
   minArea: number | null; minRooms: number | null;
   maxArea: number | null; maxRooms: number | null;
   aiCriteria: string;
+  outputLanguage: string;
   scoreThreshold: number; pollIntervalMin: number;
   appriseUrls: string[]; deepseekEnabled: boolean;
   listPages: number; maxDetailFetchesPerRun: number;

@@ -37,6 +37,9 @@ export const config = pgTable("config", {
   maxArea: doublePrecision("max_area"),
   maxRooms: integer("max_rooms"),
   aiCriteria: text("ai_criteria").notNull().default(""),
+  // Language the AI is asked to answer in (score reasons, extracted features).
+  // Listings are scraped in Polish, so this defaults to Polish; change it freely.
+  outputLanguage: text("output_language").notNull().default("Polish"),
   scoreThreshold: integer("score_threshold").notNull().default(70),
   pollIntervalMin: integer("poll_interval_min").notNull().default(5),
   appriseUrls: text("apprise_urls").array().notNull().default([]),

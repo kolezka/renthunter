@@ -1,3 +1,5 @@
+import { DISTRICTS, KINDS } from "../../config/gazetteer";
+
 /** Diacritic-insensitive, lowercased normalization (Śródmieście -> srodmiescie). */
 export function normalizeText(s: string): string {
   return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[łŁ]/g, "l").trim();
@@ -8,20 +10,9 @@ export interface KeywordHit {
   kind: string | null;
 }
 
-// Canonical "City Dzielnica" forms. Extend freely — this is a starter taxonomy.
-const DISTRICTS: string[] = [
-  "Gdańsk Wrzeszcz", "Gdańsk Oliwa", "Gdańsk Przymorze", "Gdańsk Zaspa",
-  "Gdańsk Brzeźno", "Gdańsk Śródmieście", "Gdańsk Jelitkowo", "Gdańsk Stogi",
-  "Gdańsk Orunia", "Gdańsk Chełm", "Gdańsk Osowa", "Gdańsk Żabianka",
-  "Gdańsk Piecki-Migowo", "Gdańsk Ujeścisko", "Gdańsk Łostowice", "Gdańsk Morena",
-  "Gdynia Śródmieście", "Gdynia Orłowo", "Gdynia Redłowo", "Gdynia Witomino",
-  "Gdynia Chylonia", "Gdynia Oksywie", "Gdynia Działki Leśne", "Gdynia Wzgórze",
-  "Sopot",
-];
-
-// Two-tier alias structure:
+// Two-tier alias structure derived from the configured DISTRICTS taxonomy:
 //   - fullAlias: normalizeText(canonical) — used for specific tier matching (e.g. "gdynia srodmiescie")
-//   - bareAliases: stem aliases for the dzielnica word only — used for fallback declension matching
+//   - bareAliases: stem aliases for the district word only — used for fallback declension matching
 //     (e.g. "zaspa","zaspi","zasp" from "Zaspa")
 const DISTRICT_ALIASES: { canonical: string; fullAlias: string | null; bareAliases: string[] }[] = DISTRICTS.map((c) => {
   const parts = c.split(" ");
@@ -40,24 +31,14 @@ const DISTRICT_ALIASES: { canonical: string; fullAlias: string | null; bareAlias
   return { canonical: c, fullAlias, bareAliases: Array.from(bareAliases) };
 });
 
-// kind keyword -> canonical kind. Order matters: most specific first.
-const KINDS: { needle: string; kind: string }[] = [
-  { needle: "kawalerk", kind: "kawalerka" },
-  { needle: "apartament", kind: "apartament" },
-  { needle: "dom", kind: "dom" },
-  { needle: "pokoj", kind: "pokój" },
-  { needle: "studio", kind: "studio" },
-  { needle: "mieszkan", kind: "mieszkanie" },
-];
-
 function matchDistrict(haystack: string): string | null {
-  // Tier 1 — specific: match the full normalized canonical (city + dzielnica).
-  // This disambiguates districts sharing the same dzielnica name (e.g. both
+  // Tier 1 — specific: match the full normalized canonical (city + district).
+  // This disambiguates districts sharing the same district name (e.g. both
   // Gdańsk and Gdynia have "Śródmieście").
   for (const { canonical, fullAlias } of DISTRICT_ALIASES) {
     if (fullAlias && haystack.includes(fullAlias)) return canonical;
   }
-  // Tier 2 — fallback: match bare dzielnica stems (handles Polish declensions
+  // Tier 2 — fallback: match bare district stems (handles Polish declensions
   // like "Zaspie" matching "zasp"). First-match-wins is an acceptable last resort.
   for (const { canonical, bareAliases } of DISTRICT_ALIASES) {
     for (const alias of bareAliases) {

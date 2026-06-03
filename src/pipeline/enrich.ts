@@ -5,7 +5,7 @@ import { extractKeywords } from "../keywords/gazetteer";
 import { buildEmbedText, embedTextHash } from "../embeddings/embedText";
 
 export interface EnrichDeps {
-  extractFeatures: (i: { title: string; description: string }, o: { apiKey: string; baseUrl: string }) => Promise<string[]>;
+  extractFeatures: (i: { title: string; description: string }, o: { apiKey: string; baseUrl: string; language?: string }) => Promise<string[]>;
   embed: (text: string, o: { baseUrl: string; apiKey: string; model: string }) => Promise<number[]>;
   deepseekApiKey: string; deepseekBaseUrl: string;
   embedBaseUrl: string; embedApiKey: string; embedModel: string;
@@ -22,7 +22,7 @@ export type EnrichFields = Pick<NewOffer,
  *  upsertOffer preserves the existing vector. */
 export async function enrichOffer(
   d: OfferDetail,
-  config: Pick<Config, "extractEnabled" | "embedEnabled">,
+  config: Pick<Config, "extractEnabled" | "embedEnabled" | "outputLanguage">,
   deps: EnrichDeps,
   prevEmbedTextHash: string | null = null,
 ): Promise<EnrichFields> {
@@ -33,7 +33,7 @@ export async function enrichOffer(
     try {
       features = await deps.extractFeatures(
         { title: d.title, description: d.description },
-        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl },
+        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, language: config.outputLanguage },
       );
     } catch (err) {
       await deps.log.log({ level: "warn", event: "enrich.features.error", message: String(err) });

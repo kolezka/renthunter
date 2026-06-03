@@ -15,7 +15,7 @@ export interface CheckDeps extends EnrichDeps {
   resolveSource: (url: string) => Source | null;
   scoreOffer: (
     input: { description: string; criteria: string },
-    opts: { apiKey: string; baseUrl: string },
+    opts: { apiKey: string; baseUrl: string; language?: string },
   ) => Promise<{ score: number; reasons: string }>;
   sendNotification: (input: {
     appriseUrl: string; targets: string[]; title: string; body: string;
@@ -63,7 +63,7 @@ export async function maybeScore(
   if (!config.deepseekEnabled) return { score: null, reasons: null };
   const r = await deps.scoreOffer(
     { description: detail.description, criteria: config.aiCriteria },
-    { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl },
+    { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, language: config.outputLanguage },
   );
   return { score: r.score, reasons: r.reasons };
 }
@@ -107,9 +107,9 @@ export async function processOffer(
     const meetsThreshold = config.deepseekEnabled ? (score ?? 0) >= config.scoreThreshold : true;
     if (!meetsThreshold) return { notified: false, error: false };
 
-    const title = `Nowa oferta: ${d.title}`.slice(0, 120);
+    const title = `New offer: ${d.title}`.slice(0, 120);
     const body =
-      `${d.price ?? "?"} zł · ${d.area ?? "?"} m² · ${d.rooms ?? "?"} pok · ${d.district ?? ""}\n` +
+      `${d.price ?? "?"} PLN · ${d.area ?? "?"} m² · ${d.rooms ?? "?"} rooms · ${d.district ?? ""}\n` +
       (reasons ? `AI: ${reasons}\n` : "") +
       item.url;
     await deps.sendNotification({

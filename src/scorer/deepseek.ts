@@ -3,18 +3,22 @@ export interface ScoreResult { score: number; reasons: string; }
 export interface ScoreOptions {
   apiKey: string;
   baseUrl: string;
+  /** Language the model is asked to write `reasons` in. Defaults to "Polish"
+   *  because listings are Polish; configurable via the `outputLanguage` setting. */
+  language?: string;
   fetchImpl?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 }
 
 export async function scoreOffer(input: ScoreInput, opts: ScoreOptions): Promise<ScoreResult> {
   const doFetch = opts.fetchImpl ?? fetch;
+  const language = opts.language || "Polish";
   const system =
-    "Oceniasz oferty najmu mieszkań pod kątem kryteriów użytkownika. " +
-    "Zwróć WYŁĄCZNIE JSON: {\"score\": <0-100>, \"reasons\": \"<krótkie uzasadnienie po polsku>\"}. " +
-    "score = jak dobrze oferta pasuje do kryteriów (100 = idealnie).";
+    "You rate apartment rental listings against the user's criteria. " +
+    `Return ONLY JSON: {"score": <0-100>, "reasons": "<short justification in ${language}>"}. ` +
+    "score = how well the listing matches the criteria (100 = perfect match).";
   const user =
-    `Kryteria użytkownika:\n${input.criteria}\n\n` +
-    `Opis oferty:\n${input.description}`;
+    `User criteria:\n${input.criteria}\n\n` +
+    `Listing description:\n${input.description}`;
 
   const res = await doFetch(`${opts.baseUrl}/chat/completions`, {
     method: "POST",
@@ -42,6 +46,6 @@ export async function scoreOffer(input: ScoreInput, opts: ScoreOptions): Promise
     const score = Number.isFinite(raw) ? Math.max(0, Math.min(100, Math.round(raw))) : 0;
     return { score, reasons: String(parsed.reasons ?? "") };
   } catch {
-    return { score: 0, reasons: "Nie udało się sparsować odpowiedzi AI (parse error)" };
+    return { score: 0, reasons: "Failed to parse AI response (parse error)" };
   }
 }

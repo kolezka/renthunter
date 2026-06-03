@@ -86,7 +86,7 @@ export async function markNotified(externalId: string): Promise<void> {
   await db.update(offers).set({ notified: true }).where(eq(offers.externalId, externalId));
 }
 
-/** Oferty, których NIE ma na bieżącej liście aktywnych external_id, oznacz jako inactive. */
+/** Mark offers that are NOT in the current list of active external_ids as inactive. */
 export async function markInactive(activeExternalIds: string[]): Promise<void> {
   if (activeExternalIds.length === 0) {
     await db.update(offers).set({ status: "inactive" }).where(eq(offers.status, "active"));
@@ -204,7 +204,7 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
 
   // Keyword (embedding) search narrows to the most semantically relevant offers:
   // rank embeddable offers by cosine and keep the top RELEVANCE_LIMIT as the candidate
-  // set. "Trafność" (score / default) returns them in relevance order; an explicit
+  // set. "Relevance" (score / default) returns them in relevance order; an explicit
   // newest/price/area sort then reorders that relevant subset (see switch below).
   let candidates = rows;
   if (params.queryEmbedding && params.queryEmbedding.length) {
