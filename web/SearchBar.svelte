@@ -1,18 +1,19 @@
 <script lang="ts">
-  import type { Facets, SearchQuery } from "./lib/api";
+  import { SOURCE_LABEL, type Facets, type SearchQuery } from "./lib/api";
   let { facets, onChange }: { facets: Facets; onChange: (q: SearchQuery) => void } = $props();
 
   let q = $state("");
   let districts = $state<string[]>([]);
   let kinds = $state<string[]>([]);
   let features = $state<string[]>([]);
+  let sources = $state<string[]>([]);
   let sort = $state<SearchQuery["sort"]>("score");
   let debounce: ReturnType<typeof setTimeout> | null = null;
 
   function toggle(arr: string[], v: string): string[] {
     return arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
   }
-  function emit() { onChange({ q, districts, kinds, features, sort }); }
+  function emit() { onChange({ q, districts, kinds, features, sources, sort }); }
   function onType() {
     if (debounce) clearTimeout(debounce);
     debounce = setTimeout(emit, 300);
@@ -42,6 +43,13 @@
     <div class="flex flex-wrap gap-2">
       {#each facets.districts as d (d)}
         <button class={chip(districts.includes(d))} onclick={() => { districts = toggle(districts, d); emit(); }}>{d}</button>
+      {/each}
+    </div>
+  {/if}
+  {#if facets.sources.length > 1}
+    <div class="flex flex-wrap gap-2">
+      {#each facets.sources as s (s)}
+        <button class={chip(sources.includes(s))} onclick={() => { sources = toggle(sources, s); emit(); }}>{SOURCE_LABEL[s as keyof typeof SOURCE_LABEL] ?? s}</button>
       {/each}
     </div>
   {/if}
