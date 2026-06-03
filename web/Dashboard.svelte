@@ -251,6 +251,7 @@
           {#if o.area != null}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{o.area} m²</span>{/if}
           {#if o.rooms != null}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{o.rooms} pok.</span>{/if}
           {#if o.district}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{o.district}</span>{/if}
+          {#each o.features ?? [] as f (f)}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{f}</span>{/each}
         </div>
 
         <footer class="mt-auto flex items-center justify-between gap-[10px] pt-[6px]">
