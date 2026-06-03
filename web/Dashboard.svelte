@@ -4,8 +4,50 @@
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
   import OfferDetail from "./OfferDetail.svelte";
   import SearchBar from "./SearchBar.svelte";
+  import VirtualList from "./VirtualList.svelte";
+  import type { Page } from "./lib/api";
 
   let offers: Offer[] = $state([]);
+  let total = $state(0);
+  let loadingMore = $state(false);
+  let currentQuery = $state<SearchQuery | null>(null);
+  const PAGE = 50;
+  const hasMore = $derived(offers.length < total);
+
+  // Bumped on every query change; in-flight fetches that resolve against a stale
+  // generation are discarded so a late page can't append to a newer result set.
+  let queryGen = 0;
+
+  async function fetchPage(offset: number): Promise<Page<Offer>> {
+    return currentQuery ? searchOffers(currentQuery, offset, PAGE) : getOffers(offset, PAGE);
+  }
+
+  async function loadMore() {
+    if (loadingMore || !hasMore) return;
+    loadingMore = true;
+    const gen = queryGen;
+    try {
+      const page = await fetchPage(offers.length);
+      if (gen !== queryGen) return; // query changed while this page was in flight
+      offers = [...offers, ...page.items];
+      total = page.total;
+    } finally {
+      loadingMore = false;
+    }
+  }
+
+  async function resetAndLoad() {
+    const gen = ++queryGen;
+    loading = true;
+    try {
+      const page = await fetchPage(0);
+      if (gen !== queryGen) return; // a newer reset superseded this one
+      offers = page.items;
+      total = page.total;
+    } finally {
+      if (gen === queryGen) loading = false;
+    }
+  }
   let loading = $state(true);
   let running = $state(false);
   let toast = $state("");
@@ -78,7 +120,18 @@
       if (rescoreSafetyTimer) { clearTimeout(rescoreSafetyTimer); rescoreSafetyTimer = null; }
       rescoring = false;
       flash(`Przeliczono ${e.summary.scored} ofert`);
-      getOffers().then((o) => (offers = o)); // reconcile anything missed
+      // reconcile the loaded window; discard if the query changed or a loadMore
+      // grew the list past this snapshot (don't shrink rows out from under the user)
+      const gen = queryGen;
+      const windowSize = Math.max(offers.length, PAGE);
+      (currentQuery
+        ? searchOffers(currentQuery, 0, windowSize)
+        : getOffers(0, windowSize)
+      ).then((page) => {
+        if (gen !== queryGen || page.items.length < offers.length) return;
+        offers = page.items;
+        total = page.total;
+      });
     }
   }
 
@@ -124,14 +177,13 @@
   }
 
   async function onSearch(query: SearchQuery) {
-    loading = true;
-    try { offers = await searchOffers(query); } finally { loading = false; }
+    currentQuery = query;
+    await resetAndLoad();
   }
 
   onMount(async () => {
-    offers = await getOffers();
+    await resetAndLoad();
     facets = await getFacets();
-    loading = false;
     connectWs();
   });
 
@@ -153,7 +205,7 @@
   <div class="flex items-baseline gap-3">
     <h1 class="m-0 font-display text-[clamp(1.6rem,4vw,2.3rem)] font-extrabold tracking-[-0.03em]">Oferty</h1>
     {#if !loading}
-      <span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-[11px] py-[3px] text-[0.85rem] font-bold text-ink-2 [font-variant-numeric:tabular-nums]">{offers.length}</span>
+      <span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-[11px] py-[3px] text-[0.85rem] font-bold text-ink-2 [font-variant-numeric:tabular-nums]">{offers.length} / {total}</span>
     {/if}
   </div>
 
@@ -216,11 +268,22 @@
   </div>
 
 {:else if view === "cards"}
-  <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
-    {#each offers as o, i (o.id)}
+  <VirtualList items={offers} mode="cards" {hasMore} onLoadMore={loadMore} row={cardRow} />
+
+{:else}
+  <div class="glass overflow-hidden rounded-[var(--radius-glass)]">
+    <div class="grid grid-cols-[56px_64px_2fr_90px_110px_70px_70px_1fr_1.4fr_110px_90px_110px_120px] border-b border-[var(--glass-border)] bg-white/[0.03] px-4 py-[14px] text-[0.72rem] font-bold uppercase tracking-[0.07em] text-ink-3">
+      <div></div><div>Score</div><div>Tytuł</div><div>Źródło</div><div class="text-right">Cena</div><div class="text-right">m²</div><div class="text-right">Pok.</div><div>Dzielnica</div><div>AI</div><div>Dodano</div><div>Powiad.</div><div>Status</div><div></div>
+    </div>
+    <VirtualList items={offers} mode="table" {hasMore} onLoadMore={loadMore} row={tableRow} />
+  </div>
+{/if}
+
+{#snippet cardRow(rowOffers: Offer[])}
+  <div class="grid gap-[18px] pb-[18px]" style="grid-template-columns: repeat({rowOffers.length}, minmax(0,1fr));">
+    {#each rowOffers as o (o.id)}
       <article
-        class="glass relative flex cursor-pointer flex-col gap-3 rounded-[var(--radius-glass)] p-5 animate-rise transition-[transform,border-color,background] duration-[400ms] {spring} hover:-translate-y-[5px] hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-fill-strong)]"
-        style="animation-delay:{Math.min(i, 12) * 45}ms"
+        class="glass relative flex cursor-pointer flex-col gap-3 rounded-[var(--radius-glass)] p-5 transition-[transform,border-color,background] duration-[400ms] {spring} hover:-translate-y-[5px] hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-fill-strong)]"
         onclick={() => openDetail(o)}
         role="button" tabindex="0"
         onkeydown={(e) => (e.key === "Enter" || e.key === " ") && openDetail(o)}
@@ -231,7 +294,6 @@
         {#if o.images?.length}
           <img src={o.images[0]} alt={o.title} loading="lazy" class="-mx-5 -mt-5 mb-1 h-[150px] w-[calc(100%+40px)] rounded-t-[var(--radius-glass)] object-cover" />
         {/if}
-
         <header class="flex items-center justify-between">
           <span class="inline-flex min-w-[54px] flex-col items-center justify-center rounded-[14px] border px-[10px] py-[7px] font-display text-[1.35rem] font-extrabold leading-none [font-variant-numeric:tabular-nums] {tierClass[tier(o.score)]}" title={o.scoreReasons ?? ""}>
             {o.score ?? "–"}
@@ -242,28 +304,18 @@
             {#if o.notified}<span class="rounded-full border border-good/30 bg-good/10 px-[9px] py-1 text-[0.66rem] font-bold uppercase tracking-[0.06em] text-good" title="Powiadomienie wysłane">powiadomiono</span>{/if}
           </div>
         </header>
-
         <h2 class="m-0 line-clamp-2 text-[0.98rem] font-semibold leading-[1.4] text-ink" title={o.title}>{o.title}</h2>
-
         <div class="font-display text-[1.85rem] font-bold tracking-[-0.02em] [font-variant-numeric:tabular-nums]">{fmtPln(o.price)} <span class="text-[0.95rem] font-semibold text-ink-3">zł</span></div>
-
         <div class="flex flex-wrap gap-[7px]">
           {#if o.area != null}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{o.area} m²</span>{/if}
           {#if o.rooms != null}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{o.rooms} pok.</span>{/if}
           {#if o.district}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{o.district}</span>{/if}
           {#each o.features ?? [] as f (f)}<span class="rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.78rem] font-medium text-ink-2">{f}</span>{/each}
         </div>
-
         <footer class="mt-auto flex items-center justify-between gap-[10px] pt-[6px]">
           <span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span>
           <div class="flex items-center gap-[8px]">
-            <button
-              onclick={(e) => { e.stopPropagation(); onRefresh(o); }}
-              disabled={refreshingIds.has(o.externalId)}
-              title="Odśwież i przelicz ocenę"
-              aria-label="Odśwież ofertę"
-              class="grid h-9 w-9 place-items-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2 transition-colors hover:text-ink disabled:opacity-50"
-            >
+            <button onclick={(e) => { e.stopPropagation(); onRefresh(o); }} disabled={refreshingIds.has(o.externalId)} title="Odśwież i przelicz ocenę" aria-label="Odśwież ofertę" class="grid h-9 w-9 place-items-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2 transition-colors hover:text-ink disabled:opacity-50">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={refreshingIds.has(o.externalId) ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
             </button>
             <a class={openBtn} href={o.url} target="_blank" rel="noreferrer" onclick={(e) => e.stopPropagation()}>
@@ -275,52 +327,41 @@
       </article>
     {/each}
   </div>
+{/snippet}
 
-{:else}
-  <div class="glass animate-rise overflow-hidden rounded-[var(--radius-glass)]">
-    <table class="w-full border-collapse">
-      <thead>
-        <tr class="[&>th]:border-b [&>th]:border-[var(--glass-border)] [&>th]:bg-white/[0.03] [&>th]:px-4 [&>th]:py-[14px] [&>th]:text-left [&>th]:text-[0.72rem] [&>th]:font-bold [&>th]:uppercase [&>th]:tracking-[0.07em] [&>th]:text-ink-3">
-          <th></th><th>Score</th><th>Tytuł</th><th>Źródło</th><th class="!text-right">Cena</th><th class="!text-right">m²</th>
-          <th class="!text-right">Pok.</th><th>Dzielnica</th><th>AI</th><th>Dodano</th><th>Powiad.</th><th>Status</th><th></th>
-        </tr>
-      </thead>
-      <tbody class="[&_tr:last-child>td]:border-0 [&>tr>td]:border-b [&>tr>td]:border-white/[0.06] [&>tr>td]:px-4 [&>tr>td]:py-[13px] [&>tr>td]:text-[0.9rem] [&>tr>td]:text-ink-2">
-        {#each offers as o (o.id)}
-          <tr class="cursor-pointer transition-colors hover:bg-white/[0.04] {o.notified ? 'shadow-[inset_3px_0_0_0_var(--color-good)]' : ''}" onclick={() => openDetail(o)}>
-            <td>
-              {#if o.images?.length}
-                <img src={o.images[0]} alt="" loading="lazy" class="h-10 w-14 rounded-[7px] object-cover" />
-              {:else}
-                <div class="h-10 w-14 rounded-[7px] border border-[var(--glass-border)] bg-[var(--glass-fill)]"></div>
-              {/if}
-            </td>
-            <td><span class="inline-grid min-w-[38px] place-items-center rounded-[9px] border px-2 py-1 text-[0.85rem] font-extrabold [font-variant-numeric:tabular-nums] {tierClass[tier(o.score)]}">{o.score ?? "–"}</span></td>
-            <td class="max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap !text-ink" title={o.title}>{o.title}</td>
-            <td><span class="rounded-full border px-[8px] py-[2px] text-[0.66rem] font-bold uppercase tracking-[0.04em] {sourceClass(o.source)}">{sourceLabel(o.source)}</span></td>
-            <td class="text-right font-semibold !text-ink [font-variant-numeric:tabular-nums]">{fmtPln(o.price)} zł</td>
-            <td class="text-right [font-variant-numeric:tabular-nums]">{o.area ?? "–"}</td>
-            <td class="text-right [font-variant-numeric:tabular-nums]">{o.rooms ?? "–"}</td>
-            <td>{o.district ?? "–"}</td>
-            <td class="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap text-ink-3" title={o.scoreReasons ?? ""}>{o.scoreReasons ?? "–"}</td>
-            <td class="whitespace-nowrap text-ink-3">{relativeDate(o.firstSeen)}</td>
-            <td>{#if o.notified}<span class="rounded-full border border-good/30 bg-good/10 px-[8px] py-[2px] text-[0.66rem] font-bold uppercase text-good">tak</span>{:else}<span class="text-ink-3">–</span>{/if}</td>
-            <td><span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span></td>
-            <td>
-              <button
-                onclick={(e) => { e.stopPropagation(); onRefresh(o); }}
-                disabled={refreshingIds.has(o.externalId)}
-                title="Odśwież" aria-label="Odśwież ofertę"
-                class="mr-3 align-middle text-ink-3 transition-colors hover:text-ink disabled:opacity-50"
-              >
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline {refreshingIds.has(o.externalId) ? 'animate-spin' : ''}"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
-              </button>
-              <a class="font-semibold text-ink no-underline hover:text-[var(--color-aurora-indigo)]" href={o.url} target="_blank" rel="noreferrer" onclick={(e) => e.stopPropagation()}>otwórz ↗</a>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
+{#snippet tableRow(rowOffers: Offer[])}
+  {@const o = rowOffers[0]}
+  {#if o}
+    <div
+      class="grid grid-cols-[56px_64px_2fr_90px_110px_70px_70px_1fr_1.4fr_110px_90px_110px_120px] items-center border-b border-white/[0.06] px-4 py-[13px] text-[0.9rem] text-ink-2 cursor-pointer transition-colors hover:bg-white/[0.04] {o.notified ? 'shadow-[inset_3px_0_0_0_var(--color-good)]' : ''}"
+      onclick={() => openDetail(o)} role="button" tabindex="0"
+      onkeydown={(e) => (e.key === "Enter" || e.key === " ") && openDetail(o)}
+    >
+      <div>{#if o.images?.length}<img src={o.images[0]} alt="" loading="lazy" class="h-10 w-14 rounded-[7px] object-cover" />{:else}<div class="h-10 w-14 rounded-[7px] border border-[var(--glass-border)] bg-[var(--glass-fill)]"></div>{/if}</div>
+      <div><span class="inline-grid min-w-[38px] place-items-center rounded-[9px] border px-2 py-1 text-[0.85rem] font-extrabold [font-variant-numeric:tabular-nums] {tierClass[tier(o.score)]}">{o.score ?? "–"}</span></div>
+      <div class="overflow-hidden text-ellipsis whitespace-nowrap !text-ink pr-3" title={o.title}>{o.title}</div>
+      <div><span class="rounded-full border px-[8px] py-[2px] text-[0.66rem] font-bold uppercase tracking-[0.04em] {sourceClass(o.source)}">{sourceLabel(o.source)}</span></div>
+      <div class="text-right font-semibold !text-ink [font-variant-numeric:tabular-nums]">{fmtPln(o.price)} zł</div>
+      <div class="text-right [font-variant-numeric:tabular-nums]">{o.area ?? "–"}</div>
+      <div class="text-right [font-variant-numeric:tabular-nums]">{o.rooms ?? "–"}</div>
+      <div>{o.district ?? "–"}</div>
+      <div class="overflow-hidden text-ellipsis whitespace-nowrap text-ink-3 pr-3" title={o.scoreReasons ?? ""}>{o.scoreReasons ?? "–"}</div>
+      <div class="whitespace-nowrap text-ink-3">{relativeDate(o.firstSeen)}</div>
+      <div>{#if o.notified}<span class="rounded-full border border-good/30 bg-good/10 px-[8px] py-[2px] text-[0.66rem] font-bold uppercase text-good">tak</span>{:else}<span class="text-ink-3">–</span>{/if}</div>
+      <div><span class="text-[0.72rem] font-semibold uppercase tracking-[0.04em] text-ink-3">{o.status}</span></div>
+      <div>
+        <button onclick={(e) => { e.stopPropagation(); onRefresh(o); }} disabled={refreshingIds.has(o.externalId)} title="Odśwież" aria-label="Odśwież ofertę" class="mr-3 align-middle text-ink-3 transition-colors hover:text-ink disabled:opacity-50">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline {refreshingIds.has(o.externalId) ? 'animate-spin' : ''}"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        </button>
+        <a class="font-semibold text-ink no-underline hover:text-[var(--color-aurora-indigo)]" href={o.url} target="_blank" rel="noreferrer" onclick={(e) => e.stopPropagation()}>otwórz ↗</a>
+      </div>
+    </div>
+  {/if}
+{/snippet}
+
+{#if loadingMore}
+  <div class="mt-4 flex justify-center py-4 text-ink-3" aria-live="polite">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/></svg>
   </div>
 {/if}
 

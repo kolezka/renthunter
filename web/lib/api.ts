@@ -17,9 +17,6 @@ export interface Offer {
   districtCanonical: string | null;
   features: string[];
 }
-
-export interface Page<T> { items: T[]; total: number }
-
 export interface Config {
   searchUrls: string[]; minPrice: number | null; maxPrice: number | null;
   minArea: number | null; minRooms: number | null;
@@ -32,6 +29,8 @@ export interface Config {
   extractEnabled: boolean;
   embedEnabled: boolean;
 }
+
+export interface Page<T> { items: T[]; total: number }
 
 export async function getOffers(offset = 0, limit = 50): Promise<Page<Offer>> {
   return (await fetch(`/api/offers?limit=${limit}&offset=${offset}`)).json();
