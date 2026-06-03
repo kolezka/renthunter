@@ -14,7 +14,7 @@ export function trackedFields(o: Record<string, unknown>): TrackedSnapshot {
 function eq(a: unknown, b: unknown): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    return [...a].sort().join(" ") === [...b].sort().join(" ");
+    return JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
   }
   return a === b;
 }

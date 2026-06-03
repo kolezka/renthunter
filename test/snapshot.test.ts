@@ -25,3 +25,14 @@ test("trackedFields picks only the tracked keys", () => {
     ["area", "description", "district", "districtCanonical", "features", "kind", "price", "rooms", "title"].sort(),
   );
 });
+
+test("hasTrackedChange detects reshuffled multi-word features (no space-join collision)", () => {
+  expect(hasTrackedChange({ ...base, features: ["a b", "c"] }, { ...base, features: ["a", "b c"] })).toBe(true);
+});
+
+test("hasTrackedChange treats equal multi-word feature sets (any order) as unchanged", () => {
+  expect(hasTrackedChange(
+    { ...base, features: ["miejsce parkingowe", "balkon"] },
+    { ...base, features: ["balkon", "miejsce parkingowe"] },
+  )).toBe(false);
+});
