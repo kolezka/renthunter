@@ -37,6 +37,11 @@ function fakeDeps(over: Partial<CheckDeps> = {}): CheckDeps {
     appriseUrl: "http://apprise",
     deepseekApiKey: "k",
     deepseekBaseUrl: "https://api.deepseek.com",
+    extractFeatures: async () => [],
+    embed: async () => [0, 0],
+    embedBaseUrl: "https://embed.example",
+    embedApiKey: "",
+    embedModel: "m",
     log: nullLogger,
     ...over,
   };
