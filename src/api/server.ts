@@ -104,17 +104,17 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         }
         const sortParam = sp.get("sort");
         const sort = (["score", "newest", "price", "area"] as const).find((s) => s === sortParam);
-        const results = await searchOffers({
+        const results = (await searchOffers({
           q, queryEmbedding,
           districts: list("districts"), kinds: list("kinds"),
           features: list("features"), sources: list("sources"),
           sort,
-        });
+        })).items;
         return json(results);
       }
 
       if (path === "/api/offers" && req.method === "GET") {
-        return json(await listOffers());
+        return json((await listOffers()).items);
       }
       if (path === "/api/logs" && req.method === "GET") {
         const limitParam = url.searchParams.get("limit");
