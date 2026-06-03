@@ -4,6 +4,9 @@ export interface AppConfig {
   deepseekBaseUrl: string;
   appriseUrl: string;
   port: number;
+  embedBaseUrl: string;
+  embedApiKey: string;
+  embedModel: string;
 }
 
 export function loadConfig(env: Record<string, string | undefined> = process.env): AppConfig {
@@ -18,5 +21,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     deepseekBaseUrl: env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com",
     appriseUrl: env.APPRISE_URL ?? "http://localhost:8000",
     port: Number(env.PORT ?? "3000"),
+    embedBaseUrl: env.EMBED_BASE_URL ?? "https://api.openai.com/v1",
+    embedApiKey: env.EMBED_API_KEY ?? "",
+    embedModel: env.EMBED_MODEL ?? "text-embedding-3-small",
   };
 }

@@ -2,8 +2,9 @@ import type { Config, NewOffer, Offer } from "../db/schema";
 import type { Source } from "../scraper/sources/types";
 import { maybeScore } from "./check";
 import type { Logger } from "../log/logger";
+import { enrichOffer, type EnrichDeps } from "./enrich";
 
-export interface RefreshDeps {
+export interface RefreshDeps extends EnrichDeps {
   getConfig: () => Promise<Config>;
   getOffer: (externalId: string) => Promise<Offer | null>;
   fetchPage: (url: string) => Promise<string>;
@@ -15,7 +16,6 @@ export interface RefreshDeps {
   upsertOffer: (o: NewOffer) => Promise<void>;
   deepseekApiKey: string;
   deepseekBaseUrl: string;
-  log: Logger;
 }
 
 /** Re-fetch one offer's detail page, re-score it, persist, and return the
@@ -30,6 +30,7 @@ export async function refreshOffer(externalId: string, deps: RefreshDeps): Promi
   if (!src) throw new Error(`no parser for ${existing.url}`);
   const d = src.parseDetail(html);
   const { score, reasons } = await maybeScore(d, config, deps);
+  const enriched = await enrichOffer(d, config, deps);
 
   const row: NewOffer = {
     externalId,
@@ -42,6 +43,7 @@ export async function refreshOffer(externalId: string, deps: RefreshDeps): Promi
     district: d.district,
     description: d.description,
     images: d.images,
+    ...enriched,
     score,
     scoreReasons: reasons,
   };

@@ -3,8 +3,9 @@ import { passesFilters } from "./filter";
 import type { ListItem, OfferDetail, Source } from "../scraper/sources/types";
 import { runPool } from "./pool";
 import type { Logger } from "../log/logger";
+import { enrichOffer, type EnrichDeps } from "./enrich";
 
-export interface CheckDeps {
+export interface CheckDeps extends EnrichDeps {
   getConfig: () => Promise<Config>;
   getKnownExternalIds: () => Promise<Set<string>>;
   upsertOffer: (o: NewOffer) => Promise<void>;
@@ -22,7 +23,6 @@ export interface CheckDeps {
   appriseUrl: string;
   deepseekApiKey: string;
   deepseekBaseUrl: string;
-  log: Logger;
 }
 
 export interface CheckSummary {
@@ -81,7 +81,7 @@ export async function processOffer(
     await sleep(config.requestDelayMs);
     const detailHtml = await deps.fetchPage(item.url);
     const d = src.parseDetail(detailHtml);
-
+    const enriched = await enrichOffer(d, config, deps);
     const base: NewOffer = {
       externalId: item.externalId,
       url: item.url,
@@ -93,6 +93,7 @@ export async function processOffer(
       district: d.district,
       description: d.description,
       images: d.images,
+      ...enriched,
     };
 
     if (!passesFilters(d, config)) {
