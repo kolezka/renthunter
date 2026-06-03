@@ -1,6 +1,6 @@
-# renthunter
+# RentHunter
 
-A self-hosted rental-listing monitor for the Trójmiasto area. It crawls apartment
+RentHunter is a self-hosted rental-listing monitor for the Trójmiasto area. It crawls apartment
 offers from multiple portals, applies hard filters and optional AI scoring, and
 pushes a notification the moment an interesting offer appears. A Svelte SPA lets you
 search semantically, browse with sortable infinite scroll, inspect each offer's
