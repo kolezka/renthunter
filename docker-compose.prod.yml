@@ -5,20 +5,20 @@
 # driven by config.pollIntervalMin from the DB (editable in the panel; 0 = off).
 # No sidecar, no external trigger. Postgres is never exposed off the host. Put a
 # reverse proxy / TLS (Caddy, Traefik, nginx) in front of the app.
-name: trojmiasto-wynajem-prod
+name: renthunter-prod
 
 services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: wynajem
+      POSTGRES_USER: renthunter
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
-      POSTGRES_DB: wynajem
+      POSTGRES_DB: renthunter
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wynajem"]
+      test: ["CMD-SHELL", "pg_isready -U renthunter"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -59,7 +59,7 @@ services:
     build: .
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://wynajem:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}@db:5432/wynajem
+      DATABASE_URL: postgres://renthunter:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}@db:5432/renthunter
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       # Default to the local Ollama service (free). Override these to use OpenAI/Jina.

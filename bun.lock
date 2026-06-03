@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "trojmiasto-wynajem",
+      "name": "renthunter",
       "dependencies": {
         "@tanstack/virtual-core": "^3.17.0",
         "bun-plugin-svelte": "^0.0.6",

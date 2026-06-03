@@ -2,22 +2,22 @@
 #   docker compose -f docker-compose.dev.yml up
 # Ports are loopback-only so `bun test` and `trigger:dev` on the host can still
 # reach the DB/apprise. The app runs from bind-mounted source with `bun --hot`.
-name: trojmiasto-wynajem-dev
+name: renthunter-dev
 
 services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: wynajem
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wynajem}
-      POSTGRES_DB: wynajem
+      POSTGRES_USER: renthunter
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-renthunter}
+      POSTGRES_DB: renthunter
     ports:
       # Loopback-only: host tools (tests, trigger:dev) reach it; the network can't.
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wynajem"]
+      test: ["CMD-SHELL", "pg_isready -U renthunter"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -67,7 +67,7 @@ services:
       # Compose `environment:` wins over the bind-mounted host .env — verified: Bun
       # gives real env vars precedence over .env file values. So this `db` host (not
       # the host .env's `localhost`) is what the app actually uses inside the network.
-      DATABASE_URL: postgres://wynajem:${POSTGRES_PASSWORD:-wynajem}@db:5432/wynajem
+      DATABASE_URL: postgres://renthunter:${POSTGRES_PASSWORD:-renthunter}@db:5432/renthunter
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       # Default to the local Ollama service (free). Override these to use OpenAI/Jina.

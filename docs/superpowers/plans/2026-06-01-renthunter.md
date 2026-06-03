@@ -8,7 +8,7 @@
 
 **Tech Stack:** Bun, TypeScript, Drizzle ORM + drizzle-kit, PostgreSQL, HTMLRewriter (scraping), DeepSeek API (`deepseek-chat`), trigger.dev v3, Apprise (kontener `caronc/apprise`), Svelte 5 + `bun-plugin-svelte`.
 
-**Spec:** `docs/superpowers/specs/2026-06-01-trojmiasto-wynajem-design.md`
+**Spec:** `docs/superpowers/specs/2026-06-01-renthunter-design.md`
 
 ---
 
