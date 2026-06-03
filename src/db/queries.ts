@@ -2,6 +2,7 @@ import { eq, notInArray, sql, desc, lt, and, isNotNull, asc, inArray } from "dri
 import { db } from "./client";
 import { offers, config, logs, runLock, offerSnapshots, type Config, type NewOffer, type Offer, type LogRow, type OfferSnapshot } from "./schema";
 import { hasTrackedChange, trackedFields } from "./snapshot";
+import { rankByCosine } from "../embeddings/cosine";
 
 export async function ensureConfig(defaultSearchUrl: string): Promise<void> {
   await db.insert(config).values({ id: 1, searchUrls: [defaultSearchUrl] }).onConflictDoNothing();
@@ -161,7 +162,8 @@ export async function updateOfferScore(
 }
 
 export interface SearchParams {
-  q?: string;
+  q?: string; // raw query text; the API layer turns this into queryEmbedding
+
   queryEmbedding?: number[] | null;
   districts?: string[];
   kinds?: string[];
@@ -176,6 +178,9 @@ export async function searchOffers(params: SearchParams): Promise<Offer[]> {
   if (params.kinds?.length) conds.push(inArray(offers.kind, params.kinds));
   if (params.sources?.length) conds.push(inArray(offers.source, params.sources));
   if (params.features?.length) {
+    // PGlite can't bind a JS array to a Postgres array parameter for the @> operator,
+    // so we build a Postgres array literal and cast it. The literal is passed as a
+    // BOUND parameter (not concatenated into SQL), so this is injection-safe.
     const pgLiteral = "{" + params.features.map((f) => f.replace(/\\/g, "\\\\").replace(/"/g, '\\"')).join(",") + "}";
     conds.push(sql`${offers.features} @> ${pgLiteral}::text[]`);
   }
@@ -183,7 +188,6 @@ export async function searchOffers(params: SearchParams): Promise<Offer[]> {
   const rows = await db.select().from(offers).where(and(...conds));
 
   if (params.queryEmbedding && params.queryEmbedding.length) {
-    const { rankByCosine } = await import("../embeddings/cosine");
     return rankByCosine(rows, params.queryEmbedding, (o) => o.embedding ?? null);
   }
 
