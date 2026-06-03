@@ -98,12 +98,14 @@ export async function markInactive(activeExternalIds: string[]): Promise<void> {
     .where(notInArray(offers.externalId, activeExternalIds));
 }
 
-export async function listOffers(): Promise<Offer[]> {
+export async function listOffers(page?: PageParams): Promise<Page<Offer>> {
   // NULLS LAST so unscored offers don't float above scored ones (Postgres defaults NULLS FIRST on DESC).
-  return db
+  // id desc is the final tiebreaker so a row can't drift between page fetches.
+  const rows = await db
     .select()
     .from(offers)
-    .orderBy(sql`${offers.score} desc nulls last`, desc(offers.lastSeen));
+    .orderBy(sql`${offers.score} desc nulls last`, desc(offers.lastSeen), desc(offers.id));
+  return paginate(rows, page);
 }
 
 export async function appendLog(entry: {
@@ -161,6 +163,14 @@ export async function updateOfferScore(
     .where(eq(offers.externalId, externalId));
 }
 
+export interface PageParams { limit: number; offset: number }
+export interface Page<T> { items: T[]; total: number }
+
+function paginate<T>(rows: T[], page?: PageParams): Page<T> {
+  if (!page) return { items: rows, total: rows.length };
+  return { items: rows.slice(page.offset, page.offset + page.limit), total: rows.length };
+}
+
 export interface SearchParams {
   q?: string; // raw query text; the API layer turns this into queryEmbedding
 
@@ -172,7 +182,7 @@ export interface SearchParams {
   sort?: "score" | "newest" | "price" | "area";
 }
 
-export async function searchOffers(params: SearchParams): Promise<Offer[]> {
+export async function searchOffers(params: SearchParams, page?: PageParams): Promise<Page<Offer>> {
   const conds = [eq(offers.status, "active")];
   if (params.districts?.length) conds.push(inArray(offers.districtCanonical, params.districts));
   if (params.kinds?.length) conds.push(inArray(offers.kind, params.kinds));
@@ -185,20 +195,21 @@ export async function searchOffers(params: SearchParams): Promise<Offer[]> {
     conds.push(sql`${offers.features} @> ${pgLiteral}::text[]`);
   }
 
-  const rows = await db.select().from(offers).where(and(...conds));
+  // Deterministic base order so JS sorts (stable in ES2019+) and cosine tie-breaks are reproducible across pages.
+  const rows = await db.select().from(offers).where(and(...conds)).orderBy(desc(offers.id));
 
   if (params.queryEmbedding && params.queryEmbedding.length) {
-    return rankByCosine(rows, params.queryEmbedding, (o) => o.embedding ?? null);
+    return paginate(rankByCosine(rows, params.queryEmbedding, (o) => o.embedding ?? null), page);
   }
 
   const sorted = [...rows];
   switch (params.sort) {
-    case "newest": sorted.sort((a, b) => +new Date(b.firstSeen) - +new Date(a.firstSeen)); break;
-    case "price": sorted.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity)); break;
-    case "area": sorted.sort((a, b) => (b.area ?? -Infinity) - (a.area ?? -Infinity)); break;
-    default: sorted.sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || +new Date(b.lastSeen) - +new Date(a.lastSeen));
+    case "newest": sorted.sort((a, b) => +new Date(b.firstSeen) - +new Date(a.firstSeen) || b.id - a.id); break;
+    case "price": sorted.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || b.id - a.id); break;
+    case "area": sorted.sort((a, b) => (b.area ?? -Infinity) - (a.area ?? -Infinity) || b.id - a.id); break;
+    default: sorted.sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || +new Date(b.lastSeen) - +new Date(a.lastSeen) || b.id - a.id);
   }
-  return sorted;
+  return paginate(sorted, page);
 }
 
 export async function getFacets(): Promise<{ districts: string[]; kinds: string[]; features: string[]; sources: string[] }> {
