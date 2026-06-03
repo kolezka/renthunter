@@ -166,6 +166,10 @@ export async function updateOfferScore(
 export interface PageParams { limit: number; offset: number }
 export interface Page<T> { items: T[]; total: number }
 
+/** A keyword (embedding) search returns at most this many of the most relevant
+ *  offers; the chosen sort then orders that relevant subset. */
+const RELEVANCE_LIMIT = 100;
+
 function paginate<T>(rows: T[], page?: PageParams): Page<T> {
   if (!page) return { items: rows, total: rows.length };
   return { items: rows.slice(page.offset, page.offset + page.limit), total: rows.length };
@@ -198,11 +202,19 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
   // Deterministic base order so JS sorts (stable in ES2019+) and cosine tie-breaks are reproducible across pages.
   const rows = await db.select().from(offers).where(and(...conds)).orderBy(desc(offers.id));
 
+  // Keyword (embedding) search narrows to the most semantically relevant offers:
+  // rank embeddable offers by cosine and keep the top RELEVANCE_LIMIT as the candidate
+  // set. "Trafność" (score / default) returns them in relevance order; an explicit
+  // newest/price/area sort then reorders that relevant subset (see switch below).
+  let candidates = rows;
   if (params.queryEmbedding && params.queryEmbedding.length) {
-    return paginate(rankByCosine(rows, params.queryEmbedding, (o) => o.embedding ?? null), page);
+    const embeddable = rows.filter((o) => o.embedding && o.embedding.length);
+    const ranked = rankByCosine(embeddable, params.queryEmbedding, (o) => o.embedding ?? null);
+    candidates = ranked.slice(0, RELEVANCE_LIMIT);
+    if (!params.sort || params.sort === "score") return paginate(candidates, page);
   }
 
-  const sorted = [...rows];
+  const sorted = [...candidates];
   switch (params.sort) {
     case "newest": sorted.sort((a, b) => +new Date(b.firstSeen) - +new Date(a.firstSeen) || b.id - a.id); break;
     case "price": sorted.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || b.id - a.id); break;

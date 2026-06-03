@@ -167,10 +167,25 @@ test("searchOffers filters by district", async () => {
   expect(r.map((o) => o.externalId)).toEqual(["s:1"]);
 });
 
-test("searchOffers ranks by query embedding when provided", async () => {
+test("searchOffers ranks by query embedding under relevance (Trafność) sort", async () => {
   await seedSearch();
-  const r = (await searchOffers({ queryEmbedding: [0.9, 0.1], sort: "newest" })).items;
+  const r = (await searchOffers({ queryEmbedding: [0.9, 0.1], sort: "score" })).items;
   expect(r[0]!.externalId).toBe("s:1"); // closest to [1,0]
+});
+
+test("explicit sort overrides relevance for keyword (embedding) searches", async () => {
+  await seedSearch(); // s:1 price 3000 (closest to query), s:2 price 2000
+  const r = (await searchOffers({ queryEmbedding: [0.9, 0.1], sort: "price" })).items;
+  // price asc wins over cosine relevance, so the cheaper s:2 comes first
+  expect(r.map((o) => o.externalId)).toEqual(["s:2", "s:1"]);
+});
+
+test("keyword searches only return embeddable offers (relevance filter)", async () => {
+  await seedSearch(); // s:1, s:2 both have embeddings
+  await upsertOffer({ externalId: "s:3", url: "u3", source: "olx", title: "C", price: 100 }); // no embedding
+  const page = await searchOffers({ queryEmbedding: [0.9, 0.1], sort: "price" });
+  expect(page.items.find((o) => o.externalId === "s:3")).toBeUndefined();
+  expect(page.total).toBe(2); // total reflects the relevant subset, not all active
 });
 
 test("searchOffers sort=price ascending", async () => {
