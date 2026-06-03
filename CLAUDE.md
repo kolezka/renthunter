@@ -1,12 +1,12 @@
 
-## This project (trojmiasto-wynajem)
+## This project (renthunter)
 
 Rental crawler: scrape listings → filter → AI-score (DeepSeek) → notify (Apprise). Postgres via Drizzle + `postgres-js` (NOT Bun.sql); Svelte 5 SPA in `web/`.
 
 - **Tests run on in-memory PGlite, never the real DB.** `test/setup.ts` (bunfig `[test] preload`) injects it; `src/db/client.ts` THROWS under `NODE_ENV=test` without it. Never point `DATABASE_URL` at data you care about — DB-backed tests truncate tables in setup hooks.
 - `make db-backup` before any risky DB work (no other backups exist). `make up-fresh` DESTROYS the DB volume — only `make up` is safe to rerun.
 - `bun run db:generate` (drizzle-kit) needs an interactive TTY; in agent shells hand-author migrations: SQL in `drizzle/` + `drizzle/meta/NNNN_snapshot.json` + a `_journal.json` entry (see `0003_multisource`).
-- Host DB for migrations/server: `DATABASE_URL=postgres://wynajem:wynajem@localhost:5432/wynajem` (dev Docker `db`, loopback-only). Apply with `bun run db:migrate`.
+- Host DB for migrations/server: `DATABASE_URL=postgres://renthunter:renthunter@localhost:5432/renthunter` (dev Docker `db`, loopback-only). Apply with `bun run db:migrate`.
 - Crawl scheduling is in-process (`src/pipeline/scheduler.ts`), driven by DB `config.pollIntervalMin` (0 = off). No trigger.dev.
 
 Default to using Bun instead of Node.js.
