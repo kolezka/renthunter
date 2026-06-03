@@ -13,6 +13,9 @@ export interface Offer {
   firstSeen: string; lastSeen: string;
   images: string[]; description: string | null;
   source: Source;
+  kind: string | null;
+  districtCanonical: string | null;
+  features: string[];
 }
 export interface Config {
   searchUrls: string[]; minPrice: number | null; maxPrice: number | null;
@@ -23,6 +26,8 @@ export interface Config {
   appriseUrls: string[]; deepseekEnabled: boolean;
   listPages: number; maxDetailFetchesPerRun: number;
   requestDelayMs: number; concurrencyLimit: number;
+  extractEnabled: boolean;
+  embedEnabled: boolean;
 }
 
 export async function getOffers(): Promise<Offer[]> {
@@ -83,4 +88,27 @@ export async function rescoreAll(): Promise<{ runId: string }> {
   const data = await res.json();
   if (!res.ok) throw new Error((data as { error?: string }).error ?? `Rescore failed (HTTP ${res.status})`);
   return data as { runId: string };
+}
+
+export interface Facets { districts: string[]; kinds: string[]; features: string[]; sources: string[] }
+export interface SearchQuery {
+  q?: string; districts?: string[]; kinds?: string[]; features?: string[]; sources?: string[];
+  sort?: "score" | "newest" | "price" | "area";
+}
+export async function getFacets(): Promise<Facets> {
+  return (await fetch("/api/offers/facets")).json();
+}
+export async function searchOffers(query: SearchQuery): Promise<Offer[]> {
+  const p = new URLSearchParams();
+  if (query.q) p.set("q", query.q);
+  for (const k of ["districts", "kinds", "features", "sources"] as const) {
+    const v = query[k]; if (v && v.length) p.set(k, v.join(","));
+  }
+  if (query.sort) p.set("sort", query.sort);
+  return (await fetch(`/api/offers/search?${p.toString()}`)).json();
+}
+
+export interface OfferSnapshot { id: number; offerId: number; capturedAt: string; data: Record<string, unknown> }
+export async function getOfferHistory(externalId: string): Promise<OfferSnapshot[]> {
+  return (await fetch(`/api/offers/${encodeURIComponent(externalId)}/history`)).json();
 }
