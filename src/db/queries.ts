@@ -1,6 +1,7 @@
-import { eq, notInArray, sql, desc, lt, and, isNotNull } from "drizzle-orm";
+import { eq, notInArray, sql, desc, lt, and, isNotNull, asc, inArray } from "drizzle-orm";
 import { db } from "./client";
-import { offers, config, logs, runLock, type Config, type NewOffer, type Offer, type LogRow } from "./schema";
+import { offers, config, logs, runLock, offerSnapshots, type Config, type NewOffer, type Offer, type LogRow, type OfferSnapshot } from "./schema";
+import { hasTrackedChange, trackedFields } from "./snapshot";
 
 export async function ensureConfig(defaultSearchUrl: string): Promise<void> {
   await db.insert(config).values({ id: 1, searchUrls: [defaultSearchUrl] }).onConflictDoNothing();
@@ -24,6 +25,16 @@ export async function getKnownExternalIds(): Promise<Set<string>> {
 }
 
 export async function upsertOffer(o: NewOffer): Promise<void> {
+  const existing = (
+    await db.select().from(offers).where(eq(offers.externalId, o.externalId)).limit(1)
+  )[0] ?? null;
+
+  // The would-be new tracked state (incoming non-null value, else keep existing).
+  const merged: Record<string, unknown> = { ...(existing ?? {}) };
+  for (const k of Object.keys(o) as (keyof NewOffer)[]) {
+    if (o[k] !== undefined && o[k] !== null) merged[k] = o[k];
+  }
+
   await db
     .insert(offers)
     .values({ ...o, lastSeen: sql`now()` })
@@ -36,6 +47,11 @@ export async function upsertOffer(o: NewOffer): Promise<void> {
         rooms: o.rooms ?? sql`${offers.rooms}`,
         url: o.url,
         district: o.district ?? sql`${offers.district}`,
+        districtCanonical: o.districtCanonical ?? sql`${offers.districtCanonical}`,
+        kind: o.kind ?? sql`${offers.kind}`,
+        features: o.features ?? sql`${offers.features}`,
+        embedding: o.embedding ?? sql`${offers.embedding}`,
+        embedTextHash: o.embedTextHash ?? sql`${offers.embedTextHash}`,
         description: o.description ?? sql`${offers.description}`,
         images: o.images ?? sql`${offers.images}`,
         score: o.score ?? sql`${offers.score}`,
@@ -44,6 +60,25 @@ export async function upsertOffer(o: NewOffer): Promise<void> {
         lastSeen: sql`now()`,
       },
     });
+
+  if (hasTrackedChange(existing, merged)) {
+    const row = (
+      await db.select({ id: offers.id }).from(offers).where(eq(offers.externalId, o.externalId)).limit(1)
+    )[0];
+    if (row) await db.insert(offerSnapshots).values({ offerId: row.id, data: trackedFields(merged) });
+  }
+}
+
+export async function getOfferHistory(externalId: string): Promise<OfferSnapshot[]> {
+  const row = (
+    await db.select({ id: offers.id }).from(offers).where(eq(offers.externalId, externalId)).limit(1)
+  )[0];
+  if (!row) return [];
+  return db
+    .select()
+    .from(offerSnapshots)
+    .where(eq(offerSnapshots.offerId, row.id))
+    .orderBy(asc(offerSnapshots.capturedAt), asc(offerSnapshots.id));
 }
 
 export async function markNotified(externalId: string): Promise<void> {
