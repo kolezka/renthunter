@@ -17,6 +17,9 @@ export interface Offer {
   districtCanonical: string | null;
   features: string[];
 }
+
+export interface Page<T> { items: T[]; total: number }
+
 export interface Config {
   searchUrls: string[]; minPrice: number | null; maxPrice: number | null;
   minArea: number | null; minRooms: number | null;
@@ -30,8 +33,8 @@ export interface Config {
   embedEnabled: boolean;
 }
 
-export async function getOffers(): Promise<Offer[]> {
-  return (await fetch("/api/offers")).json();
+export async function getOffers(offset = 0, limit = 50): Promise<Page<Offer>> {
+  return (await fetch(`/api/offers?limit=${limit}&offset=${offset}`)).json();
 }
 export async function getConfig(): Promise<Config> {
   return (await fetch("/api/config")).json();
@@ -98,13 +101,15 @@ export interface SearchQuery {
 export async function getFacets(): Promise<Facets> {
   return (await fetch("/api/offers/facets")).json();
 }
-export async function searchOffers(query: SearchQuery): Promise<Offer[]> {
+export async function searchOffers(query: SearchQuery, offset = 0, limit = 50): Promise<Page<Offer>> {
   const p = new URLSearchParams();
   if (query.q) p.set("q", query.q);
   for (const k of ["districts", "kinds", "features", "sources"] as const) {
     const v = query[k]; if (v && v.length) p.set(k, v.join(","));
   }
   if (query.sort) p.set("sort", query.sort);
+  p.set("limit", String(limit));
+  p.set("offset", String(offset));
   return (await fetch(`/api/offers/search?${p.toString()}`)).json();
 }
 
