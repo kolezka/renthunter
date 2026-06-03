@@ -14,6 +14,10 @@
   const PAGE = 50;
   const hasMore = $derived(offers.length < total);
 
+  // Bumped on every query change; in-flight fetches that resolve against a stale
+  // generation are discarded so a late page can't append to a newer result set.
+  let queryGen = 0;
+
   async function fetchPage(offset: number): Promise<Page<Offer>> {
     return currentQuery ? searchOffers(currentQuery, offset, PAGE) : getOffers(offset, PAGE);
   }
@@ -21,8 +25,10 @@
   async function loadMore() {
     if (loadingMore || !hasMore) return;
     loadingMore = true;
+    const gen = queryGen;
     try {
       const page = await fetchPage(offers.length);
+      if (gen !== queryGen) return; // query changed while this page was in flight
       offers = [...offers, ...page.items];
       total = page.total;
     } finally {
@@ -31,13 +37,15 @@
   }
 
   async function resetAndLoad() {
+    const gen = ++queryGen;
     loading = true;
     try {
       const page = await fetchPage(0);
+      if (gen !== queryGen) return; // a newer reset superseded this one
       offers = page.items;
       total = page.total;
     } finally {
-      loading = false;
+      if (gen === queryGen) loading = false;
     }
   }
   let loading = $state(true);
@@ -112,10 +120,18 @@
       if (rescoreSafetyTimer) { clearTimeout(rescoreSafetyTimer); rescoreSafetyTimer = null; }
       rescoring = false;
       flash(`Przeliczono ${e.summary.scored} ofert`);
+      // reconcile the loaded window; discard if the query changed or a loadMore
+      // grew the list past this snapshot (don't shrink rows out from under the user)
+      const gen = queryGen;
+      const windowSize = Math.max(offers.length, PAGE);
       (currentQuery
-        ? searchOffers(currentQuery, 0, Math.max(offers.length, PAGE))
-        : getOffers(0, Math.max(offers.length, PAGE))
-      ).then((page) => { offers = page.items; total = page.total; }); // reconcile anything missed
+        ? searchOffers(currentQuery, 0, windowSize)
+        : getOffers(0, windowSize)
+      ).then((page) => {
+        if (gen !== queryGen || page.items.length < offers.length) return;
+        offers = page.items;
+        total = page.total;
+      });
     }
   }
 
