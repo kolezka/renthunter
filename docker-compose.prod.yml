@@ -29,6 +29,32 @@ services:
     restart: unless-stopped
     # Internal-only: no host port; only the app reaches it over the compose network.
 
+  # Local, free embeddings provider (OpenAI-compatible /v1/embeddings). Internal-only.
+  # Semantic search runs on this — no paid embeddings key required.
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No host port: reachable only on the internal compose network.
+
+  # One-shot: pull the embedding model once Ollama is healthy, then exit.
+  # Idempotent — a no-op if the model is already in the ollama volume.
+  ollama-pull:
+    image: ollama/ollama:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["/bin/sh", "-c", "ollama pull ${EMBED_MODEL:-bge-m3}"]
+    restart: "no"
+
   app:
     build: .
     restart: unless-stopped
@@ -36,9 +62,10 @@ services:
       DATABASE_URL: postgres://wynajem:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}@db:5432/wynajem
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
-      EMBED_BASE_URL: ${EMBED_BASE_URL:-https://api.openai.com/v1}
-      EMBED_API_KEY: ${EMBED_API_KEY:-}
-      EMBED_MODEL: ${EMBED_MODEL:-text-embedding-3-small}
+      # Default to the local Ollama service (free). Override these to use OpenAI/Jina.
+      EMBED_BASE_URL: ${EMBED_BASE_URL:-http://ollama:11434/v1}
+      EMBED_API_KEY: ${EMBED_API_KEY:-ollama}
+      EMBED_MODEL: ${EMBED_MODEL:-bge-m3}
       APPRISE_URL: http://apprise:8000
       PORT: "3000"
     ports:
@@ -49,6 +76,10 @@ services:
         condition: service_healthy
       apprise:
         condition: service_started
+      # Wait for Ollama to be up (network alias). Embeddings still degrade
+      # gracefully if the model pull hasn't finished yet.
+      ollama:
+        condition: service_healthy
     healthcheck:
       # The slim image has no curl/wget; use bun itself to probe the API.
       test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/api/config').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -59,3 +90,4 @@ services:
 
 volumes:
   pgdata:
+  ollama:
