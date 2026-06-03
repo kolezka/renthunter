@@ -38,6 +38,14 @@ const DIST = resolve(import.meta.dir, "../../web/dist");
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json" } });
 
+// limit: [1,500] (default 50); the 500 ceiling covers the dashboard's rescore-reconcile
+// which re-fetches the whole loaded window in one call. offset coerced to >= 0.
+function parsePage(sp: URLSearchParams): { limit: number; offset: number } {
+  const limit = Math.min(Math.max(parseInt(sp.get("limit") ?? "50", 10) || 50, 1), 500);
+  const offset = Math.max(parseInt(sp.get("offset") ?? "0", 10) || 0, 0);
+  return { limit, offset };
+}
+
 export function createServer(port: number, opts: ServerOptions = {}) {
   const runCrawler = opts.runCrawler ?? defaultRunCrawler;
   const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
@@ -104,17 +112,17 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         }
         const sortParam = sp.get("sort");
         const sort = (["score", "newest", "price", "area"] as const).find((s) => s === sortParam);
-        const results = (await searchOffers({
+        const page = await searchOffers({
           q, queryEmbedding,
           districts: list("districts"), kinds: list("kinds"),
           features: list("features"), sources: list("sources"),
           sort,
-        })).items;
-        return json(results);
+        }, parsePage(sp));
+        return json(page);
       }
 
       if (path === "/api/offers" && req.method === "GET") {
-        return json((await listOffers()).items);
+        return json(await listOffers(parsePage(url.searchParams)));
       }
       if (path === "/api/logs" && req.method === "GET") {
         const limitParam = url.searchParams.get("limit");
