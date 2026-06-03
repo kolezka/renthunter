@@ -30,7 +30,7 @@ export async function refreshOffer(externalId: string, deps: RefreshDeps): Promi
   if (!src) throw new Error(`no parser for ${existing.url}`);
   const d = src.parseDetail(html);
   const { score, reasons } = await maybeScore(d, config, deps);
-  const enriched = await enrichOffer(d, config, deps);
+  const enriched = await enrichOffer(d, config, deps, existing.embedTextHash ?? null);
 
   const row: NewOffer = {
     externalId,
