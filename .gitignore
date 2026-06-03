@@ -45,3 +45,14 @@ backups/
 
 # superpowers brainstorming companion artifacts
 .superpowers/
+
+# graphify knowledge graph — track the portable outputs (overrides the global
+# ~/.gitignore_global rule that excludes graphify-out/). Skip the regenerated AST
+# cache, the ever-growing dated snapshots, the bulky HTML viewer, per-run cost
+# telemetry, and machine-specific metadata (.graphify_root holds an absolute path).
+!graphify-out/
+graphify-out/cache/
+graphify-out/????-??-??/
+graphify-out/graph.html
+graphify-out/cost.json
+graphify-out/.graphify_*

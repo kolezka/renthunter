@@ -1,6 +1,6 @@
 ---
 name: deploy
-description: Release trojmiasto-wynajem to production safely — back up the DB, apply pending Drizzle migrations, redeploy the app (Coolify), then verify. Use when the user asks to deploy, ship, or release the current main.
+description: Release renthunter to production safely — back up the DB, apply pending Drizzle migrations, redeploy the app (Coolify), then verify. Use when the user asks to deploy, ship, or release the current main.
 disable-model-invocation: true
 ---
 
@@ -15,7 +15,7 @@ migration never lands on an unbacked-up DB.
 ## Preconditions
 
 - On `main`, working tree clean, and `main` is pushed to `origin`
-  (`git@github.com:kolezka/trojmiasto-wynajem.git`).
+  (`git@github.com:kolezka/renthunter.git`).
 - `make check` is green (tsc + tests).
 - `.env.production` exists on the deploy host (it is NOT in the repo).
 
@@ -27,7 +27,7 @@ migration never lands on an unbacked-up DB.
 
 2. **Back up the production database.** This is the only backup that exists:
    ```sh
-   make db-backup    # writes backups/wynajem-<timestamp>.sql.gz (in the DB container)
+   make db-backup    # writes backups/renthunter-<timestamp>.sql.gz (in the DB container)
    ```
    Verify the dump file was created and is non-empty.
 
@@ -36,7 +36,7 @@ migration never lands on an unbacked-up DB.
    and the migration-reviewer subagent) before they hit prod.
 
 4. **Deploy.** Prefer Coolify (its MCP is connected). Use the Coolify tools to:
-   - identify the trojmiasto-wynajem application/service,
+   - identify the renthunter application/service,
    - trigger a redeploy of the latest `main`,
    - watch the deployment + application logs until healthy.
 

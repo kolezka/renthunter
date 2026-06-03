@@ -1,6 +1,6 @@
 ---
 name: create-migration
-description: Hand-author a new Drizzle migration (SQL + snapshot + journal entry) for trojmiasto-wynajem, because drizzle-kit generate needs an interactive TTY that agent shells don't have. Use when src/db/schema.ts changed and a migration must be created without `bun run db:generate`.
+description: Hand-author a new Drizzle migration (SQL + snapshot + journal entry) for renthunter, because drizzle-kit generate needs an interactive TTY that agent shells don't have. Use when src/db/schema.ts changed and a migration must be created without `bun run db:generate`.
 disable-model-invocation: true
 ---
 
@@ -72,7 +72,7 @@ A migration is **three** coordinated changes:
 6. **Apply to the dev DB (host, loopback-only).** Only when you intend to mutate
    the dev database:
    ```sh
-   DATABASE_URL=postgres://wynajem:wynajem@localhost:5432/wynajem bun run db:migrate
+   DATABASE_URL=postgres://renthunter:renthunter@localhost:5432/renthunter bun run db:migrate
    ```
 
 ## Guardrails
