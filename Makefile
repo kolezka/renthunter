@@ -1,4 +1,4 @@
-# trojmiasto-wynajem — common tasks. Run `make` or `make help` to list targets.
+# renthunter — common tasks. Run `make` or `make help` to list targets.
 # Thin wrappers over the package.json scripts (Bun) and docker compose.
 .DEFAULT_GOAL := help
 .PHONY: help install build typecheck test check dev start \
@@ -49,10 +49,10 @@ db-migrate: ## Apply pending Drizzle migrations
 db-studio: ## Open Drizzle Studio
 	bun run db:studio
 
-db-backup: ## Dump the DB (in its container) to backups/wynajem-<timestamp>.sql.gz
+db-backup: ## Dump the DB (in its container) to backups/renthunter-<timestamp>.sql.gz
 	@mkdir -p "$(BACKUP_DIR)"
-	@ts=$$(date +%Y%m%d-%H%M%S); out="$(BACKUP_DIR)/wynajem-$$ts.sql.gz"; tmp="$$out.tmp"; \
-	  if docker compose -f $(COMPOSE) exec -T db pg_dump --clean --if-exists -U wynajem -d wynajem > "$$tmp" 2>/dev/null && test -s "$$tmp"; then \
+	@ts=$$(date +%Y%m%d-%H%M%S); out="$(BACKUP_DIR)/renthunter-$$ts.sql.gz"; tmp="$$out.tmp"; \
+	  if docker compose -f $(COMPOSE) exec -T db pg_dump --clean --if-exists -U renthunter -d renthunter > "$$tmp" 2>/dev/null && test -s "$$tmp"; then \
 	    gzip -c "$$tmp" > "$$out"; rm -f "$$tmp"; \
 	    echo "backup -> $$out ($$(du -h "$$out" | cut -f1))"; \
 	  else \
@@ -60,11 +60,11 @@ db-backup: ## Dump the DB (in its container) to backups/wynajem-<timestamp>.sql.
 	    echo "backup FAILED (is the '$(COMPOSE)' db service running? try 'make up')"; exit 1; \
 	  fi
 
-db-restore: ## Restore the DB from a dump: make db-restore FILE=backups/wynajem-....sql.gz (OVERWRITES current data)
-	@test -n "$(FILE)" || { echo "usage: make db-restore FILE=backups/wynajem-<timestamp>.sql.gz"; exit 1; }
+db-restore: ## Restore the DB from a dump: make db-restore FILE=backups/renthunter-....sql.gz (OVERWRITES current data)
+	@test -n "$(FILE)" || { echo "usage: make db-restore FILE=backups/renthunter-<timestamp>.sql.gz"; exit 1; }
 	@test -f "$(FILE)" || { echo "no such file: $(FILE)"; exit 1; }
 	@echo "Restoring $(FILE) into the $(COMPOSE) db (existing objects are dropped & recreated)…"
-	@gunzip -c "$(FILE)" | docker compose -f $(COMPOSE) exec -T db psql -v ON_ERROR_STOP=1 -U wynajem -d wynajem \
+	@gunzip -c "$(FILE)" | docker compose -f $(COMPOSE) exec -T db psql -v ON_ERROR_STOP=1 -U renthunter -d renthunter \
 	  && echo "restore done" || { echo "restore FAILED"; exit 1; }
 
 up: ## Start the dev stack, reachable on the LAN (docker compose, hot reload)

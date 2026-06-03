@@ -28,7 +28,7 @@ wykonuje crawl in-process, więc:
 
 trigger.dev pozostaje opcjonalne dla dev (`bun run trigger:dev` na hoście).
 
-## `docker-compose.dev.yml` (projekt `trojmiasto-wynajem-dev`)
+## `docker-compose.dev.yml` (projekt `renthunter-dev`)
 
 - **db** — `postgres:16-alpine`, hasło `${POSTGRES_PASSWORD:-wynajem}`, port
   **loopback** `127.0.0.1:5432` (host: testy, `trigger:dev`), healthcheck, wolumen
@@ -45,7 +45,7 @@ trigger.dev pozostaje opcjonalne dla dev (`bun run trigger:dev` na hoście).
 - Ograniczenie: `bun run dev` buduje SPA raz; tylko serwer hot-reloaduje — edycje
   `web/` wymagają ponownego builda. Udokumentowane, poza zakresem zmiany.
 
-## `docker-compose.prod.yml` (projekt `trojmiasto-wynajem-prod`)
+## `docker-compose.prod.yml` (projekt `renthunter-prod`)
 
 - **db** — hasło **wymagane** (`${POSTGRES_PASSWORD:?…}`), `restart: unless-stopped`,
   healthcheck, wolumen `pgdata`, **bez portu hosta** (tylko sieć wewnętrzna).

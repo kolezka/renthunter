@@ -1,4 +1,4 @@
-# trojmiasto-wynajem
+# renthunter
 
 A self-hosted rental-listing monitor for the Trójmiasto area. It crawls apartment
 offers from multiple portals, applies hard filters and optional AI scoring, and
