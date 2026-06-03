@@ -96,7 +96,11 @@ export function createServer(port: number, opts: ServerOptions = {}) {
           const env = loadConfig();
           try {
             queryEmbedding = await embed(q, { baseUrl: env.embedBaseUrl, apiKey: env.embedApiKey, model: env.embedModel });
-          } catch { queryEmbedding = null; }
+          } catch (err) {
+            // Degrade to filter+sort, but log so a misconfigured embed provider isn't silently invisible.
+            queryEmbedding = null;
+            await dbLogger.log({ level: "warn", event: "search.embed.error", message: `query embedding failed: ${String(err)}` });
+          }
         }
         const sortParam = sp.get("sort");
         const sort = (["score", "newest", "price", "area"] as const).find((s) => s === sortParam);
