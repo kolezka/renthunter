@@ -82,6 +82,20 @@
         </span>
         <span class="text-[0.92rem] font-semibold">DeepSeek scoring</span>
       </label>
+      <label class="mt-[14px] flex cursor-pointer select-none items-center gap-3">
+        <input type="checkbox" bind:checked={cfg.extractEnabled} class="peer pointer-events-none absolute opacity-0" />
+        <span class="relative h-[27px] w-[46px] flex-shrink-0 rounded-full border border-[var(--glass-border)] bg-white/10 transition-[background,border-color] duration-300 peer-checked:border-transparent peer-checked:bg-[linear-gradient(120deg,var(--color-aurora-indigo),var(--color-aurora-violet))] peer-checked:[&>span]:translate-x-[19px] peer-focus-visible:shadow-[0_0_0_3px_rgba(47,109,255,0.3)]" aria-hidden="true">
+          <span class="absolute left-[2px] top-[2px] h-[21px] w-[21px] rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1.18,0.36,1)]"></span>
+        </span>
+        <span class="text-[0.92rem] font-semibold">Ekstrakcja cech (AI)</span>
+      </label>
+      <label class="mt-[14px] flex cursor-pointer select-none items-center gap-3">
+        <input type="checkbox" bind:checked={cfg.embedEnabled} class="peer pointer-events-none absolute opacity-0" />
+        <span class="relative h-[27px] w-[46px] flex-shrink-0 rounded-full border border-[var(--glass-border)] bg-white/10 transition-[background,border-color] duration-300 peer-checked:border-transparent peer-checked:bg-[linear-gradient(120deg,var(--color-aurora-indigo),var(--color-aurora-violet))] peer-checked:[&>span]:translate-x-[19px] peer-focus-visible:shadow-[0_0_0_3px_rgba(47,109,255,0.3)]" aria-hidden="true">
+          <span class="absolute left-[2px] top-[2px] h-[21px] w-[21px] rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1.18,0.36,1)]"></span>
+        </span>
+        <span class="text-[0.92rem] font-semibold">Embeddingi (wyszukiwanie semantyczne)</span>
+      </label>
     </fieldset>
 
     <fieldset class={panel}>
