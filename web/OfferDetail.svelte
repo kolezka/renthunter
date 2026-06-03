@@ -1,6 +1,7 @@
 <script lang="ts">
   import { SOURCE_LABEL, type Offer } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
+  import OfferHistory from "./OfferHistory.svelte";
 
   let { offer, onClose, onRefresh, refreshing = false }: {
     offer: Offer;
@@ -100,6 +101,7 @@
       {#if offer.area != null}<span class={tagCls}>{offer.area} m²</span>{/if}
       {#if offer.rooms != null}<span class={tagCls}>{offer.rooms} pok.</span>{/if}
       {#if offer.district}<span class={tagCls}>{offer.district}</span>{/if}
+      {#each offer.features ?? [] as f (f)}<span class={tagCls}>{f}</span>{/each}
       <span class={tagCls}>{relativeDate(offer.firstSeen)}</span>
     </div>
 
@@ -116,6 +118,8 @@
         </div>
       </div>
     </section>
+
+    <OfferHistory externalId={offer.externalId} />
 
     {#if offer.description}
       <section class="mb-4">
