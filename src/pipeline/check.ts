@@ -4,6 +4,7 @@ import type { ListItem, OfferDetail, Source } from "../scraper/sources/types";
 import { runPool } from "./pool";
 import type { Logger } from "../log/logger";
 import { enrichOffer, type EnrichDeps } from "./enrich";
+import { buildOfferNotification } from "../notify/message";
 
 export interface CheckDeps extends EnrichDeps {
   getConfig: () => Promise<Config>;
@@ -107,11 +108,10 @@ export async function processOffer(
     const meetsThreshold = config.deepseekEnabled ? (score ?? 0) >= config.scoreThreshold : true;
     if (!meetsThreshold) return { notified: false, error: false };
 
-    const title = `New offer: ${d.title}`.slice(0, 120);
-    const body =
-      `${d.price ?? "?"} PLN · ${d.area ?? "?"} m² · ${d.rooms ?? "?"} rooms · ${d.district ?? ""}\n` +
-      (reasons ? `AI: ${reasons}\n` : "") +
-      item.url;
+    const { title, body } = buildOfferNotification({
+      title: d.title, price: d.price, area: d.area, rooms: d.rooms,
+      district: d.district, url: item.url, reasons,
+    });
     await deps.sendNotification({
       appriseUrl: deps.appriseUrl,
       targets: config.appriseUrls,
