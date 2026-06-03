@@ -160,6 +160,58 @@ export async function updateOfferScore(
     .where(eq(offers.externalId, externalId));
 }
 
+export interface SearchParams {
+  q?: string;
+  queryEmbedding?: number[] | null;
+  districts?: string[];
+  kinds?: string[];
+  features?: string[];
+  sources?: string[];
+  sort?: "score" | "newest" | "price" | "area";
+}
+
+export async function searchOffers(params: SearchParams): Promise<Offer[]> {
+  const conds = [eq(offers.status, "active")];
+  if (params.districts?.length) conds.push(inArray(offers.districtCanonical, params.districts));
+  if (params.kinds?.length) conds.push(inArray(offers.kind, params.kinds));
+  if (params.sources?.length) conds.push(inArray(offers.source, params.sources));
+  if (params.features?.length) {
+    const pgLiteral = "{" + params.features.map((f) => f.replace(/\\/g, "\\\\").replace(/"/g, '\\"')).join(",") + "}";
+    conds.push(sql`${offers.features} @> ${pgLiteral}::text[]`);
+  }
+
+  const rows = await db.select().from(offers).where(and(...conds));
+
+  if (params.queryEmbedding && params.queryEmbedding.length) {
+    const { rankByCosine } = await import("../embeddings/cosine");
+    return rankByCosine(rows, params.queryEmbedding, (o) => o.embedding ?? null);
+  }
+
+  const sorted = [...rows];
+  switch (params.sort) {
+    case "newest": sorted.sort((a, b) => +new Date(b.firstSeen) - +new Date(a.firstSeen)); break;
+    case "price": sorted.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity)); break;
+    case "area": sorted.sort((a, b) => (b.area ?? -Infinity) - (a.area ?? -Infinity)); break;
+    default: sorted.sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || +new Date(b.lastSeen) - +new Date(a.lastSeen));
+  }
+  return sorted;
+}
+
+export async function getFacets(): Promise<{ districts: string[]; kinds: string[]; features: string[]; sources: string[] }> {
+  const rows = await db
+    .select({ districtCanonical: offers.districtCanonical, kind: offers.kind, features: offers.features, source: offers.source })
+    .from(offers)
+    .where(eq(offers.status, "active"));
+  const districts = new Set<string>(), kinds = new Set<string>(), features = new Set<string>(), sources = new Set<string>();
+  for (const r of rows) {
+    if (r.districtCanonical) districts.add(r.districtCanonical);
+    if (r.kind) kinds.add(r.kind);
+    if (r.source) sources.add(r.source);
+    for (const f of r.features ?? []) features.add(f);
+  }
+  return { districts: [...districts], kinds: [...kinds], features: [...features], sources: [...sources] };
+}
+
 /**
  * Atomically acquire the single-row run lock. Returns true if acquired (lock was
  * free, stale beyond staleMs, or first use), false if currently held by a live

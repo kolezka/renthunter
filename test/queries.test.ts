@@ -7,6 +7,7 @@ import {
   getKnownExternalIds, upsertOffer, markNotified, markInactive, listOffers,
   appendLog, listLogs, pruneLogs, getOfferByExternalId,
   getActiveScorableOffers, updateOfferScore, getOfferHistory,
+  searchOffers, getFacets,
 } from "../src/db/queries";
 
 beforeEach(async () => {
@@ -153,4 +154,41 @@ test("upsertOffer writes a snapshot on first insert and on change, not on no-op"
   hist = await getOfferHistory(ext);
   expect(hist.length).toBe(2); // price changed -> new snapshot
   expect((hist[1]!.data as any).price).toBe(2900);
+});
+
+async function seedSearch() {
+  await upsertOffer({ externalId: "s:1", url: "u1", source: "trojmiasto", title: "A", price: 3000, districtCanonical: "Gdańsk Wrzeszcz", kind: "mieszkanie", features: ["balkon"], embedding: [1, 0] });
+  await upsertOffer({ externalId: "s:2", url: "u2", source: "olx", title: "B", price: 2000, districtCanonical: "Gdynia Orłowo", kind: "kawalerka", features: ["garaż"], embedding: [0, 1] });
+}
+
+test("searchOffers filters by district", async () => {
+  await seedSearch();
+  const r = await searchOffers({ districts: ["Gdańsk Wrzeszcz"], sort: "newest" });
+  expect(r.map((o) => o.externalId)).toEqual(["s:1"]);
+});
+
+test("searchOffers ranks by query embedding when provided", async () => {
+  await seedSearch();
+  const r = await searchOffers({ queryEmbedding: [0.9, 0.1], sort: "newest" });
+  expect(r[0]!.externalId).toBe("s:1"); // closest to [1,0]
+});
+
+test("searchOffers sort=price ascending", async () => {
+  await seedSearch();
+  const r = await searchOffers({ sort: "price" });
+  expect(r.map((o) => o.price)).toEqual([2000, 3000]);
+});
+
+test("searchOffers filters by features (array contains)", async () => {
+  await seedSearch();
+  const r = await searchOffers({ features: ["garaż"] });
+  expect(r.map((o) => o.externalId)).toEqual(["s:2"]);
+});
+
+test("getFacets returns distinct districts/kinds/features", async () => {
+  await seedSearch();
+  const f = await getFacets();
+  expect(f.districts).toContain("Gdańsk Wrzeszcz");
+  expect(f.kinds.sort()).toEqual(["kawalerka", "mieszkanie"]);
+  expect(f.features.sort()).toEqual(["balkon", "garaż"]);
 });
