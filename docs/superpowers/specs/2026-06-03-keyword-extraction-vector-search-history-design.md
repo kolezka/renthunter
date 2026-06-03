@@ -33,12 +33,16 @@ Built from two underlying mechanisms:
 
 ### Defaults adopted (user-approved)
 
-- **Dimension-agnostic `vector` column** (declared `vector`, no fixed N), exact KNN via
-  `<=>` with no index. Dataset is hundreds–low-thousands of offers, so an unindexed exact
-  scan is acceptable. An HNSW index can be added later once a model/dimension is locked.
+- **Embeddings stored as `real[]`; cosine ranking computed in application code.** The spike
+  found `pgvector` is unavailable in the PGlite 0.5.1 test harness (`CREATE EXTENSION
+  vector` → "extension not available", and there is no separate vector package for 0.5.1),
+  and `test/setup.ts` runs every committed migration against PGlite — so a `vector` column
+  would break all DB-backed tests. `real[]` is fully supported in both PGlite and Postgres.
+  At hundreds–low-thousands of offers, fetching filtered candidates and ranking by cosine
+  in app code is fast. No SQL ANN index and no Postgres image change. (A migration to real
+  `pgvector` can happen later if the dataset outgrows exact scan.)
 - **One combined search endpoint** replaces the standalone source-filter row; source
   becomes another chip group.
-- **Postgres image** swapped to `pgvector/pgvector:pg16` in dev and prod.
 - **Extraction + embedding gated behind config flags**, defaulting on.
 
 ## Architecture
@@ -56,7 +60,7 @@ mirror the columns in `src/db/schema.ts`.
 - `kind text` — kawalerka / mieszkanie / dom / pokój (gazetteer-derived)
 - `district_canonical text` — normalized gazetteer hit (keep raw `district` too)
 - `features text[] not null default '{}'` — DeepSeek-extracted features
-- `embedding vector` — dimension-agnostic; nullable until embedded
+- `embedding real[]` — the offer's embedding vector; nullable until embedded
 - `embed_text_hash text` — hash of the text last embedded; skip re-embedding when unchanged
 
 New table:
@@ -69,8 +73,6 @@ offer_snapshots(
   data        jsonb not null            -- snapshot of tracked fields
 )
 ```
-
-Migration also runs `CREATE EXTENSION IF NOT EXISTS vector;`.
 
 Tracked fields for snapshots: `price, area, rooms, district, district_canonical, kind,
 title, description, features`.
@@ -103,8 +105,8 @@ title, description, features`.
 
 - Structured params → SQL `WHERE` on `district_canonical`, `kind`, `features @> …`,
   plus the existing source filter.
-- `q` present → embed the query, `ORDER BY embedding <=> $q` (cosine distance), with
-  rows lacking an embedding ranked last.
+- `q` present → embed the query, fetch the filtered candidate rows with their `embedding`
+  arrays, and rank by cosine similarity in app code (rows lacking an embedding rank last).
 - `q` empty → order by `sort`.
 - `sort` ∈ `score | newest | price | area` (newest = `first_seen desc`; score keeps the
   current `score desc nulls last, last_seen desc`).
@@ -142,12 +144,8 @@ No snapshot is written when an unchanged refresh re-runs.
 
 ## Infrastructure changes
 
-- **Postgres image**: `postgres:16-alpine` → `pgvector/pgvector:pg16` in
-  `docker-compose.dev.yml` and the prod compose. Same `PGDATA` volume, no data loss; the
-  migration adds the extension.
-- **PGlite tests**: `test/setup.ts` loads the `@electric-sql/pglite/vector` extension
-  (`new PGlite({ extensions: { vector } })`) so migrations declaring a `vector` column and
-  `CREATE EXTENSION vector` apply on a fresh in-memory DB.
+- **No Postgres image change and no PGlite extension** — embeddings are `real[]`, ranked in
+  app code (see "Defaults adopted").
 - **Env / config**: add `EMBED_BASE_URL`, `EMBED_API_KEY`, `EMBED_MODEL` to `config.ts`
   and both compose files. Add enable flags for extraction and embedding to the `config`
   table (defaulting on), surfaced in the Config UI.
@@ -166,33 +164,30 @@ No snapshot is written when an unchanged refresh re-runs.
 All DB-backed tests run on the injected in-memory PGlite (never the real DB).
 
 - **Pure units**: gazetteer mapping (diacritics, multi-token addresses, unknown →
-  null), snapshot-diff detection, embed-text hashing/skip logic.
+  null), cosine-similarity ranking, snapshot-diff detection, embed-text hashing/skip logic.
 - **Injected `fetchImpl`**: DeepSeek feature extraction and the embedding provider client
   (success, HTTP error, malformed JSON).
-- **Integration on PGlite**: migration `0005` applies cleanly; `upsertOffer` writes a
-  snapshot only on change; the search endpoint filters and orders correctly.
-- **Early spike (highest-risk unknown)**: confirm `pgvector` works end-to-end in PGlite +
-  drizzle `migrate` — extension load, `vector` column round-trip, `<=>` ordering — before
-  building dependent components.
+- **Integration on PGlite**: migration `0005` applies cleanly; `real[]` embedding
+  round-trips; `upsertOffer` writes a snapshot only on change; the search endpoint filters
+  and ranks correctly.
 
 ## Build sequence
 
 Single worktree for the branch. Order:
 
-1. Spike: pgvector in PGlite + drizzle `migrate`.
-2. Migration `0005` + `schema.ts` + `test/setup.ts` vector extension.
-3. Gazetteer (district/kind).
-4. DeepSeek feature extraction.
-5. Embeddings client + embed-on-change wiring.
-6. Search API endpoint.
-7. Change-history write path + history endpoint.
-8. Frontend: search bar (A), feature chips, history view (A), sort.
+1. Migration `0005` + `schema.ts` (new columns, `offer_snapshots`).
+2. Gazetteer (district/kind).
+3. DeepSeek feature extraction.
+4. Embeddings client + cosine util + embed-on-change wiring.
+5. Search API endpoint (+ facets) and history write path/endpoint.
+6. Frontend: search bar (A), feature chips, history view (A), sort.
 
 Each step is TDD'd and independently testable.
 
 ## Out of scope (YAGNI)
 
-- HNSW / ivfflat vector indexing (revisit if the dataset grows past exact-scan comfort).
+- Migrating to real `pgvector` with an ANN index (revisit if the dataset grows past
+  app-side exact-scan comfort, and once a PGlite build bundles the vector extension).
 - Re-embedding the entire backlog automatically on provider/model change (a manual
   re-embed action can be added later, reusing the rescore plumbing).
 - Per-field specialized history tables.
