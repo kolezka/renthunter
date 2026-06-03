@@ -1,6 +1,6 @@
 /** Diacritic-insensitive, lowercased normalization (Śródmieście -> srodmiescie). */
 export function normalizeText(s: string): string {
-  return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim();
+  return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[łŁ]/g, "l").trim();
 }
 
 export interface KeywordHit {
