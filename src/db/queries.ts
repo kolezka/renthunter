@@ -86,16 +86,15 @@ export async function markNotified(externalId: string): Promise<void> {
   await db.update(offers).set({ notified: true }).where(eq(offers.externalId, externalId));
 }
 
-/** Mark offers that are NOT in the current list of active external_ids as inactive. */
+/** Mark offers that are NOT in the current list of active external_ids as inactive.
+ *  An empty list is treated as "no signal" (likely a total scrape failure), NOT
+ *  "everything is gone" — so it deactivates nothing. */
 export async function markInactive(activeExternalIds: string[]): Promise<void> {
-  if (activeExternalIds.length === 0) {
-    await db.update(offers).set({ status: "inactive" }).where(eq(offers.status, "active"));
-    return;
-  }
+  if (activeExternalIds.length === 0) return;
   await db
     .update(offers)
     .set({ status: "inactive" })
-    .where(notInArray(offers.externalId, activeExternalIds));
+    .where(and(eq(offers.status, "active"), notInArray(offers.externalId, activeExternalIds)));
 }
 
 export async function listOffers(page?: PageParams): Promise<Page<Offer>> {
