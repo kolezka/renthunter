@@ -57,7 +57,9 @@
   }
 </script>
 
-<div class="grid gap-[10px]">
+<!-- grid-cols-1 → minmax(0,1fr): pins rows to the container width so long URLs
+     truncate instead of widening the row and pushing the source pill off-screen. -->
+<div class="grid grid-cols-1 gap-[10px]">
   {#if urls.length === 0}
     <p class="rounded-[13px] border border-dashed border-[var(--glass-border)] px-4 py-5 text-center text-[0.82rem] text-ink-3">
       No search URLs yet — paste one below to start monitoring a marketplace.

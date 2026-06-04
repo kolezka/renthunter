@@ -124,8 +124,9 @@
           {/each}
         </nav>
 
-        <!-- Content pane -->
-        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-7">
+        <!-- Content pane (min-w-0 so long search-URL rows truncate instead of
+             widening the flex row and pushing the source pill off-screen) -->
+        <div class="min-h-0 min-w-0 flex-1 overflow-y-auto px-6 py-5 sm:px-7">
           {#key active}
             <div class="animate-rise">
               <div class="mb-[18px]">
