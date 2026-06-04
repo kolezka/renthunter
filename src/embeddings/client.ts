@@ -1,3 +1,5 @@
+import { TIMEOUTS } from "../scraper/timeout";
+
 export interface EmbedOptions {
   baseUrl: string;
   apiKey: string;
@@ -14,6 +16,7 @@ export async function embed(text: string, opts: EmbedOptions): Promise<number[]>
       "Content-Type": "application/json",
       Authorization: `Bearer ${opts.apiKey}`,
     },
+    signal: AbortSignal.timeout(TIMEOUTS.ai),
     body: JSON.stringify({ model: opts.model, input: text }),
   });
   if (!res.ok) throw new Error(`Embeddings HTTP ${res.status}`);

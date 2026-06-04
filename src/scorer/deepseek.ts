@@ -1,3 +1,5 @@
+import { TIMEOUTS } from "../scraper/timeout";
+
 export interface ScoreInput { description: string; criteria: string; }
 export interface ScoreResult { score: number; reasons: string; }
 export interface ScoreOptions {
@@ -26,6 +28,7 @@ export async function scoreOffer(input: ScoreInput, opts: ScoreOptions): Promise
       "Content-Type": "application/json",
       Authorization: `Bearer ${opts.apiKey}`,
     },
+    signal: AbortSignal.timeout(TIMEOUTS.ai),
     body: JSON.stringify({
       model: "deepseek-chat",
       messages: [
