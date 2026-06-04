@@ -49,3 +49,22 @@ test("canonicalizeFeatures caps at 12", () => {
   const many = Array.from({ length: 20 }, (_, i) => `unique-tag-${i}`);
   expect(canonicalizeFeatures(many).length).toBe(12);
 });
+
+test("canonicalizeFeatures maps the extended aliases", () => {
+  expect(canonicalizeFeatures(["district heating"])).toEqual(["ogrzewanie miejskie"]);
+  expect(canonicalizeFeatures(["robot vacuum", "odkurzacz robot"])).toEqual(["odkurzacz"]);
+  expect(canonicalizeFeatures(["available now"])).toEqual(["gotowe do zamieszkania"]);
+  expect(canonicalizeFeatures(["park", "near park"])).toEqual(["blisko parku"]);
+  expect(canonicalizeFeatures(["two bathrooms"])).toEqual(["dwie łazienki"]);
+});
+
+test("extractFeatures steers the model with the canonical tag list", async () => {
+  let sentBody = "";
+  const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
+    sentBody = String(init?.body ?? "");
+    return new Response(JSON.stringify({ choices: [{ message: { content: '{"features":[]}' } }] }), { status: 200 });
+  };
+  await extractFeatures({ title: "t", description: "d" }, { ...opts, fetchImpl });
+  expect(sentBody).toContain("winda");
+  expect(sentBody).toContain("blisko morza");
+});

@@ -9,6 +9,9 @@ for (const { canonical, aliases } of FEATURE_TAXONOMY) {
   for (const a of aliases) ALIAS_TO_CANON.set(normalizeText(a), canonical);
 }
 
+/** Canonical feature labels — fed to the model to steer it toward consistent tags. */
+export const CANONICAL_FEATURES: string[] = FEATURE_TAXONOMY.map((t) => t.canonical);
+
 /**
  * Snap free-form AI feature tags onto the canonical taxonomy: alias → canonical,
  * drop non-feature noise (room counts, areas, floors), pass unknown tags through
@@ -48,8 +51,9 @@ export async function extractFeatures(
   const system =
     "You extract apartment features from a rental listing. " +
     'Return ONLY JSON: {"features": ["<feature>", ...]}. ' +
-    `Each feature is a short lowercase tag in ${language} (e.g. balcony, garage, ` +
-    "furnished, near the sea, elevator, parking). At most 12 features.";
+    `Each feature is a short lowercase tag in ${language}. At most 12 features. ` +
+    "Prefer these standard tags whenever the listing matches one (reuse them verbatim); " +
+    `only invent a new tag for a feature none of these cover: ${CANONICAL_FEATURES.join(", ")}.`;
   const user = `Title:\n${input.title}\n\nDescription:\n${input.description}`;
 
   const res = await doFetch(`${opts.baseUrl}/chat/completions`, {
