@@ -26,48 +26,48 @@ export async function getKnownExternalIds(): Promise<Set<string>> {
 }
 
 export async function upsertOffer(o: NewOffer): Promise<void> {
-  const existing = (
-    await db.select().from(offers).where(eq(offers.externalId, o.externalId)).limit(1)
-  )[0] ?? null;
+  await db.transaction(async (tx) => {
+    const existing = (
+      await tx.select().from(offers).where(eq(offers.externalId, o.externalId)).limit(1)
+    )[0] ?? null;
 
-  // The would-be new tracked state (incoming non-null value, else keep existing).
-  const merged: Record<string, unknown> = { ...(existing ?? {}) };
-  for (const k of Object.keys(o) as (keyof NewOffer)[]) {
-    if (o[k] !== undefined && o[k] !== null) merged[k] = o[k];
-  }
+    // The would-be new tracked state (incoming non-null value, else keep existing).
+    const merged: Record<string, unknown> = { ...(existing ?? {}) };
+    for (const k of Object.keys(o) as (keyof NewOffer)[]) {
+      if (o[k] !== undefined && o[k] !== null) merged[k] = o[k];
+    }
 
-  await db
-    .insert(offers)
-    .values({ ...o, lastSeen: sql`now()` })
-    .onConflictDoUpdate({
-      target: offers.externalId,
-      set: {
-        title: o.title ?? sql`${offers.title}`,
-        price: o.price ?? sql`${offers.price}`,
-        area: o.area ?? sql`${offers.area}`,
-        rooms: o.rooms ?? sql`${offers.rooms}`,
-        url: o.url,
-        district: o.district ?? sql`${offers.district}`,
-        districtCanonical: o.districtCanonical ?? sql`${offers.districtCanonical}`,
-        kind: o.kind ?? sql`${offers.kind}`,
-        features: o.features ?? sql`${offers.features}`,
-        embedding: o.embedding ?? sql`${offers.embedding}`,
-        embedTextHash: o.embedTextHash ?? sql`${offers.embedTextHash}`,
-        description: o.description ?? sql`${offers.description}`,
-        images: o.images ?? sql`${offers.images}`,
-        score: o.score ?? sql`${offers.score}`,
-        scoreReasons: o.scoreReasons ?? sql`${offers.scoreReasons}`,
-        status: "active",
-        lastSeen: sql`now()`,
-      },
-    });
+    const [row] = await tx
+      .insert(offers)
+      .values({ ...o, lastSeen: sql`now()` })
+      .onConflictDoUpdate({
+        target: offers.externalId,
+        set: {
+          title: o.title ?? sql`${offers.title}`,
+          price: o.price ?? sql`${offers.price}`,
+          area: o.area ?? sql`${offers.area}`,
+          rooms: o.rooms ?? sql`${offers.rooms}`,
+          url: o.url,
+          district: o.district ?? sql`${offers.district}`,
+          districtCanonical: o.districtCanonical ?? sql`${offers.districtCanonical}`,
+          kind: o.kind ?? sql`${offers.kind}`,
+          features: o.features ?? sql`${offers.features}`,
+          embedding: o.embedding ?? sql`${offers.embedding}`,
+          embedTextHash: o.embedTextHash ?? sql`${offers.embedTextHash}`,
+          description: o.description ?? sql`${offers.description}`,
+          images: o.images ?? sql`${offers.images}`,
+          score: o.score ?? sql`${offers.score}`,
+          scoreReasons: o.scoreReasons ?? sql`${offers.scoreReasons}`,
+          status: "active",
+          lastSeen: sql`now()`,
+        },
+      })
+      .returning({ id: offers.id });
 
-  if (hasTrackedChange(existing, merged)) {
-    const row = (
-      await db.select({ id: offers.id }).from(offers).where(eq(offers.externalId, o.externalId)).limit(1)
-    )[0];
-    if (row) await db.insert(offerSnapshots).values({ offerId: row.id, data: trackedFields(merged) });
-  }
+    if (row && hasTrackedChange(existing, merged)) {
+      await tx.insert(offerSnapshots).values({ offerId: row.id, data: trackedFields(merged) });
+    }
+  });
 }
 
 export async function getOfferHistory(externalId: string): Promise<OfferSnapshot[]> {
