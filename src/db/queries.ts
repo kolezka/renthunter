@@ -97,13 +97,14 @@ export async function markInactive(activeExternalIds: string[]): Promise<void> {
     .where(and(eq(offers.status, "active"), notInArray(offers.externalId, activeExternalIds)));
 }
 
-export async function listOffers(page?: PageParams): Promise<Page<Offer>> {
+export async function listOffers(page?: PageParams): Promise<Page<ListOffer>> {
   // Order + paginate + count in SQL (NOT in JS): the DB only ships the requested
   // page, and the index offers_status_score_idx serves this exact ordering.
+  // listColumns omits the heavy server-only embedding column from the payload.
   // NULLS LAST so unscored offers don't float above scored ones (Postgres defaults NULLS FIRST on DESC).
   // id desc is the final tiebreaker so a row can't drift between page fetches.
   const ordered = db
-    .select()
+    .select(listColumns)
     .from(offers)
     .orderBy(sql`${offers.score} desc nulls last`, desc(offers.lastSeen), desc(offers.id));
   if (!page) {
@@ -175,6 +176,37 @@ export async function updateOfferScore(
 export interface PageParams { limit: number; offset: number }
 export interface Page<T> { items: T[]; total: number }
 
+/** List/search payload projection: every column the client `Offer` type reads, and
+ *  NOTHING the browser never uses. Excludes `embedding` (a large per-row float[] used
+ *  only for server-side cosine ranking) and `embedTextHash` (an internal dedupe key).
+ *  `description` is kept — the client `Offer` shape is shared with the detail view. */
+const listColumns = {
+  id: offers.id,
+  externalId: offers.externalId,
+  title: offers.title,
+  price: offers.price,
+  area: offers.area,
+  rooms: offers.rooms,
+  district: offers.district,
+  kind: offers.kind,
+  districtCanonical: offers.districtCanonical,
+  features: offers.features,
+  source: offers.source,
+  url: offers.url,
+  description: offers.description,
+  images: offers.images,
+  score: offers.score,
+  scoreReasons: offers.scoreReasons,
+  status: offers.status,
+  notified: offers.notified,
+  firstSeen: offers.firstSeen,
+  lastSeen: offers.lastSeen,
+} as const;
+
+/** The row shape returned by the list/search endpoints (full `Offer` minus the
+ *  server-only `embedding`/`embedTextHash` columns). */
+export type ListOffer = { [K in keyof typeof listColumns]: Offer[K & keyof Offer] };
+
 /** A keyword (embedding) search returns at most this many of the most relevant
  *  offers; the chosen sort then orders that relevant subset. */
 const RELEVANCE_LIMIT = 100;
@@ -195,7 +227,7 @@ export interface SearchParams {
   sort?: "score" | "newest" | "price" | "area";
 }
 
-export async function searchOffers(params: SearchParams, page?: PageParams): Promise<Page<Offer>> {
+export async function searchOffers(params: SearchParams, page?: PageParams): Promise<Page<ListOffer>> {
   const conds = [eq(offers.status, "active")];
   if (params.districts?.length) conds.push(inArray(offers.districtCanonical, params.districts));
   if (params.kinds?.length) conds.push(inArray(offers.kind, params.kinds));
@@ -214,7 +246,7 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
   // the requested page instead of every matching row). The embedding branch below
   // still needs all candidate rows in JS to rank them by cosine similarity.
   if (!params.queryEmbedding || !params.queryEmbedding.length) {
-    const ordered = db.select().from(offers).where(where).orderBy(...searchOrderBy(params.sort));
+    const ordered = db.select(listColumns).from(offers).where(where).orderBy(...searchOrderBy(params.sort));
     if (!page) {
       const rows = await ordered;
       return { items: rows, total: rows.length };
@@ -235,7 +267,9 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
   const embeddable = rows.filter((o) => o.embedding && o.embedding.length);
   const ranked = rankByCosine(embeddable, params.queryEmbedding, (o) => o.embedding ?? null);
   const candidates = ranked.slice(0, RELEVANCE_LIMIT);
-  if (!params.sort || params.sort === "score") return paginate(candidates, page);
+  // Strip the server-only embedding column from the payload (the client never reads
+  // it, and it's a large float[] per row). Rank first, project last.
+  if (!params.sort || params.sort === "score") return paginate(candidates.map(toListOffer), page);
 
   const sorted = [...candidates];
   switch (params.sort) {
@@ -243,7 +277,15 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
     case "price": sorted.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || b.id - a.id); break;
     case "area": sorted.sort((a, b) => (b.area ?? -Infinity) - (a.area ?? -Infinity) || b.id - a.id); break;
   }
-  return paginate(sorted, page);
+  return paginate(sorted.map(toListOffer), page);
+}
+
+/** Project a full DB offer row down to the client-facing `ListOffer` shape,
+ *  dropping `embedding`/`embedTextHash` (used only server-side for ranking/dedupe). */
+function toListOffer(o: Offer): ListOffer {
+  const out = {} as Record<string, unknown>;
+  for (const k of Object.keys(listColumns)) out[k] = o[k as keyof Offer];
+  return out as ListOffer;
 }
 
 /** SQL ORDER BY clause matching the JS sort semantics used for the embedding path,
