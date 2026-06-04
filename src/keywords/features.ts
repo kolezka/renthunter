@@ -1,3 +1,34 @@
+import { normalizeText } from "./gazetteer";
+import { FEATURE_TAXONOMY, FEATURE_NOISE } from "../../config/features";
+
+// alias (normalized) -> canonical. Built once from the taxonomy; the canonical
+// is registered as its own alias so already-canonical tags map to themselves.
+const ALIAS_TO_CANON = new Map<string, string>();
+for (const { canonical, aliases } of FEATURE_TAXONOMY) {
+  ALIAS_TO_CANON.set(normalizeText(canonical), canonical);
+  for (const a of aliases) ALIAS_TO_CANON.set(normalizeText(a), canonical);
+}
+
+/**
+ * Snap free-form AI feature tags onto the canonical taxonomy: alias → canonical,
+ * drop non-feature noise (room counts, areas, floors), pass unknown tags through
+ * normalized (lowercased/trimmed) so nothing is lost, dedupe (first wins), cap 12.
+ */
+export function canonicalizeFeatures(raw: string[]): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const t of raw) {
+    const norm = normalizeText(String(t));
+    if (!norm || FEATURE_NOISE.some((re) => re.test(norm))) continue;
+    const canon = ALIAS_TO_CANON.get(norm) ?? String(t).trim().toLowerCase();
+    const key = normalizeText(canon);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(canon);
+  }
+  return out.slice(0, 12);
+}
+
 export interface ExtractFeaturesInput { title: string; description: string; }
 export interface ExtractFeaturesOptions {
   apiKey: string;
@@ -40,7 +71,7 @@ export async function extractFeatures(
   try {
     const parsed = JSON.parse(content);
     const arr = Array.isArray(parsed.features) ? parsed.features : [];
-    return arr.map((f: unknown) => String(f).trim().toLowerCase()).filter(Boolean).slice(0, 12);
+    return canonicalizeFeatures(arr.map((f: unknown) => String(f)));
   } catch {
     return [];
   }

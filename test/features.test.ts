@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { extractFeatures } from "../src/keywords/features";
+import { extractFeatures, canonicalizeFeatures } from "../src/keywords/features";
 
 function mockChat(content: string, ok = true, status = 200) {
   return async () =>
@@ -22,4 +22,30 @@ test("extractFeatures throws on non-OK HTTP", async () => {
   const fetchImpl = mockChat("", false, 500);
   await expect(extractFeatures({ title: "t", description: "d" }, { ...opts, fetchImpl }))
     .rejects.toThrow("DeepSeek HTTP 500");
+});
+
+test("extractFeatures canonicalizes the model output", async () => {
+  const fetchImpl = mockChat(JSON.stringify({ features: ["elevator", "winda", "balcony"] }));
+  expect(await extractFeatures({ title: "t", description: "d" }, { ...opts, fetchImpl }))
+    .toEqual(["winda", "balkon"]);
+});
+
+test("canonicalizeFeatures collapses bilingual + inflected variants to one canonical", () => {
+  expect(canonicalizeFeatures(["elevator", "winda", "windy"])).toEqual(["winda"]);
+  expect(canonicalizeFeatures(["furnished", "umeblowane", "wyposażone"])).toEqual(["umeblowane"]);
+  expect(canonicalizeFeatures(["near the sea", "blisko morza"])).toEqual(["blisko morza"]);
+  expect(canonicalizeFeatures(["miejsce parkingowe", "parking", "miejsce postojowe"])).toEqual(["parking"]);
+});
+
+test("canonicalizeFeatures drops room/area/floor noise", () => {
+  expect(canonicalizeFeatures(["2 pokoje", "51 m²", "5 piętro", "dwupokojowe", "balkon"])).toEqual(["balkon"]);
+});
+
+test("canonicalizeFeatures passes unknown tags through normalized and deduped", () => {
+  expect(canonicalizeFeatures(["Jacuzzi", "jacuzzi", "kominek"])).toEqual(["jacuzzi", "kominek"]);
+});
+
+test("canonicalizeFeatures caps at 12", () => {
+  const many = Array.from({ length: 20 }, (_, i) => `unique-tag-${i}`);
+  expect(canonicalizeFeatures(many).length).toBe(12);
 });
