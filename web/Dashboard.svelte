@@ -57,6 +57,7 @@
   let ws: WebSocket | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   let rescoreSafetyTimer: ReturnType<typeof setTimeout> | null = null;
+  let toastTimer: ReturnType<typeof setTimeout> | null = null;
   let wsRetry = 0;
 
   let facets = $state<Facets>({ districts: [], kinds: [], features: [], sources: [] });
@@ -73,8 +74,9 @@
   function closeDetail() { selected = null; }
 
   function flash(msg: string) {
+    if (toastTimer) clearTimeout(toastTimer);
     toast = msg;
-    setTimeout(() => (toast = ""), 2500);
+    toastTimer = setTimeout(() => (toast = ""), 2500);
   }
 
   async function onRun() {
@@ -190,6 +192,7 @@
   onDestroy(() => {
     if (reconnectTimer) clearTimeout(reconnectTimer);
     if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
+    if (toastTimer) clearTimeout(toastTimer);
     if (ws) { ws.onclose = null; ws.close(); } // null onclose so teardown doesn't reconnect
   });
 

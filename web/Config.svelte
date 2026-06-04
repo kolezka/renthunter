@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { getConfig, saveConfig, type Config } from "./lib/api";
   import SearchUrlList from "./SearchUrlList.svelte";
 
@@ -7,6 +7,7 @@
 
   let cfg: Config | null = $state(null);
   let saved = $state(false);
+  let savedTimer: ReturnType<typeof setTimeout> | null = null;
   let error = $state("");
   let appriseText = $state("");
 
@@ -26,6 +27,8 @@
     appriseText = cfg.appriseUrls.join("\n");
   });
 
+  onDestroy(() => { if (savedTimer) clearTimeout(savedTimer); });
+
   async function submit(e: Event) {
     e.preventDefault();
     if (!cfg) return;
@@ -40,8 +43,9 @@
     try {
       cfg = await saveConfig(patch);
       appriseText = cfg.appriseUrls.join("\n");
+      if (savedTimer) clearTimeout(savedTimer);
       saved = true;
-      setTimeout(() => (saved = false), 1500);
+      savedTimer = setTimeout(() => (saved = false), 1500);
     } catch (err) {
       // Validation rejection (e.g. cleared threshold/interval, bad searchUrl) — keep
       // the form state intact and tell the user what was wrong.

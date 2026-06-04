@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onDestroy } from "svelte";
   import { SOURCE_LABEL, type Facets, type SearchQuery } from "./lib/api";
   let { facets, onChange }: { facets: Facets; onChange: (q: SearchQuery) => void } = $props();
 
@@ -18,6 +19,7 @@
     if (debounce) clearTimeout(debounce);
     debounce = setTimeout(emit, 300);
   }
+  onDestroy(() => { if (debounce) clearTimeout(debounce); });
   const chip = (on: boolean) =>
     `rounded-full border px-[12px] py-[5px] text-[0.8rem] font-semibold transition-colors ${on
       ? "border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] text-ink shadow-[var(--inset-sheen)]"
