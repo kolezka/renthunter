@@ -11,15 +11,8 @@
     refreshing?: boolean;
   } = $props();
 
-  // Same scaffolding as the Config modal: freeze the aurora + lock scroll while open.
-  $effect(() => {
-    document.body.style.overflow = "hidden";
-    document.documentElement.classList.add("modal-open");
-    return () => {
-      document.body.style.overflow = "";
-      document.documentElement.classList.remove("modal-open");
-    };
-  });
+  // Scroll-lock + aurora freeze are owned by App (it locks while any modal is
+  // open), so this component no longer touches document.body.
 
   const tagCls = "rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.8rem] font-medium text-ink-2";
 </script>

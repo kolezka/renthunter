@@ -7,6 +7,10 @@
   import VirtualList from "./VirtualList.svelte";
   import type { Page } from "./lib/api";
 
+  // App owns the body scroll-lock for all modals; we report our offer-detail
+  // open state up via this $bindable so it can lock/unlock in one place.
+  let { detailOpen = $bindable(false) }: { detailOpen?: boolean } = $props();
+
   let offers: Offer[] = $state([]);
   let total = $state(0);
   let loadingMore = $state(false);
@@ -72,6 +76,8 @@
     SOURCE_CLASS[s] ?? "border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2";
   function openDetail(o: Offer) { selected = o; }
   function closeDetail() { selected = null; }
+  // Mirror the offer-detail open state up to App, which owns the scroll-lock.
+  $effect(() => { detailOpen = selected !== null; });
 
   function flash(msg: string) {
     if (toastTimer) clearTimeout(toastTimer);

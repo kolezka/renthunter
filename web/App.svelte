@@ -4,18 +4,23 @@
   import Logs from "./Logs.svelte";
 
   let configOpen = $state(false);
+  // Set by Dashboard via $bindable when an offer detail modal is open, so App
+  // can own the body scroll-lock for every modal in one place.
+  let detailOpen = $state(false);
   let view: "dashboard" | "logs" = $state("dashboard");
   const close = () => (configOpen = false);
 
-  // Lock background scroll + freeze the aurora animation while the modal is
-  // open (the `modal-open` class pauses the backdrop so its blur is cheap).
+  // Single owner of the background scroll-lock + aurora freeze. Locks whenever
+  // ANY modal (settings or offer detail) is open; the `modal-open` class pauses
+  // the backdrop so its blur stays cheap. Owning it here prevents one modal
+  // closing from clearing the lock while another is still open.
   $effect(() => {
-    const open = configOpen;
-    document.body.style.overflow = open ? "hidden" : "";
-    document.documentElement.classList.toggle("modal-open", open);
+    const locked = configOpen || detailOpen;
+    document.body.style.overflow = locked ? "hidden" : "";
+    document.body.classList.toggle("modal-open", locked);
     return () => {
       document.body.style.overflow = "";
-      document.documentElement.classList.remove("modal-open");
+      document.body.classList.remove("modal-open");
     };
   });
 </script>
@@ -67,7 +72,7 @@
 
   <main class="animate-rise">
     {#if view === "dashboard"}
-      <Dashboard />
+      <Dashboard bind:detailOpen />
     {:else}
       <Logs />
     {/if}
