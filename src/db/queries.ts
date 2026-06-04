@@ -1,4 +1,5 @@
 import { eq, notInArray, sql, desc, lt, and, isNotNull, asc, inArray } from "drizzle-orm";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { db } from "./client";
 import { offers, config, logs, runLock, offerSnapshots, type Config, type NewOffer, type Offer, type LogRow, type OfferSnapshot } from "./schema";
 import { hasTrackedChange, trackedFields } from "./snapshot";
@@ -300,18 +301,31 @@ function searchOrderBy(sort: SearchParams["sort"]) {
 }
 
 export async function getFacets(): Promise<{ districts: string[]; kinds: string[]; features: string[]; sources: string[] }> {
-  const rows = await db
-    .select({ districtCanonical: offers.districtCanonical, kind: offers.kind, features: offers.features, source: offers.source })
-    .from(offers)
-    .where(eq(offers.status, "active"));
-  const districts = new Set<string>(), kinds = new Set<string>(), features = new Set<string>(), sources = new Set<string>();
-  for (const r of rows) {
-    if (r.districtCanonical) districts.add(r.districtCanonical);
-    if (r.kind) kinds.add(r.kind);
-    if (r.source) sources.add(r.source);
-    for (const f of r.features ?? []) features.add(f);
-  }
-  return { districts: [...districts], kinds: [...kinds], features: [...features], sources: [...sources] };
+  // SELECT DISTINCT for the scalar facets so the DB collapses duplicates instead of
+  // us pulling every active row's column and de-duping in JS. Features is a text[]
+  // column, so we unnest it to one row per element and DISTINCT that server-side.
+  const active = eq(offers.status, "active");
+  const distinct = (col: AnyPgColumn): Promise<{ v: string | null }[]> =>
+    db.selectDistinct({ v: col }).from(offers).where(and(active, isNotNull(col)));
+  const [districtRows, kindRows, sourceRows, featureResult] = await Promise.all([
+    distinct(offers.districtCanonical),
+    distinct(offers.kind),
+    distinct(offers.source),
+    db.execute(sql`
+      SELECT DISTINCT unnest(${offers.features}) AS v
+      FROM ${offers}
+      WHERE ${active}
+    `),
+  ]);
+  // Driver envelope differs: postgres-js returns a bare row array, drizzle-pglite
+  // returns { rows: [...] }. Normalize before reading.
+  const featureRows = (Array.isArray(featureResult) ? featureResult : (featureResult as { rows?: unknown[] }).rows ?? []) as { v: string | null }[];
+  return {
+    districts: districtRows.map((r) => r.v).filter((v): v is string => v != null),
+    kinds: kindRows.map((r) => r.v).filter((v): v is string => v != null),
+    sources: sourceRows.map((r) => r.v).filter((v): v is string => v != null),
+    features: featureRows.map((r) => r.v).filter((v): v is string => v != null),
+  };
 }
 
 /**
