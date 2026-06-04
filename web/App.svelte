@@ -50,9 +50,11 @@
       <div class="flex gap-1 rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] p-1" role="group" aria-label="View">
         <button
           class="cursor-pointer rounded-full px-4 py-[6px] text-[0.85rem] transition-colors {view === 'dashboard' ? 'bg-[var(--glass-fill-strong)] text-ink' : 'text-ink-3 hover:text-ink'}"
+          aria-pressed={view === "dashboard"}
           onclick={() => (view = "dashboard")}>Offers</button>
         <button
           class="cursor-pointer rounded-full px-4 py-[6px] text-[0.85rem] transition-colors {view === 'logs' ? 'bg-[var(--glass-fill-strong)] text-ink' : 'text-ink-3 hover:text-ink'}"
+          aria-pressed={view === "logs"}
           onclick={() => (view = "logs")}>Logs</button>
       </div>
 

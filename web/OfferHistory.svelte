@@ -44,7 +44,7 @@
   </section>
 {:else if loaded && snaps.length > 1}
   <section class="mb-4 rounded-[16px] border border-[var(--glass-border)] bg-white/[0.04] p-4">
-    <h3 class="m-0 mb-3 font-display text-[0.95rem] font-bold text-ink-2">Historia zmian</h3>
+    <h3 class="m-0 mb-3 font-display text-[0.95rem] font-bold text-ink-2">Change history</h3>
     {#if prices.length > 1}
       <svg viewBox="0 0 320 64" preserveAspectRatio="none" class="mb-3 h-[64px] w-full">
         <polyline points={points(prices)} fill="none" stroke="var(--color-aurora-indigo, #7dd3fc)" stroke-width="2" />
