@@ -85,22 +85,6 @@
     aria-label="Settings"
     onclick={(e) => e.target === e.currentTarget && close()}
   >
-    <div class="relative my-auto w-full max-w-[720px] rounded-[var(--radius-glass)] border border-[var(--glass-border)] bg-[rgba(14,19,34,0.92)] p-6 shadow-[var(--shadow-lift),var(--inset-sheen)] animate-pop sm:p-8">
-      <header class="mb-5 flex items-start justify-between gap-4">
-        <div>
-          <h2 class="m-0 font-display text-[1.5rem] font-extrabold tracking-[-0.02em]">Settings</h2>
-          <p class="m-0 text-[0.9rem] text-ink-3">Monitor and notification parameters.</p>
-        </div>
-        <button
-          class="grid h-9 w-9 flex-shrink-0 cursor-pointer place-items-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2 transition-colors duration-200 hover:bg-[var(--glass-fill-strong)] hover:text-ink"
-          onclick={close}
-          aria-label="Close"
-        >
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
-        </button>
-      </header>
-
-      <Config />
-    </div>
+    <Config onClose={close} />
   </div>
 {/if}
