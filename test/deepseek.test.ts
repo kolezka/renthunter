@@ -27,11 +27,11 @@ test("scoreOffer clamps score to 0-100", async () => {
   expect(r.score).toBe(100);
 });
 
-test("scoreOffer handles non-JSON content gracefully", async () => {
-  const r = await scoreOffer(
-    { description: "x", criteria: "y" },
-    { ...opts, fetchImpl: fakeFetch("nonsense") },
-  );
-  expect(r.score).toBe(0);
-  expect(r.reasons).toContain("parse");
+test("scoreOffer throws on non-JSON content (no fabricated score 0)", async () => {
+  await expect(
+    scoreOffer(
+      { description: "x", criteria: "y" },
+      { ...opts, fetchImpl: fakeFetch("nonsense") },
+    ),
+  ).rejects.toThrow();
 });
