@@ -6,7 +6,14 @@
 
   let snaps = $state<OfferSnapshot[]>([]);
   let loaded = $state(false);
-  onMount(async () => { snaps = await getOfferHistory(externalId); loaded = true; });
+  let error = $state("");
+  onMount(() => {
+    const ctl = new AbortController();
+    getOfferHistory(externalId, ctl.signal)
+      .then((s) => { snaps = s; loaded = true; })
+      .catch((e) => { if (!ctl.signal.aborted) { error = (e as Error).message; loaded = true; } });
+    return () => ctl.abort();
+  });
 
   const prices = $derived(
     snaps.map((s) => Number((s.data as any).price)).filter((n) => Number.isFinite(n)),
@@ -31,7 +38,11 @@
   });
 </script>
 
-{#if loaded && snaps.length > 1}
+{#if error}
+  <section class="mb-4 rounded-[16px] border border-[var(--glass-border)] bg-white/[0.04] p-4">
+    <p class="m-0 text-sm text-red-400">Failed to load history.</p>
+  </section>
+{:else if loaded && snaps.length > 1}
   <section class="mb-4 rounded-[16px] border border-[var(--glass-border)] bg-white/[0.04] p-4">
     <h3 class="m-0 mb-3 font-display text-[0.95rem] font-bold text-ink-2">Historia zmian</h3>
     {#if prices.length > 1}
