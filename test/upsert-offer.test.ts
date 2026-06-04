@@ -11,6 +11,7 @@ beforeEach(async () => { await db.delete(offerSnapshots); await db.delete(offers
 test("first upsert inserts the offer and records the initial snapshot", async () => {
   await upsertOffer({ externalId: "e1", url: "https://x/e1", source: "olx", price: 1000 });
   const [o] = await db.select().from(offers).where(eq(offers.externalId, "e1"));
+  if (!o) throw new Error("offer not found");
   expect(o.price).toBe(1000);
   expect((await db.select().from(offerSnapshots).where(eq(offerSnapshots.offerId, o.id))).length).toBe(1);
 });
@@ -18,12 +19,14 @@ test("no-op re-upsert does not add a snapshot", async () => {
   await upsertOffer({ externalId: "e1", url: "https://x/e1", source: "olx", price: 1000 });
   await upsertOffer({ externalId: "e1", url: "https://x/e1", source: "olx", price: 1000 });
   const [o] = await db.select().from(offers).where(eq(offers.externalId, "e1"));
+  if (!o) throw new Error("offer not found");
   expect((await db.select().from(offerSnapshots).where(eq(offerSnapshots.offerId, o.id))).length).toBe(1);
 });
 test("price change records another snapshot", async () => {
   await upsertOffer({ externalId: "e1", url: "https://x/e1", source: "olx", price: 1000 });
   await upsertOffer({ externalId: "e1", url: "https://x/e1", source: "olx", price: 1200 });
   const [o] = await db.select().from(offers).where(eq(offers.externalId, "e1"));
+  if (!o) throw new Error("offer not found");
   expect(o.price).toBe(1200);
   expect((await db.select().from(offerSnapshots).where(eq(offerSnapshots.offerId, o.id))).length).toBe(2);
 });
