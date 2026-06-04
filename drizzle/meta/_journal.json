@@ -57,6 +57,13 @@
       "when": 1780790400000,
       "tag": "0007_rescore_interval",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1780876800000,
+      "tag": "0008_review_indexes",
+      "breakpoints": true
     }
   ]
 }

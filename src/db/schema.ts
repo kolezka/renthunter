@@ -1,5 +1,5 @@
 import {
-  pgTable, serial, integer, text, doublePrecision, real, boolean, timestamp, jsonb,
+  pgTable, serial, integer, text, doublePrecision, real, boolean, timestamp, jsonb, index,
 } from "drizzle-orm/pg-core";
 
 export const offers = pgTable("offers", {
@@ -25,7 +25,10 @@ export const offers = pgTable("offers", {
   notified: boolean("notified").notNull().default(false),
   firstSeen: timestamp("first_seen", { withTimezone: true }).notNull().defaultNow(),
   lastSeen: timestamp("last_seen", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => ({
+  statusIdx: index("offers_status_idx").on(t.status),
+  statusScoreIdx: index("offers_status_score_idx").on(t.status, t.score.desc(), t.lastSeen.desc(), t.id.desc()),
+}));
 
 export const config = pgTable("config", {
   id: integer("id").primaryKey().default(1),
@@ -65,7 +68,9 @@ export const logs = pgTable("logs", {
   event: text("event").notNull(),
   message: text("message").notNull().default(""),
   context: jsonb("context"),
-});
+}, (t) => ({
+  tsIdx: index("logs_ts_idx").on(t.ts.desc(), t.id.desc()),
+}));
 
 export type LogRow = typeof logs.$inferSelect;
 export type NewLogRow = typeof logs.$inferInsert;
@@ -84,7 +89,9 @@ export const offerSnapshots = pgTable("offer_snapshots", {
   offerId: integer("offer_id").notNull().references(() => offers.id, { onDelete: "cascade" }),
   capturedAt: timestamp("captured_at", { withTimezone: true }).notNull().defaultNow(),
   data: jsonb("data").notNull(),
-});
+}, (t) => ({
+  offerIdIdx: index("offer_snapshots_offer_id_idx").on(t.offerId, t.id),
+}));
 
 export type OfferSnapshot = typeof offerSnapshots.$inferSelect;
 export type NewOfferSnapshot = typeof offerSnapshots.$inferInsert;
