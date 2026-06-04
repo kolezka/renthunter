@@ -98,13 +98,23 @@ export async function markInactive(activeExternalIds: string[]): Promise<void> {
 }
 
 export async function listOffers(page?: PageParams): Promise<Page<Offer>> {
+  // Order + paginate + count in SQL (NOT in JS): the DB only ships the requested
+  // page, and the index offers_status_score_idx serves this exact ordering.
   // NULLS LAST so unscored offers don't float above scored ones (Postgres defaults NULLS FIRST on DESC).
   // id desc is the final tiebreaker so a row can't drift between page fetches.
-  const rows = await db
+  const ordered = db
     .select()
     .from(offers)
     .orderBy(sql`${offers.score} desc nulls last`, desc(offers.lastSeen), desc(offers.id));
-  return paginate(rows, page);
+  if (!page) {
+    const rows = await ordered;
+    return { items: rows, total: rows.length };
+  }
+  const [items, [countRow]] = await Promise.all([
+    ordered.limit(page.limit).offset(page.offset),
+    db.select({ count: sql<number>`count(*)::int` }).from(offers),
+  ]);
+  return { items, total: countRow?.count ?? 0 };
 }
 
 export async function appendLog(entry: {
@@ -198,29 +208,53 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
     conds.push(sql`${offers.features} @> ${pgLiteral}::text[]`);
   }
 
-  // Deterministic base order so JS sorts (stable in ES2019+) and cosine tie-breaks are reproducible across pages.
-  const rows = await db.select().from(offers).where(and(...conds)).orderBy(desc(offers.id));
+  const where = and(...conds);
+
+  // No query embedding: order + paginate + count entirely in SQL (the DB ships only
+  // the requested page instead of every matching row). The embedding branch below
+  // still needs all candidate rows in JS to rank them by cosine similarity.
+  if (!params.queryEmbedding || !params.queryEmbedding.length) {
+    const ordered = db.select().from(offers).where(where).orderBy(...searchOrderBy(params.sort));
+    if (!page) {
+      const rows = await ordered;
+      return { items: rows, total: rows.length };
+    }
+    const [items, [countRow]] = await Promise.all([
+      ordered.limit(page.limit).offset(page.offset),
+      db.select({ count: sql<number>`count(*)::int` }).from(offers).where(where),
+    ]);
+    return { items, total: countRow?.count ?? 0 };
+  }
 
   // Keyword (embedding) search narrows to the most semantically relevant offers:
   // rank embeddable offers by cosine and keep the top RELEVANCE_LIMIT as the candidate
   // set. "Relevance" (score / default) returns them in relevance order; an explicit
   // newest/price/area sort then reorders that relevant subset (see switch below).
-  let candidates = rows;
-  if (params.queryEmbedding && params.queryEmbedding.length) {
-    const embeddable = rows.filter((o) => o.embedding && o.embedding.length);
-    const ranked = rankByCosine(embeddable, params.queryEmbedding, (o) => o.embedding ?? null);
-    candidates = ranked.slice(0, RELEVANCE_LIMIT);
-    if (!params.sort || params.sort === "score") return paginate(candidates, page);
-  }
+  // Deterministic base order so JS sorts (stable in ES2019+) and cosine tie-breaks are reproducible across pages.
+  const rows = await db.select().from(offers).where(where).orderBy(desc(offers.id));
+  const embeddable = rows.filter((o) => o.embedding && o.embedding.length);
+  const ranked = rankByCosine(embeddable, params.queryEmbedding, (o) => o.embedding ?? null);
+  const candidates = ranked.slice(0, RELEVANCE_LIMIT);
+  if (!params.sort || params.sort === "score") return paginate(candidates, page);
 
   const sorted = [...candidates];
   switch (params.sort) {
     case "newest": sorted.sort((a, b) => +new Date(b.firstSeen) - +new Date(a.firstSeen) || b.id - a.id); break;
     case "price": sorted.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || b.id - a.id); break;
     case "area": sorted.sort((a, b) => (b.area ?? -Infinity) - (a.area ?? -Infinity) || b.id - a.id); break;
-    default: sorted.sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || +new Date(b.lastSeen) - +new Date(a.lastSeen) || b.id - a.id);
   }
   return paginate(sorted, page);
+}
+
+/** SQL ORDER BY clause matching the JS sort semantics used for the embedding path,
+ *  so the two search branches order identically. id desc is the final tiebreaker. */
+function searchOrderBy(sort: SearchParams["sort"]) {
+  switch (sort) {
+    case "newest": return [desc(offers.firstSeen), desc(offers.id)];
+    case "price": return [sql`${offers.price} asc nulls last`, desc(offers.id)];
+    case "area": return [sql`${offers.area} desc nulls last`, desc(offers.id)];
+    default: return [sql`${offers.score} desc nulls last`, desc(offers.lastSeen), desc(offers.id)];
+  }
 }
 
 export async function getFacets(): Promise<{ districts: string[]; kinds: string[]; features: string[]; sources: string[] }> {
