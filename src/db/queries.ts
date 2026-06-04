@@ -99,8 +99,12 @@ export async function markInactive(activeExternalIds: string[]): Promise<void> {
 }
 
 export async function listOffers(page?: PageParams): Promise<Page<ListOffer>> {
-  // Order + paginate + count in SQL (NOT in JS): the DB only ships the requested
-  // page, and the index offers_status_score_idx serves this exact ordering.
+  // Returns offers of ALL statuses (active + inactive) by design — the dashboard
+  // renders a per-row status badge and relies on inactive rows still showing up.
+  // There is no `WHERE status=` predicate, so the status-leading
+  // offers_status_score_idx does NOT serve this query (that index primarily
+  // benefits searchOffers, which filters status=active). Order + paginate + count
+  // happen in SQL (NOT in JS) so the DB only ships the requested page.
   // listColumns omits the heavy server-only embedding column from the payload.
   // NULLS LAST so unscored offers don't float above scored ones (Postgres defaults NULLS FIRST on DESC).
   // id desc is the final tiebreaker so a row can't drift between page fetches.

@@ -27,7 +27,7 @@ export const offers = pgTable("offers", {
   lastSeen: timestamp("last_seen", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({
   statusIdx: index("offers_status_idx").on(t.status),
-  statusScoreIdx: index("offers_status_score_idx").on(t.status, t.score.desc(), t.lastSeen.desc(), t.id.desc()),
+  statusScoreIdx: index("offers_status_score_idx").on(t.status, t.score.desc().nullsLast(), t.lastSeen.desc(), t.id.desc()),
 }));
 
 export const config = pgTable("config", {
