@@ -74,10 +74,11 @@
   const sourceLabel = (s: string) => SOURCE_LABEL[s] ?? s;
   const sourceClass = (s: string) =>
     SOURCE_CLASS[s] ?? "border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2";
-  function openDetail(o: Offer) { selected = o; }
-  function closeDetail() { selected = null; }
-  // Mirror the offer-detail open state up to App, which owns the scroll-lock.
-  $effect(() => { detailOpen = selected !== null; });
+  // Set detailOpen alongside `selected` (not via $effect) so App's scroll-lock
+  // reacts in the same tick. Refresh/rescore reassign `selected` only when it's
+  // already non-null, so detailOpen stays correct without touching those paths.
+  function openDetail(o: Offer) { selected = o; detailOpen = true; }
+  function closeDetail() { selected = null; detailOpen = false; }
 
   function flash(msg: string) {
     if (toastTimer) clearTimeout(toastTimer);

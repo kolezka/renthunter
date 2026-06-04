@@ -55,7 +55,7 @@
         <li class="flex items-start gap-[10px] border-t border-white/[0.07] py-[9px] text-[0.85rem]">
           <span class="rounded-[6px] border border-[var(--glass-border)] px-[7px] py-[1px] text-[0.66rem] uppercase tracking-[0.05em] text-ink-3">{c.field}</span>
           <span class="text-ink-2">
-            {#if c.field === "description"}zmieniono opis{:else}<span class="text-[#f0a4a4] line-through">{String(c.from ?? "–")}</span> → <span class="font-semibold text-[#9be3b0]">{String(c.to ?? "–")}</span>{/if}
+            {#if c.field === "description"}description changed{:else}<span class="text-[#f0a4a4] line-through">{String(c.from ?? "–")}</span> → <span class="font-semibold text-[#9be3b0]">{String(c.to ?? "–")}</span>{/if}
           </span>
           <span class="ml-auto whitespace-nowrap text-[0.72rem] text-ink-3">{relativeDate(c.at)}</span>
         </li>

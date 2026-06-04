@@ -19,6 +19,13 @@
   function go(n: number) { if ((images ?? []).length) idx = nextLive(n); }
 </script>
 
+<!-- Known minor limitation: these arrow-key handlers stay live even if the
+     Settings modal is somehow opened on top of an open OfferDetail, advancing
+     the hidden gallery. The normal path is unreachable — the OfferDetail
+     backdrop (fixed inset-0 z-50) covers the settings button, so it can't be
+     clicked while a detail is open. Only a keyboard-focus + Enter on the
+     covered button could trigger it. Deferred (would need an `active` prop
+     threaded App→Dashboard→OfferDetail→Gallery for a negligible edge case). -->
 <svelte:window onkeydown={(e) => { if (e.key === "ArrowRight") go(idx + 1); if (e.key === "ArrowLeft") go(idx - 1); }} />
 
 {#if (images ?? []).length}
