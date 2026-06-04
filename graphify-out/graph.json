@@ -156,22 +156,22 @@
       "norm_label": "searchurllist.svelte"
     },
     {
-      "label": "cands",
+      "label": "k",
       "file_type": "code",
       "source_file": "web/SearchUrlList.svelte",
-      "source_location": "L40",
-      "id": "web_searchurllist_cands",
+      "source_location": "L68",
+      "id": "web_searchurllist_k",
       "community": 298,
-      "norm_label": "cands"
+      "norm_label": "k"
     },
     {
-      "label": "res",
+      "label": "p",
       "file_type": "code",
       "source_file": "web/SearchUrlList.svelte",
-      "source_location": "L42",
-      "id": "web_searchurllist_res",
+      "source_location": "L69",
+      "id": "web_searchurllist_p",
       "community": 298,
-      "norm_label": "res"
+      "norm_label": "p"
     },
     {
       "label": "./lib/api",
@@ -1537,7 +1537,7 @@
       "file_type": "code",
       "source_file": "test/snapshot.test.ts",
       "source_location": "L1",
-      "community": 82,
+      "community": 14,
       "norm_label": "snapshot.test.ts",
       "id": "test_snapshot_test_ts"
     },
@@ -1546,7 +1546,7 @@
       "file_type": "code",
       "source_file": "test/snapshot.test.ts",
       "source_location": "L4",
-      "community": 82,
+      "community": 14,
       "norm_label": "base",
       "id": "test_snapshot_test_base"
     },
@@ -1555,7 +1555,7 @@
       "file_type": "code",
       "source_file": "test/snapshot.test.ts",
       "source_location": "L23",
-      "community": 82,
+      "community": 14,
       "norm_label": "snap",
       "id": "test_snapshot_test_snap"
     },
@@ -2849,7 +2849,7 @@
       "file_type": "code",
       "source_file": "scripts/backfill-features.ts",
       "source_location": "L1",
-      "community": 14,
+      "community": 13,
       "norm_label": "backfill-features.ts",
       "id": "scripts_backfill_features_ts"
     },
@@ -2858,7 +2858,7 @@
       "file_type": "code",
       "source_file": "scripts/backfill-features.ts",
       "source_location": "L23",
-      "community": 14,
+      "community": 13,
       "norm_label": "next",
       "id": "scripts_backfill_features_next"
     },
@@ -3668,7 +3668,7 @@
       "file_type": "code",
       "source_file": "src/pipeline/deps.ts",
       "source_location": "L40",
-      "community": 13,
+      "community": 17,
       "norm_label": "buildrefreshdeps()",
       "id": "pipeline_deps_buildrefreshdeps"
     },
@@ -3749,7 +3749,7 @@
       "file_type": "code",
       "source_file": "src/embeddings/embedText.ts",
       "source_location": "L20",
-      "community": 173,
+      "community": 184,
       "norm_label": "embedtexthash()",
       "id": "embeddings_embedtext_embedtexthash"
     },
@@ -3965,7 +3965,7 @@
       "file_type": "code",
       "source_file": "src/db/snapshot.ts",
       "source_location": "L1",
-      "community": 82,
+      "community": 14,
       "norm_label": "snapshot.ts",
       "id": "src_db_snapshot_ts"
     },
@@ -3974,7 +3974,7 @@
       "file_type": "code",
       "source_file": "src/db/snapshot.ts",
       "source_location": "L1",
-      "community": 82,
+      "community": 14,
       "norm_label": "tracked_keys",
       "id": "db_snapshot_tracked_keys"
     },
@@ -3983,7 +3983,7 @@
       "file_type": "code",
       "source_file": "src/db/snapshot.ts",
       "source_location": "L6",
-      "community": 82,
+      "community": 14,
       "norm_label": "trackedsnapshot",
       "id": "db_snapshot_trackedsnapshot"
     },
@@ -3992,7 +3992,7 @@
       "file_type": "code",
       "source_file": "src/db/snapshot.ts",
       "source_location": "L8",
-      "community": 82,
+      "community": 14,
       "norm_label": "trackedfields()",
       "id": "db_snapshot_trackedfields"
     },
@@ -4010,7 +4010,7 @@
       "file_type": "code",
       "source_file": "src/db/snapshot.ts",
       "source_location": "L23",
-      "community": 82,
+      "community": 14,
       "norm_label": "hastrackedchange()",
       "id": "db_snapshot_hastrackedchange"
     },
@@ -4235,7 +4235,7 @@
       "file_type": "code",
       "source_file": "src/db/client.ts",
       "source_location": "L1",
-      "community": 14,
+      "community": 13,
       "norm_label": "client.ts",
       "id": "src_db_client_ts"
     },
@@ -4262,7 +4262,7 @@
       "file_type": "code",
       "source_file": "src/db/client.ts",
       "source_location": "L16",
-      "community": 14,
+      "community": 13,
       "norm_label": "getdb()",
       "id": "db_client_getdb"
     },
@@ -4469,7 +4469,7 @@
       "file_type": "code",
       "source_file": "src/log/logger.ts",
       "source_location": "L22",
-      "community": 13,
+      "community": 85,
       "norm_label": "dblogger",
       "id": "log_logger_dblogger"
     },
@@ -4550,7 +4550,7 @@
       "file_type": "code",
       "source_file": "src/log/logger.ts",
       "source_location": "L94",
-      "community": 13,
+      "community": 85,
       "norm_label": "createrunlogger()",
       "id": "log_logger_createrunlogger"
     },
@@ -4658,7 +4658,7 @@
       "file_type": "code",
       "source_file": "src/keywords/features.ts",
       "source_location": "L20",
-      "community": 14,
+      "community": 13,
       "norm_label": "canonicalizefeatures()",
       "id": "keywords_features_canonicalizefeatures"
     },
@@ -9932,7 +9932,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L256",
-      "community": 68,
+      "community": 300,
       "norm_label": "score",
       "id": "meta_0003_snapshot_columns_score"
     },
@@ -9941,7 +9941,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L257",
-      "community": 68,
+      "community": 300,
       "norm_label": "name",
       "id": "meta_0003_snapshot_score_name"
     },
@@ -9950,7 +9950,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L258",
-      "community": 68,
+      "community": 300,
       "norm_label": "type",
       "id": "meta_0003_snapshot_score_type"
     },
@@ -9959,7 +9959,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L259",
-      "community": 68,
+      "community": 300,
       "norm_label": "primarykey",
       "id": "meta_0003_snapshot_score_primarykey"
     },
@@ -9968,7 +9968,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L260",
-      "community": 68,
+      "community": 300,
       "norm_label": "notnull",
       "id": "meta_0003_snapshot_score_notnull"
     },
@@ -9977,7 +9977,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L262",
-      "community": 272,
+      "community": 68,
       "norm_label": "score_reasons",
       "id": "meta_0003_snapshot_columns_score_reasons"
     },
@@ -9986,7 +9986,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L263",
-      "community": 272,
+      "community": 68,
       "norm_label": "name",
       "id": "meta_0003_snapshot_score_reasons_name"
     },
@@ -9995,7 +9995,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L264",
-      "community": 272,
+      "community": 68,
       "norm_label": "type",
       "id": "meta_0003_snapshot_score_reasons_type"
     },
@@ -10004,7 +10004,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L265",
-      "community": 272,
+      "community": 68,
       "norm_label": "primarykey",
       "id": "meta_0003_snapshot_score_reasons_primarykey"
     },
@@ -10013,7 +10013,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0003_snapshot.json",
       "source_location": "L266",
-      "community": 272,
+      "community": 68,
       "norm_label": "notnull",
       "id": "meta_0003_snapshot_score_reasons_notnull"
     },
@@ -10751,7 +10751,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L11",
-      "community": 26,
+      "community": 133,
       "norm_label": "id",
       "id": "meta_0004_snapshot_columns_id"
     },
@@ -10760,7 +10760,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L12",
-      "community": 26,
+      "community": 133,
       "norm_label": "name",
       "id": "meta_0004_snapshot_id_name"
     },
@@ -11183,7 +11183,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L68",
-      "community": 95,
+      "community": 214,
       "norm_label": "score_threshold",
       "id": "meta_0004_snapshot_columns_score_threshold"
     },
@@ -11192,7 +11192,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L69",
-      "community": 95,
+      "community": 214,
       "norm_label": "name",
       "id": "meta_0004_snapshot_score_threshold_name"
     },
@@ -11201,7 +11201,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L70",
-      "community": 95,
+      "community": 214,
       "norm_label": "type",
       "id": "meta_0004_snapshot_score_threshold_type"
     },
@@ -11210,7 +11210,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L71",
-      "community": 95,
+      "community": 214,
       "norm_label": "primarykey",
       "id": "meta_0004_snapshot_score_threshold_primarykey"
     },
@@ -11219,7 +11219,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L72",
-      "community": 95,
+      "community": 214,
       "norm_label": "notnull",
       "id": "meta_0004_snapshot_score_threshold_notnull"
     },
@@ -11228,7 +11228,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L73",
-      "community": 95,
+      "community": 214,
       "norm_label": "default",
       "id": "meta_0004_snapshot_score_threshold_default"
     },
@@ -11399,7 +11399,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L96",
-      "community": 229,
+      "community": 132,
       "norm_label": "list_pages",
       "id": "meta_0004_snapshot_columns_list_pages"
     },
@@ -11408,7 +11408,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L97",
-      "community": 229,
+      "community": 132,
       "norm_label": "name",
       "id": "meta_0004_snapshot_list_pages_name"
     },
@@ -11417,7 +11417,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L98",
-      "community": 229,
+      "community": 132,
       "norm_label": "type",
       "id": "meta_0004_snapshot_list_pages_type"
     },
@@ -11426,7 +11426,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L99",
-      "community": 229,
+      "community": 132,
       "norm_label": "primarykey",
       "id": "meta_0004_snapshot_list_pages_primarykey"
     },
@@ -11435,7 +11435,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L100",
-      "community": 229,
+      "community": 132,
       "norm_label": "notnull",
       "id": "meta_0004_snapshot_list_pages_notnull"
     },
@@ -11444,7 +11444,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L101",
-      "community": 229,
+      "community": 132,
       "norm_label": "default",
       "id": "meta_0004_snapshot_list_pages_default"
     },
@@ -12146,7 +12146,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L206",
-      "community": 132,
+      "community": 229,
       "norm_label": "title",
       "id": "meta_0004_snapshot_columns_title"
     },
@@ -12155,7 +12155,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L207",
-      "community": 132,
+      "community": 229,
       "norm_label": "name",
       "id": "meta_0004_snapshot_title_name"
     },
@@ -12164,7 +12164,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L208",
-      "community": 132,
+      "community": 229,
       "norm_label": "type",
       "id": "meta_0004_snapshot_title_type"
     },
@@ -12173,7 +12173,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L209",
-      "community": 132,
+      "community": 229,
       "norm_label": "primarykey",
       "id": "meta_0004_snapshot_title_primarykey"
     },
@@ -12182,7 +12182,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L210",
-      "community": 132,
+      "community": 229,
       "norm_label": "notnull",
       "id": "meta_0004_snapshot_title_notnull"
     },
@@ -12191,7 +12191,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L211",
-      "community": 132,
+      "community": 229,
       "norm_label": "default",
       "id": "meta_0004_snapshot_title_default"
     },
@@ -12380,7 +12380,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L237",
-      "community": 26,
+      "community": 133,
       "norm_label": "source",
       "id": "meta_0004_snapshot_columns_source"
     },
@@ -12389,7 +12389,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L238",
-      "community": 26,
+      "community": 133,
       "norm_label": "name",
       "id": "meta_0004_snapshot_source_name"
     },
@@ -12398,7 +12398,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L239",
-      "community": 26,
+      "community": 133,
       "norm_label": "type",
       "id": "meta_0004_snapshot_source_type"
     },
@@ -12407,7 +12407,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L240",
-      "community": 26,
+      "community": 133,
       "norm_label": "primarykey",
       "id": "meta_0004_snapshot_source_primarykey"
     },
@@ -12416,7 +12416,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L241",
-      "community": 26,
+      "community": 133,
       "norm_label": "notnull",
       "id": "meta_0004_snapshot_source_notnull"
     },
@@ -12425,7 +12425,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L242",
-      "community": 26,
+      "community": 133,
       "norm_label": "default",
       "id": "meta_0004_snapshot_source_default"
     },
@@ -12524,7 +12524,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L256",
-      "community": 211,
+      "community": 26,
       "norm_label": "images",
       "id": "meta_0004_snapshot_columns_images"
     },
@@ -12533,7 +12533,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L257",
-      "community": 211,
+      "community": 26,
       "norm_label": "name",
       "id": "meta_0004_snapshot_images_name"
     },
@@ -12542,7 +12542,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L258",
-      "community": 211,
+      "community": 26,
       "norm_label": "type",
       "id": "meta_0004_snapshot_images_type"
     },
@@ -12551,7 +12551,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L259",
-      "community": 211,
+      "community": 26,
       "norm_label": "primarykey",
       "id": "meta_0004_snapshot_images_primarykey"
     },
@@ -12560,7 +12560,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L260",
-      "community": 211,
+      "community": 26,
       "norm_label": "notnull",
       "id": "meta_0004_snapshot_images_notnull"
     },
@@ -12569,7 +12569,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L261",
-      "community": 211,
+      "community": 26,
       "norm_label": "default",
       "id": "meta_0004_snapshot_images_default"
     },
@@ -13010,7 +13010,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L323",
-      "community": 26,
+      "community": 133,
       "norm_label": "columns",
       "id": "meta_0004_snapshot_public_run_lock_columns"
     },
@@ -13019,7 +13019,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L331",
-      "community": 26,
+      "community": 133,
       "norm_label": "holder",
       "id": "meta_0004_snapshot_columns_holder"
     },
@@ -13028,7 +13028,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L332",
-      "community": 26,
+      "community": 133,
       "norm_label": "name",
       "id": "meta_0004_snapshot_holder_name"
     },
@@ -13037,7 +13037,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L333",
-      "community": 26,
+      "community": 133,
       "norm_label": "type",
       "id": "meta_0004_snapshot_holder_type"
     },
@@ -13046,7 +13046,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L334",
-      "community": 26,
+      "community": 133,
       "norm_label": "primarykey",
       "id": "meta_0004_snapshot_holder_primarykey"
     },
@@ -13055,7 +13055,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L335",
-      "community": 26,
+      "community": 133,
       "norm_label": "notnull",
       "id": "meta_0004_snapshot_holder_notnull"
     },
@@ -13064,7 +13064,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L343",
-      "community": 26,
+      "community": 133,
       "norm_label": "acquired_at",
       "id": "meta_0004_snapshot_columns_acquired_at"
     },
@@ -13073,7 +13073,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L344",
-      "community": 26,
+      "community": 133,
       "norm_label": "name",
       "id": "meta_0004_snapshot_acquired_at_name"
     },
@@ -13082,7 +13082,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L345",
-      "community": 26,
+      "community": 133,
       "norm_label": "type",
       "id": "meta_0004_snapshot_acquired_at_type"
     },
@@ -13091,7 +13091,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L346",
-      "community": 26,
+      "community": 133,
       "norm_label": "primarykey",
       "id": "meta_0004_snapshot_acquired_at_primarykey"
     },
@@ -13100,7 +13100,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0004_snapshot.json",
       "source_location": "L347",
-      "community": 26,
+      "community": 133,
       "norm_label": "notnull",
       "id": "meta_0004_snapshot_acquired_at_notnull"
     },
@@ -13379,7 +13379,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L14",
-      "community": 97,
+      "community": 193,
       "norm_label": "primarykey",
       "id": "meta_0000_snapshot_id_primarykey"
     },
@@ -13451,7 +13451,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L24",
-      "community": 69,
+      "community": 128,
       "norm_label": "min_price",
       "id": "meta_0000_snapshot_columns_min_price"
     },
@@ -13460,7 +13460,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L25",
-      "community": 69,
+      "community": 128,
       "norm_label": "name",
       "id": "meta_0000_snapshot_min_price_name"
     },
@@ -13469,7 +13469,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L26",
-      "community": 69,
+      "community": 128,
       "norm_label": "type",
       "id": "meta_0000_snapshot_min_price_type"
     },
@@ -13478,7 +13478,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L27",
-      "community": 69,
+      "community": 128,
       "norm_label": "primarykey",
       "id": "meta_0000_snapshot_min_price_primarykey"
     },
@@ -13487,7 +13487,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L28",
-      "community": 69,
+      "community": 128,
       "norm_label": "notnull",
       "id": "meta_0000_snapshot_min_price_notnull"
     },
@@ -13496,7 +13496,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L30",
-      "community": 128,
+      "community": 193,
       "norm_label": "max_price",
       "id": "meta_0000_snapshot_columns_max_price"
     },
@@ -13505,7 +13505,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L31",
-      "community": 128,
+      "community": 193,
       "norm_label": "name",
       "id": "meta_0000_snapshot_max_price_name"
     },
@@ -13514,7 +13514,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L32",
-      "community": 128,
+      "community": 193,
       "norm_label": "type",
       "id": "meta_0000_snapshot_max_price_type"
     },
@@ -13523,7 +13523,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L33",
-      "community": 128,
+      "community": 193,
       "norm_label": "primarykey",
       "id": "meta_0000_snapshot_max_price_primarykey"
     },
@@ -13532,7 +13532,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L34",
-      "community": 128,
+      "community": 193,
       "norm_label": "notnull",
       "id": "meta_0000_snapshot_max_price_notnull"
     },
@@ -14837,7 +14837,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L218",
-      "community": 97,
+      "community": 193,
       "norm_label": "area",
       "id": "meta_0000_snapshot_columns_area"
     },
@@ -14846,7 +14846,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L219",
-      "community": 97,
+      "community": 193,
       "norm_label": "name",
       "id": "meta_0000_snapshot_area_name"
     },
@@ -14855,7 +14855,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L220",
-      "community": 97,
+      "community": 193,
       "norm_label": "type",
       "id": "meta_0000_snapshot_area_type"
     },
@@ -14864,7 +14864,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L221",
-      "community": 97,
+      "community": 193,
       "norm_label": "primarykey",
       "id": "meta_0000_snapshot_area_primarykey"
     },
@@ -14873,7 +14873,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L222",
-      "community": 97,
+      "community": 193,
       "norm_label": "notnull",
       "id": "meta_0000_snapshot_area_notnull"
     },
@@ -15107,7 +15107,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L254",
-      "community": 97,
+      "community": 193,
       "norm_label": "score_reasons",
       "id": "meta_0000_snapshot_columns_score_reasons"
     },
@@ -15116,7 +15116,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L255",
-      "community": 97,
+      "community": 193,
       "norm_label": "name",
       "id": "meta_0000_snapshot_score_reasons_name"
     },
@@ -15125,7 +15125,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L256",
-      "community": 97,
+      "community": 193,
       "norm_label": "type",
       "id": "meta_0000_snapshot_score_reasons_type"
     },
@@ -15134,7 +15134,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L257",
-      "community": 97,
+      "community": 193,
       "norm_label": "primarykey",
       "id": "meta_0000_snapshot_score_reasons_primarykey"
     },
@@ -15143,7 +15143,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L258",
-      "community": 97,
+      "community": 193,
       "norm_label": "notnull",
       "id": "meta_0000_snapshot_score_reasons_notnull"
     },
@@ -15206,7 +15206,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L267",
-      "community": 133,
+      "community": 69,
       "norm_label": "notified",
       "id": "meta_0000_snapshot_columns_notified"
     },
@@ -15215,7 +15215,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L268",
-      "community": 133,
+      "community": 69,
       "norm_label": "name",
       "id": "meta_0000_snapshot_notified_name"
     },
@@ -15224,7 +15224,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L269",
-      "community": 133,
+      "community": 69,
       "norm_label": "type",
       "id": "meta_0000_snapshot_notified_type"
     },
@@ -15233,7 +15233,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L270",
-      "community": 133,
+      "community": 69,
       "norm_label": "primarykey",
       "id": "meta_0000_snapshot_notified_primarykey"
     },
@@ -15242,7 +15242,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L271",
-      "community": 133,
+      "community": 69,
       "norm_label": "notnull",
       "id": "meta_0000_snapshot_notified_notnull"
     },
@@ -15251,7 +15251,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0000_snapshot.json",
       "source_location": "L272",
-      "community": 133,
+      "community": 69,
       "norm_label": "default",
       "id": "meta_0000_snapshot_notified_default"
     },
@@ -18131,7 +18131,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L2",
-      "community": 178,
+      "community": 212,
       "norm_label": "id",
       "id": "meta_0005_snapshot_id"
     },
@@ -18221,7 +18221,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L12",
-      "community": 98,
+      "community": 107,
       "norm_label": "name",
       "id": "meta_0005_snapshot_id_name"
     },
@@ -18230,7 +18230,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L13",
-      "community": 173,
+      "community": 184,
       "norm_label": "type",
       "id": "meta_0005_snapshot_id_type"
     },
@@ -18239,7 +18239,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L14",
-      "community": 107,
+      "community": 98,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_id_primarykey"
     },
@@ -18248,7 +18248,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L15",
-      "community": 104,
+      "community": 82,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_id_notnull"
     },
@@ -18257,7 +18257,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L16",
-      "community": 178,
+      "community": 212,
       "norm_label": "default",
       "id": "meta_0005_snapshot_id_default"
     },
@@ -18266,7 +18266,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L18",
-      "community": 178,
+      "community": 294,
       "norm_label": "search_urls",
       "id": "meta_0005_snapshot_columns_search_urls"
     },
@@ -18275,7 +18275,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L19",
-      "community": 178,
+      "community": 294,
       "norm_label": "name",
       "id": "meta_0005_snapshot_search_urls_name"
     },
@@ -18284,7 +18284,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L20",
-      "community": 178,
+      "community": 294,
       "norm_label": "type",
       "id": "meta_0005_snapshot_search_urls_type"
     },
@@ -18293,7 +18293,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L21",
-      "community": 178,
+      "community": 294,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_search_urls_primarykey"
     },
@@ -18302,7 +18302,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L22",
-      "community": 178,
+      "community": 294,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_search_urls_notnull"
     },
@@ -18311,7 +18311,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L23",
-      "community": 178,
+      "community": 294,
       "norm_label": "default",
       "id": "meta_0005_snapshot_search_urls_default"
     },
@@ -18320,7 +18320,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L25",
-      "community": 173,
+      "community": 82,
       "norm_label": "min_price",
       "id": "meta_0005_snapshot_columns_min_price"
     },
@@ -18329,7 +18329,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L26",
-      "community": 173,
+      "community": 82,
       "norm_label": "name",
       "id": "meta_0005_snapshot_min_price_name"
     },
@@ -18338,7 +18338,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L27",
-      "community": 173,
+      "community": 82,
       "norm_label": "type",
       "id": "meta_0005_snapshot_min_price_type"
     },
@@ -18347,7 +18347,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L28",
-      "community": 173,
+      "community": 82,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_min_price_primarykey"
     },
@@ -18356,7 +18356,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L29",
-      "community": 173,
+      "community": 82,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_min_price_notnull"
     },
@@ -18365,7 +18365,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L31",
-      "community": 173,
+      "community": 184,
       "norm_label": "max_price",
       "id": "meta_0005_snapshot_columns_max_price"
     },
@@ -18374,7 +18374,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L32",
-      "community": 173,
+      "community": 184,
       "norm_label": "name",
       "id": "meta_0005_snapshot_max_price_name"
     },
@@ -18383,7 +18383,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L33",
-      "community": 173,
+      "community": 184,
       "norm_label": "type",
       "id": "meta_0005_snapshot_max_price_type"
     },
@@ -18392,7 +18392,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L34",
-      "community": 173,
+      "community": 184,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_max_price_primarykey"
     },
@@ -18401,7 +18401,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L35",
-      "community": 173,
+      "community": 184,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_max_price_notnull"
     },
@@ -18410,7 +18410,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L37",
-      "community": 173,
+      "community": 82,
       "norm_label": "min_area",
       "id": "meta_0005_snapshot_columns_min_area"
     },
@@ -18419,7 +18419,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L38",
-      "community": 173,
+      "community": 82,
       "norm_label": "name",
       "id": "meta_0005_snapshot_min_area_name"
     },
@@ -18428,7 +18428,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L39",
-      "community": 173,
+      "community": 82,
       "norm_label": "type",
       "id": "meta_0005_snapshot_min_area_type"
     },
@@ -18437,7 +18437,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L40",
-      "community": 173,
+      "community": 82,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_min_area_primarykey"
     },
@@ -18446,7 +18446,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L41",
-      "community": 173,
+      "community": 82,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_min_area_notnull"
     },
@@ -18590,7 +18590,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L61",
-      "community": 173,
+      "community": 184,
       "norm_label": "ai_criteria",
       "id": "meta_0005_snapshot_columns_ai_criteria"
     },
@@ -18599,7 +18599,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L62",
-      "community": 173,
+      "community": 184,
       "norm_label": "name",
       "id": "meta_0005_snapshot_ai_criteria_name"
     },
@@ -18608,7 +18608,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L63",
-      "community": 173,
+      "community": 184,
       "norm_label": "type",
       "id": "meta_0005_snapshot_ai_criteria_type"
     },
@@ -18617,7 +18617,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L64",
-      "community": 173,
+      "community": 184,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_ai_criteria_primarykey"
     },
@@ -18626,7 +18626,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L65",
-      "community": 173,
+      "community": 184,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_ai_criteria_notnull"
     },
@@ -18635,7 +18635,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L66",
-      "community": 173,
+      "community": 184,
       "norm_label": "default",
       "id": "meta_0005_snapshot_ai_criteria_default"
     },
@@ -18968,7 +18968,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L110",
-      "community": 178,
+      "community": 173,
       "norm_label": "request_delay_ms",
       "id": "meta_0005_snapshot_columns_request_delay_ms"
     },
@@ -18977,7 +18977,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L111",
-      "community": 178,
+      "community": 173,
       "norm_label": "name",
       "id": "meta_0005_snapshot_request_delay_ms_name"
     },
@@ -18986,7 +18986,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L112",
-      "community": 178,
+      "community": 173,
       "norm_label": "type",
       "id": "meta_0005_snapshot_request_delay_ms_type"
     },
@@ -18995,7 +18995,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L113",
-      "community": 178,
+      "community": 173,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_request_delay_ms_primarykey"
     },
@@ -19004,7 +19004,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L114",
-      "community": 178,
+      "community": 173,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_request_delay_ms_notnull"
     },
@@ -19013,7 +19013,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L115",
-      "community": 178,
+      "community": 173,
       "norm_label": "default",
       "id": "meta_0005_snapshot_request_delay_ms_default"
     },
@@ -19076,7 +19076,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L124",
-      "community": 294,
+      "community": 212,
       "norm_label": "extract_enabled",
       "id": "meta_0005_snapshot_columns_extract_enabled"
     },
@@ -19085,7 +19085,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L125",
-      "community": 294,
+      "community": 212,
       "norm_label": "name",
       "id": "meta_0005_snapshot_extract_enabled_name"
     },
@@ -19094,7 +19094,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L126",
-      "community": 294,
+      "community": 212,
       "norm_label": "type",
       "id": "meta_0005_snapshot_extract_enabled_type"
     },
@@ -19103,7 +19103,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L127",
-      "community": 294,
+      "community": 212,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_extract_enabled_primarykey"
     },
@@ -19112,7 +19112,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L128",
-      "community": 294,
+      "community": 212,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_extract_enabled_notnull"
     },
@@ -19121,7 +19121,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L129",
-      "community": 294,
+      "community": 212,
       "norm_label": "default",
       "id": "meta_0005_snapshot_extract_enabled_default"
     },
@@ -19130,7 +19130,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L131",
-      "community": 210,
+      "community": 173,
       "norm_label": "embed_enabled",
       "id": "meta_0005_snapshot_columns_embed_enabled"
     },
@@ -19139,7 +19139,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L132",
-      "community": 210,
+      "community": 173,
       "norm_label": "name",
       "id": "meta_0005_snapshot_embed_enabled_name"
     },
@@ -19148,7 +19148,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L133",
-      "community": 210,
+      "community": 173,
       "norm_label": "type",
       "id": "meta_0005_snapshot_embed_enabled_type"
     },
@@ -19157,7 +19157,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L134",
-      "community": 210,
+      "community": 173,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_embed_enabled_primarykey"
     },
@@ -19166,7 +19166,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L135",
-      "community": 210,
+      "community": 173,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_embed_enabled_notnull"
     },
@@ -19175,7 +19175,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L136",
-      "community": 210,
+      "community": 173,
       "norm_label": "default",
       "id": "meta_0005_snapshot_embed_enabled_default"
     },
@@ -19769,7 +19769,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L227",
-      "community": 98,
+      "community": 107,
       "norm_label": "data",
       "id": "meta_0005_snapshot_columns_data"
     },
@@ -19778,7 +19778,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L228",
-      "community": 98,
+      "community": 107,
       "norm_label": "name",
       "id": "meta_0005_snapshot_data_name"
     },
@@ -19787,7 +19787,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L229",
-      "community": 98,
+      "community": 107,
       "norm_label": "type",
       "id": "meta_0005_snapshot_data_type"
     },
@@ -19796,7 +19796,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L230",
-      "community": 98,
+      "community": 107,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_data_primarykey"
     },
@@ -19805,7 +19805,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L231",
-      "community": 98,
+      "community": 107,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_data_notnull"
     },
@@ -19994,7 +19994,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L267",
-      "community": 104,
+      "community": 84,
       "norm_label": "external_id",
       "id": "meta_0005_snapshot_columns_external_id"
     },
@@ -20003,7 +20003,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L268",
-      "community": 104,
+      "community": 84,
       "norm_label": "name",
       "id": "meta_0005_snapshot_external_id_name"
     },
@@ -20012,7 +20012,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L269",
-      "community": 104,
+      "community": 84,
       "norm_label": "type",
       "id": "meta_0005_snapshot_external_id_type"
     },
@@ -20021,7 +20021,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L270",
-      "community": 104,
+      "community": 84,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_external_id_primarykey"
     },
@@ -20030,7 +20030,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L271",
-      "community": 104,
+      "community": 84,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_external_id_notnull"
     },
@@ -20093,7 +20093,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L280",
-      "community": 104,
+      "community": 82,
       "norm_label": "price",
       "id": "meta_0005_snapshot_columns_price"
     },
@@ -20102,7 +20102,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L281",
-      "community": 104,
+      "community": 82,
       "norm_label": "name",
       "id": "meta_0005_snapshot_price_name"
     },
@@ -20111,7 +20111,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L282",
-      "community": 104,
+      "community": 82,
       "norm_label": "type",
       "id": "meta_0005_snapshot_price_type"
     },
@@ -20120,7 +20120,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L283",
-      "community": 104,
+      "community": 82,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_price_primarykey"
     },
@@ -20129,7 +20129,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L284",
-      "community": 104,
+      "community": 82,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_price_notnull"
     },
@@ -20138,7 +20138,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L286",
-      "community": 104,
+      "community": 82,
       "norm_label": "area",
       "id": "meta_0005_snapshot_columns_area"
     },
@@ -20147,7 +20147,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L287",
-      "community": 104,
+      "community": 82,
       "norm_label": "name",
       "id": "meta_0005_snapshot_area_name"
     },
@@ -20156,7 +20156,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L288",
-      "community": 104,
+      "community": 82,
       "norm_label": "type",
       "id": "meta_0005_snapshot_area_type"
     },
@@ -20165,7 +20165,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L289",
-      "community": 104,
+      "community": 82,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_area_primarykey"
     },
@@ -20174,7 +20174,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L290",
-      "community": 104,
+      "community": 82,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_area_notnull"
     },
@@ -20183,7 +20183,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L292",
-      "community": 84,
+      "community": 184,
       "norm_label": "rooms",
       "id": "meta_0005_snapshot_columns_rooms"
     },
@@ -20192,7 +20192,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L293",
-      "community": 84,
+      "community": 184,
       "norm_label": "name",
       "id": "meta_0005_snapshot_rooms_name"
     },
@@ -20201,7 +20201,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L294",
-      "community": 84,
+      "community": 184,
       "norm_label": "type",
       "id": "meta_0005_snapshot_rooms_type"
     },
@@ -20210,7 +20210,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L295",
-      "community": 84,
+      "community": 184,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_rooms_primarykey"
     },
@@ -20219,7 +20219,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L296",
-      "community": 84,
+      "community": 184,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_rooms_notnull"
     },
@@ -20228,7 +20228,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L298",
-      "community": 107,
+      "community": 98,
       "norm_label": "district",
       "id": "meta_0005_snapshot_columns_district"
     },
@@ -20237,7 +20237,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L299",
-      "community": 107,
+      "community": 98,
       "norm_label": "name",
       "id": "meta_0005_snapshot_district_name"
     },
@@ -20246,7 +20246,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L300",
-      "community": 107,
+      "community": 98,
       "norm_label": "type",
       "id": "meta_0005_snapshot_district_type"
     },
@@ -20255,7 +20255,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L301",
-      "community": 107,
+      "community": 98,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_district_primarykey"
     },
@@ -20264,7 +20264,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L302",
-      "community": 107,
+      "community": 98,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_district_notnull"
     },
@@ -20417,7 +20417,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L323",
-      "community": 324,
+      "community": 104,
       "norm_label": "images",
       "id": "meta_0005_snapshot_columns_images"
     },
@@ -20426,7 +20426,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L324",
-      "community": 324,
+      "community": 104,
       "norm_label": "name",
       "id": "meta_0005_snapshot_images_name"
     },
@@ -20435,7 +20435,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L325",
-      "community": 324,
+      "community": 104,
       "norm_label": "type",
       "id": "meta_0005_snapshot_images_type"
     },
@@ -20444,7 +20444,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L326",
-      "community": 324,
+      "community": 104,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_images_primarykey"
     },
@@ -20453,7 +20453,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L327",
-      "community": 324,
+      "community": 104,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_images_notnull"
     },
@@ -20462,7 +20462,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L328",
-      "community": 324,
+      "community": 104,
       "norm_label": "default",
       "id": "meta_0005_snapshot_images_default"
     },
@@ -20615,7 +20615,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L349",
-      "community": 338,
+      "community": 212,
       "norm_label": "notified",
       "id": "meta_0005_snapshot_columns_notified"
     },
@@ -20624,7 +20624,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L350",
-      "community": 338,
+      "community": 212,
       "norm_label": "name",
       "id": "meta_0005_snapshot_notified_name"
     },
@@ -20633,7 +20633,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L351",
-      "community": 338,
+      "community": 212,
       "norm_label": "type",
       "id": "meta_0005_snapshot_notified_type"
     },
@@ -20642,7 +20642,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L352",
-      "community": 338,
+      "community": 212,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_notified_primarykey"
     },
@@ -20651,7 +20651,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L353",
-      "community": 338,
+      "community": 212,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_notified_notnull"
     },
@@ -20660,7 +20660,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L354",
-      "community": 338,
+      "community": 212,
       "norm_label": "default",
       "id": "meta_0005_snapshot_notified_default"
     },
@@ -20669,7 +20669,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L356",
-      "community": 178,
+      "community": 272,
       "norm_label": "first_seen",
       "id": "meta_0005_snapshot_columns_first_seen"
     },
@@ -20678,7 +20678,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L357",
-      "community": 178,
+      "community": 272,
       "norm_label": "name",
       "id": "meta_0005_snapshot_first_seen_name"
     },
@@ -20687,7 +20687,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L358",
-      "community": 178,
+      "community": 272,
       "norm_label": "type",
       "id": "meta_0005_snapshot_first_seen_type"
     },
@@ -20696,7 +20696,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L359",
-      "community": 178,
+      "community": 272,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_first_seen_primarykey"
     },
@@ -20705,7 +20705,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L360",
-      "community": 178,
+      "community": 272,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_first_seen_notnull"
     },
@@ -20714,7 +20714,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L361",
-      "community": 178,
+      "community": 272,
       "norm_label": "default",
       "id": "meta_0005_snapshot_first_seen_default"
     },
@@ -20777,7 +20777,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L370",
-      "community": 84,
+      "community": 104,
       "norm_label": "kind",
       "id": "meta_0005_snapshot_columns_kind"
     },
@@ -20786,7 +20786,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L371",
-      "community": 84,
+      "community": 104,
       "norm_label": "name",
       "id": "meta_0005_snapshot_kind_name"
     },
@@ -20795,7 +20795,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L372",
-      "community": 84,
+      "community": 104,
       "norm_label": "type",
       "id": "meta_0005_snapshot_kind_type"
     },
@@ -20804,7 +20804,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L373",
-      "community": 84,
+      "community": 104,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_kind_primarykey"
     },
@@ -20813,7 +20813,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L374",
-      "community": 84,
+      "community": 104,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_kind_notnull"
     },
@@ -20822,7 +20822,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L376",
-      "community": 104,
+      "community": 84,
       "norm_label": "district_canonical",
       "id": "meta_0005_snapshot_columns_district_canonical"
     },
@@ -20831,7 +20831,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L377",
-      "community": 104,
+      "community": 84,
       "norm_label": "name",
       "id": "meta_0005_snapshot_district_canonical_name"
     },
@@ -20840,7 +20840,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L378",
-      "community": 104,
+      "community": 84,
       "norm_label": "type",
       "id": "meta_0005_snapshot_district_canonical_type"
     },
@@ -20849,7 +20849,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L379",
-      "community": 104,
+      "community": 84,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_district_canonical_primarykey"
     },
@@ -20858,7 +20858,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L380",
-      "community": 104,
+      "community": 84,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_district_canonical_notnull"
     },
@@ -20867,7 +20867,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L382",
-      "community": 300,
+      "community": 212,
       "norm_label": "features",
       "id": "meta_0005_snapshot_columns_features"
     },
@@ -20876,7 +20876,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L383",
-      "community": 300,
+      "community": 212,
       "norm_label": "name",
       "id": "meta_0005_snapshot_features_name"
     },
@@ -20885,7 +20885,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L384",
-      "community": 300,
+      "community": 212,
       "norm_label": "type",
       "id": "meta_0005_snapshot_features_type"
     },
@@ -20894,7 +20894,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L385",
-      "community": 300,
+      "community": 212,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_features_primarykey"
     },
@@ -20903,7 +20903,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L386",
-      "community": 300,
+      "community": 212,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_features_notnull"
     },
@@ -20912,7 +20912,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L387",
-      "community": 300,
+      "community": 212,
       "norm_label": "default",
       "id": "meta_0005_snapshot_features_default"
     },
@@ -20921,7 +20921,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L389",
-      "community": 104,
+      "community": 307,
       "norm_label": "embedding",
       "id": "meta_0005_snapshot_columns_embedding"
     },
@@ -20930,7 +20930,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L390",
-      "community": 104,
+      "community": 307,
       "norm_label": "name",
       "id": "meta_0005_snapshot_embedding_name"
     },
@@ -20939,7 +20939,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L391",
-      "community": 104,
+      "community": 307,
       "norm_label": "type",
       "id": "meta_0005_snapshot_embedding_type"
     },
@@ -20948,7 +20948,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L392",
-      "community": 104,
+      "community": 307,
       "norm_label": "primarykey",
       "id": "meta_0005_snapshot_embedding_primarykey"
     },
@@ -20957,7 +20957,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0005_snapshot.json",
       "source_location": "L393",
-      "community": 104,
+      "community": 307,
       "norm_label": "notnull",
       "id": "meta_0005_snapshot_embedding_notnull"
     },
@@ -21578,7 +21578,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L24",
-      "community": 140,
+      "community": 109,
       "norm_label": "min_price",
       "id": "meta_0002_snapshot_columns_min_price"
     },
@@ -21587,7 +21587,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L25",
-      "community": 140,
+      "community": 109,
       "norm_label": "name",
       "id": "meta_0002_snapshot_min_price_name"
     },
@@ -21596,7 +21596,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L26",
-      "community": 140,
+      "community": 109,
       "norm_label": "type",
       "id": "meta_0002_snapshot_min_price_type"
     },
@@ -21605,7 +21605,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L27",
-      "community": 140,
+      "community": 109,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_min_price_primarykey"
     },
@@ -21614,7 +21614,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L28",
-      "community": 140,
+      "community": 109,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_min_price_notnull"
     },
@@ -21803,7 +21803,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L54",
-      "community": 140,
+      "community": 109,
       "norm_label": "max_rooms",
       "id": "meta_0002_snapshot_columns_max_rooms"
     },
@@ -21812,7 +21812,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L55",
-      "community": 140,
+      "community": 109,
       "norm_label": "name",
       "id": "meta_0002_snapshot_max_rooms_name"
     },
@@ -21821,7 +21821,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L56",
-      "community": 140,
+      "community": 109,
       "norm_label": "type",
       "id": "meta_0002_snapshot_max_rooms_type"
     },
@@ -21830,7 +21830,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L57",
-      "community": 140,
+      "community": 109,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_max_rooms_primarykey"
     },
@@ -21839,7 +21839,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L58",
-      "community": 140,
+      "community": 109,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_max_rooms_notnull"
     },
@@ -21848,7 +21848,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L60",
-      "community": 101,
+      "community": 197,
       "norm_label": "ai_criteria",
       "id": "meta_0002_snapshot_columns_ai_criteria"
     },
@@ -21857,7 +21857,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L61",
-      "community": 101,
+      "community": 197,
       "norm_label": "name",
       "id": "meta_0002_snapshot_ai_criteria_name"
     },
@@ -21866,7 +21866,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L62",
-      "community": 101,
+      "community": 197,
       "norm_label": "type",
       "id": "meta_0002_snapshot_ai_criteria_type"
     },
@@ -21875,7 +21875,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L63",
-      "community": 101,
+      "community": 197,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_ai_criteria_primarykey"
     },
@@ -21884,7 +21884,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L64",
-      "community": 101,
+      "community": 197,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_ai_criteria_notnull"
     },
@@ -21893,7 +21893,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L65",
-      "community": 101,
+      "community": 197,
       "norm_label": "default",
       "id": "meta_0002_snapshot_ai_criteria_default"
     },
@@ -21956,7 +21956,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L74",
-      "community": 109,
+      "community": 211,
       "norm_label": "poll_interval_min",
       "id": "meta_0002_snapshot_columns_poll_interval_min"
     },
@@ -21965,7 +21965,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L75",
-      "community": 109,
+      "community": 211,
       "norm_label": "name",
       "id": "meta_0002_snapshot_poll_interval_min_name"
     },
@@ -21974,7 +21974,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L76",
-      "community": 109,
+      "community": 211,
       "norm_label": "type",
       "id": "meta_0002_snapshot_poll_interval_min_type"
     },
@@ -21983,7 +21983,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L77",
-      "community": 109,
+      "community": 211,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_poll_interval_min_primarykey"
     },
@@ -21992,7 +21992,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L78",
-      "community": 109,
+      "community": 211,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_poll_interval_min_notnull"
     },
@@ -22001,7 +22001,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L79",
-      "community": 109,
+      "community": 211,
       "norm_label": "default",
       "id": "meta_0002_snapshot_poll_interval_min_default"
     },
@@ -22064,7 +22064,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L88",
-      "community": 101,
+      "community": 210,
       "norm_label": "deepseek_enabled",
       "id": "meta_0002_snapshot_columns_deepseek_enabled"
     },
@@ -22073,7 +22073,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L89",
-      "community": 101,
+      "community": 210,
       "norm_label": "name",
       "id": "meta_0002_snapshot_deepseek_enabled_name"
     },
@@ -22082,7 +22082,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L90",
-      "community": 101,
+      "community": 210,
       "norm_label": "type",
       "id": "meta_0002_snapshot_deepseek_enabled_type"
     },
@@ -22091,7 +22091,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L91",
-      "community": 101,
+      "community": 210,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_deepseek_enabled_primarykey"
     },
@@ -22100,7 +22100,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L92",
-      "community": 101,
+      "community": 210,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_deepseek_enabled_notnull"
     },
@@ -22109,7 +22109,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L93",
-      "community": 101,
+      "community": 210,
       "norm_label": "default",
       "id": "meta_0002_snapshot_deepseek_enabled_default"
     },
@@ -22433,7 +22433,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L142",
-      "community": 193,
+      "community": 64,
       "norm_label": "ts",
       "id": "meta_0002_snapshot_columns_ts"
     },
@@ -22442,7 +22442,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L143",
-      "community": 193,
+      "community": 64,
       "norm_label": "name",
       "id": "meta_0002_snapshot_ts_name"
     },
@@ -22451,7 +22451,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L144",
-      "community": 193,
+      "community": 64,
       "norm_label": "type",
       "id": "meta_0002_snapshot_ts_type"
     },
@@ -22460,7 +22460,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L145",
-      "community": 193,
+      "community": 64,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_ts_primarykey"
     },
@@ -22469,7 +22469,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L146",
-      "community": 193,
+      "community": 64,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_ts_notnull"
     },
@@ -22478,7 +22478,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L147",
-      "community": 193,
+      "community": 64,
       "norm_label": "default",
       "id": "meta_0002_snapshot_ts_default"
     },
@@ -22811,7 +22811,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L192",
-      "community": 76,
+      "community": 101,
       "norm_label": "columns",
       "id": "meta_0002_snapshot_public_offers_columns"
     },
@@ -22820,7 +22820,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L199",
-      "community": 76,
+      "community": 101,
       "norm_label": "external_id",
       "id": "meta_0002_snapshot_columns_external_id"
     },
@@ -22829,7 +22829,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L200",
-      "community": 76,
+      "community": 101,
       "norm_label": "name",
       "id": "meta_0002_snapshot_external_id_name"
     },
@@ -22838,7 +22838,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L201",
-      "community": 76,
+      "community": 101,
       "norm_label": "type",
       "id": "meta_0002_snapshot_external_id_type"
     },
@@ -22847,7 +22847,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L202",
-      "community": 76,
+      "community": 101,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_external_id_primarykey"
     },
@@ -22856,7 +22856,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L203",
-      "community": 76,
+      "community": 101,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_external_id_notnull"
     },
@@ -22865,7 +22865,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L205",
-      "community": 197,
+      "community": 101,
       "norm_label": "title",
       "id": "meta_0002_snapshot_columns_title"
     },
@@ -22874,7 +22874,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L206",
-      "community": 197,
+      "community": 101,
       "norm_label": "name",
       "id": "meta_0002_snapshot_title_name"
     },
@@ -22883,7 +22883,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L207",
-      "community": 197,
+      "community": 101,
       "norm_label": "type",
       "id": "meta_0002_snapshot_title_type"
     },
@@ -22892,7 +22892,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L208",
-      "community": 197,
+      "community": 101,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_title_primarykey"
     },
@@ -22901,7 +22901,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L209",
-      "community": 197,
+      "community": 101,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_title_notnull"
     },
@@ -22910,7 +22910,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L210",
-      "community": 197,
+      "community": 101,
       "norm_label": "default",
       "id": "meta_0002_snapshot_title_default"
     },
@@ -23009,7 +23009,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L224",
-      "community": 76,
+      "community": 140,
       "norm_label": "rooms",
       "id": "meta_0002_snapshot_columns_rooms"
     },
@@ -23018,7 +23018,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L225",
-      "community": 76,
+      "community": 140,
       "norm_label": "name",
       "id": "meta_0002_snapshot_rooms_name"
     },
@@ -23027,7 +23027,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L226",
-      "community": 76,
+      "community": 140,
       "norm_label": "type",
       "id": "meta_0002_snapshot_rooms_type"
     },
@@ -23036,7 +23036,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L227",
-      "community": 76,
+      "community": 140,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_rooms_primarykey"
     },
@@ -23045,7 +23045,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L228",
-      "community": 76,
+      "community": 140,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_rooms_notnull"
     },
@@ -23054,7 +23054,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L230",
-      "community": 76,
+      "community": 140,
       "norm_label": "district",
       "id": "meta_0002_snapshot_columns_district"
     },
@@ -23063,7 +23063,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L231",
-      "community": 76,
+      "community": 140,
       "norm_label": "name",
       "id": "meta_0002_snapshot_district_name"
     },
@@ -23072,7 +23072,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L232",
-      "community": 76,
+      "community": 140,
       "norm_label": "type",
       "id": "meta_0002_snapshot_district_type"
     },
@@ -23081,7 +23081,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L233",
-      "community": 76,
+      "community": 140,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_district_primarykey"
     },
@@ -23090,7 +23090,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L234",
-      "community": 76,
+      "community": 140,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_district_notnull"
     },
@@ -23099,7 +23099,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L236",
-      "community": 76,
+      "community": 140,
       "norm_label": "url",
       "id": "meta_0002_snapshot_columns_url"
     },
@@ -23108,7 +23108,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L237",
-      "community": 76,
+      "community": 140,
       "norm_label": "name",
       "id": "meta_0002_snapshot_url_name"
     },
@@ -23117,7 +23117,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L238",
-      "community": 76,
+      "community": 140,
       "norm_label": "type",
       "id": "meta_0002_snapshot_url_type"
     },
@@ -23126,7 +23126,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L239",
-      "community": 76,
+      "community": 140,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_url_primarykey"
     },
@@ -23135,7 +23135,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L240",
-      "community": 76,
+      "community": 140,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_url_notnull"
     },
@@ -23243,7 +23243,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L255",
-      "community": 140,
+      "community": 295,
       "norm_label": "score",
       "id": "meta_0002_snapshot_columns_score"
     },
@@ -23252,7 +23252,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L256",
-      "community": 140,
+      "community": 295,
       "norm_label": "name",
       "id": "meta_0002_snapshot_score_name"
     },
@@ -23261,7 +23261,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L257",
-      "community": 140,
+      "community": 295,
       "norm_label": "type",
       "id": "meta_0002_snapshot_score_type"
     },
@@ -23270,7 +23270,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L258",
-      "community": 140,
+      "community": 295,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_score_primarykey"
     },
@@ -23279,7 +23279,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L259",
-      "community": 140,
+      "community": 295,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_score_notnull"
     },
@@ -23387,7 +23387,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L274",
-      "community": 214,
+      "community": 101,
       "norm_label": "notified",
       "id": "meta_0002_snapshot_columns_notified"
     },
@@ -23396,7 +23396,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L275",
-      "community": 214,
+      "community": 101,
       "norm_label": "name",
       "id": "meta_0002_snapshot_notified_name"
     },
@@ -23405,7 +23405,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L276",
-      "community": 214,
+      "community": 101,
       "norm_label": "type",
       "id": "meta_0002_snapshot_notified_type"
     },
@@ -23414,7 +23414,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L277",
-      "community": 214,
+      "community": 101,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_notified_primarykey"
     },
@@ -23423,7 +23423,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L278",
-      "community": 214,
+      "community": 101,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_notified_notnull"
     },
@@ -23432,7 +23432,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L279",
-      "community": 214,
+      "community": 101,
       "norm_label": "default",
       "id": "meta_0002_snapshot_notified_default"
     },
@@ -23495,7 +23495,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L288",
-      "community": 184,
+      "community": 101,
       "norm_label": "last_seen",
       "id": "meta_0002_snapshot_columns_last_seen"
     },
@@ -23504,7 +23504,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L289",
-      "community": 184,
+      "community": 101,
       "norm_label": "name",
       "id": "meta_0002_snapshot_last_seen_name"
     },
@@ -23513,7 +23513,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L290",
-      "community": 184,
+      "community": 101,
       "norm_label": "type",
       "id": "meta_0002_snapshot_last_seen_type"
     },
@@ -23522,7 +23522,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L291",
-      "community": 184,
+      "community": 101,
       "norm_label": "primarykey",
       "id": "meta_0002_snapshot_last_seen_primarykey"
     },
@@ -23531,7 +23531,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L292",
-      "community": 184,
+      "community": 101,
       "norm_label": "notnull",
       "id": "meta_0002_snapshot_last_seen_notnull"
     },
@@ -23540,7 +23540,7 @@
       "file_type": "code",
       "source_file": "drizzle/meta/0002_snapshot.json",
       "source_location": "L293",
-      "community": 184,
+      "community": 101,
       "norm_label": "default",
       "id": "meta_0002_snapshot_last_seen_default"
     },
@@ -37817,7 +37817,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 295,
+      "community": 13,
       "norm_label": "test db isolation refuses real db under node_env=test",
       "id": "db_client_test_isolation"
     },
@@ -37869,7 +37869,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 295,
+      "community": 13,
       "norm_label": "pretooluse guard hook",
       "id": "guard_pretooluse"
     },
@@ -37882,7 +37882,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 295,
+      "community": 13,
       "norm_label": ".claude settings hooks",
       "id": "settings_hooks"
     },
@@ -38142,7 +38142,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 295,
+      "community": 13,
       "norm_label": ".claude/hooks/check.ts",
       "id": "hooks_check"
     },
@@ -38607,37 +38607,37 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/SearchUrlList.svelte",
-      "source_location": "L40",
+      "source_location": "L68",
       "weight": 1.0,
       "source": "web_searchurllist_svelte",
-      "target": "web_searchurllist_cands",
+      "target": "web_searchurllist_k",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/SearchUrlList.svelte",
-      "source_location": "L42",
+      "source_location": "L69",
       "weight": 1.0,
       "source": "web_searchurllist_svelte",
-      "target": "web_searchurllist_res",
+      "target": "web_searchurllist_p",
       "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "web/SearchUrlList.svelte",
+      "confidence_score": 1.0,
       "source": "web_searchurllist_svelte",
-      "target": "users_me_development_trojmiasto_wynajem_claude_worktrees_search_url_input_web_lib_api",
-      "confidence_score": 1.0
+      "target": "users_me_development_trojmiasto_wynajem_claude_worktrees_search_url_input_web_lib_api"
     },
     {
       "relation": "imports_from",
       "confidence": "EXTRACTED",
       "source_file": "web/SearchUrlList.svelte",
+      "confidence_score": 1.0,
       "source": "web_searchurllist_svelte",
-      "target": "users_me_development_trojmiasto_wynajem_claude_worktrees_search_url_input_web_lib_searchurls",
-      "confidence_score": 1.0
+      "target": "users_me_development_trojmiasto_wynajem_claude_worktrees_search_url_input_web_lib_searchurls"
     },
     {
       "relation": "imports_from",
@@ -105495,5 +105495,5 @@
       "source_file": "docs/superpowers/specs/2026-06-03-paginated-virtual-scroll-design.md"
     }
   ],
-  "built_at_commit": "3173f34df1da4395a649611797b3c5b9fb65cc5f"
+  "built_at_commit": "da99c06f1324da6856c56c81d356bd25f90ab1ae"
 }

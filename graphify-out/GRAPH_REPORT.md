@@ -1,16 +1,16 @@
 # Graph Report - search-url-input  (2026-06-04)
 
 ## Corpus Check
-- 137 files · ~158,212 words
+- 137 files · ~158,241 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4200 nodes · 6628 edges · 350 communities (338 shown, 12 thin omitted)
+- 4200 nodes · 6628 edges · 349 communities (337 shown, 12 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 110 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3173f34d`
+- Built from commit: `da99c06f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -317,6 +317,7 @@
 - [[_COMMUNITY_Community 304|Community 304]]
 - [[_COMMUNITY_Community 305|Community 305]]
 - [[_COMMUNITY_Community 306|Community 306]]
+- [[_COMMUNITY_Community 307|Community 307]]
 - [[_COMMUNITY_Community 308|Community 308]]
 - [[_COMMUNITY_Community 309|Community 309]]
 - [[_COMMUNITY_Community 310|Community 310]]
@@ -333,7 +334,6 @@
 - [[_COMMUNITY_Community 321|Community 321]]
 - [[_COMMUNITY_Community 322|Community 322]]
 - [[_COMMUNITY_Community 323|Community 323]]
-- [[_COMMUNITY_Community 324|Community 324]]
 - [[_COMMUNITY_Community 327|Community 327]]
 - [[_COMMUNITY_Community 328|Community 328]]
 - [[_COMMUNITY_Community 330|Community 330]]
@@ -344,7 +344,6 @@
 - [[_COMMUNITY_Community 335|Community 335]]
 - [[_COMMUNITY_Community 336|Community 336]]
 - [[_COMMUNITY_Community 337|Community 337]]
-- [[_COMMUNITY_Community 338|Community 338]]
 - [[_COMMUNITY_Community 339|Community 339]]
 - [[_COMMUNITY_Community 340|Community 340]]
 - [[_COMMUNITY_Community 341|Community 341]]
@@ -397,7 +396,7 @@
 - **Diff-aware upsert writes jsonb snapshots rendered as history** — specs_keyword_design_diff_aware_upsert, specs_keyword_design_snapshot_history, drizzle_0005_snapshot_offer_snapshots_table, specs_keyword_design_history_display [EXTRACTED 0.85]
 - **Rank-then-slice pagination feeding windowed infinite scroll** — specs_virtual_scroll_in_memory_ranking, specs_virtual_scroll_page_envelope, specs_virtual_scroll_window_virtualizer, specs_virtual_scroll_infinite_scroll [EXTRACTED 0.85]
 
-## Communities (350 total, 12 thin omitted)
+## Communities (349 total, 12 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
@@ -452,12 +451,12 @@ Cohesion: 0.04
 Nodes (46): code:ts (test("listOffers paginates with stable order and reports tot), code:ts (if (path === "/api/offers" && req.method === "GET") {), code:bash (git add src/api/server.ts test/api.test.ts), code:ts (export interface Page<T> { items: T[]; total: number }), code:ts (export async function getOffers(offset = 0, limit = 50): Pro), code:ts (export async function searchOffers(query: SearchQuery, offse), code:bash (git add web/lib/api.ts), code:ts (import { test, expect } from "bun:test";) (+38 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.09
-Nodes (27): defaultRefresh(), defaultRunCrawler(), defaultRunRescore(), DIST, env, g, server, ServerOptions (+19 more)
+Cohesion: 0.07
+Nodes (31): defaultRefresh(), defaultRunCrawler(), defaultRunRescore(), DIST, env, g, server, ServerOptions (+23 more)
 
 ### Community 14 - "Community 14"
-Cohesion: 0.13
-Nodes (44): createServer(), DB, getDb(), appendLog(), ensureConfig(), getActiveScorableOffers(), getConfig(), getFacets() (+36 more)
+Cohesion: 0.12
+Nodes (47): createServer(), DB, appendLog(), ensureConfig(), getActiveScorableOffers(), getConfig(), getFacets(), getKnownExternalIds() (+39 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.09
@@ -469,7 +468,7 @@ Nodes (31): runCrawlGuarded, Injected Logger + decorated deps, Logs Page, Run-sc
 
 ### Community 17 - "Community 17"
 Cohesion: 0.11
-Nodes (22): AppConfig, embed(), EmbedOptions, extractFeatures(), withLogging(), NotifyInput, sendNotification(), buildCheckDeps() (+14 more)
+Nodes (23): AppConfig, embed(), EmbedOptions, extractFeatures(), withLogging(), NotifyInput, sendNotification(), buildCheckDeps() (+15 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.08
@@ -505,7 +504,7 @@ Nodes (40): compilerOptions, allowImportingTsExtensions, allowJs, jsx, lib, modu
 
 ### Community 26 - "Community 26"
 Cohesion: 0.04
-Nodes (79): name, notNull, primaryKey, type, name, notNull, primaryKey, type (+71 more)
+Nodes (66): name, notNull, primaryKey, type, area, description, district, external_id (+58 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.11
@@ -656,8 +655,8 @@ Cohesion: 0.20
 Nodes (10): code:ts (test("loadConfig reads embedding env with defaults", () => {), code:ts (embedBaseUrl: string;), code:ts (embedBaseUrl: env.EMBED_BASE_URL ?? "https://api.openai.com/), code:ts (import { test, expect } from "bun:test";), code:ts (import type { Config, NewOffer } from "../db/schema";), code:ts (const enriched = await enrichOffer(d, config, deps);), code:ts (extractFeatures, embed,), code:ts (extractFeatures: async () => [],) (+2 more)
 
 ### Community 64 - "Community 64"
-Cohesion: 0.07
-Nodes (32): context, event, level, message, run_id, name, notNull, primaryKey (+24 more)
+Cohesion: 0.06
+Nodes (38): context, event, level, message, run_id, ts, name, notNull (+30 more)
 
 ### Community 65 - "Community 65"
 Cohesion: 0.29
@@ -673,11 +672,11 @@ Nodes (9): code:ts (import { test, expect } from "bun:test";), code:ts (/**), co
 
 ### Community 68 - "Community 68"
 Cohesion: 0.06
-Nodes (38): description, district, price, rooms, score, status, url, name (+30 more)
+Nodes (38): description, district, price, rooms, score_reasons, status, url, name (+30 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.18
-Nodes (11): description, min_price, name, notNull, primaryKey, type, columns, name (+3 more)
+Cohesion: 0.17
+Nodes (12): description, notified, name, notNull, primaryKey, type, columns, default (+4 more)
 
 ### Community 70 - "Community 70"
 Cohesion: 0.12
@@ -704,8 +703,8 @@ Cohesion: 0.67
 Nodes (3): Config (interface), getConfig(), saveConfig()
 
 ### Community 76 - "Community 76"
-Cohesion: 0.06
-Nodes (37): name, notNull, primaryKey, type, area, description, district, external_id (+29 more)
+Cohesion: 0.12
+Nodes (16): name, notNull, primaryKey, type, area, description, price, name (+8 more)
 
 ### Community 77 - "Community 77"
 Cohesion: 0.22
@@ -728,8 +727,8 @@ Cohesion: 0.29
 Nodes (3): pln, tier, tierClass
 
 ### Community 82 - "Community 82"
-Cohesion: 0.43
-Nodes (6): hasTrackedChange(), TRACKED_KEYS, trackedFields(), TrackedSnapshot, base, snap
+Cohesion: 0.10
+Nodes (21): name, notNull, primaryKey, type, area, min_area, min_price, price (+13 more)
 
 ### Community 83 - "Community 83"
 Cohesion: 0.08
@@ -737,11 +736,11 @@ Nodes (28): context, event, level, run_id, ts, name, notNull, primaryKey (+20 mo
 
 ### Community 84 - "Community 84"
 Cohesion: 0.10
-Nodes (20): kind, rooms, url, name, notNull, primaryKey, type, columns (+12 more)
+Nodes (20): district_canonical, external_id, url, name, notNull, primaryKey, type, name (+12 more)
 
 ### Community 85 - "Community 85"
 Cohesion: 0.09
-Nodes (24): appLogger, combineLoggers(), createFileLogger(), fileLogger, formatLogLine(), localDay(), LogLevel, nullLogger (+16 more)
+Nodes (26): appLogger, combineLoggers(), createFileLogger(), createRunLogger(), dbLogger, fileLogger, formatLogLine(), localDay() (+18 more)
 
 ### Community 86 - "Community 86"
 Cohesion: 0.25
@@ -772,20 +771,20 @@ Cohesion: 0.50
 Nodes (3): dialect, entries, version
 
 ### Community 95 - "Community 95"
-Cohesion: 0.05
-Nodes (47): max_area, max_price, max_rooms, min_area, min_price, min_rooms, poll_interval_min, score_threshold (+39 more)
+Cohesion: 0.06
+Nodes (41): max_area, max_price, max_rooms, min_area, min_price, min_rooms, poll_interval_min, name (+33 more)
 
 ### Community 96 - "Community 96"
 Cohesion: 0.07
 Nodes (33): context, event, holder, level, message, run_id, name, notNull (+25 more)
 
 ### Community 97 - "Community 97"
-Cohesion: 0.06
-Nodes (43): name, notNull, primaryKey, type, area, district, external_id, price (+35 more)
+Cohesion: 0.07
+Nodes (32): district, external_id, price, rooms, score, url, name, notNull (+24 more)
 
 ### Community 98 - "Community 98"
 Cohesion: 0.06
-Nodes (39): context, data, event, level, message, run_id, ts, name (+31 more)
+Nodes (39): context, district, event, level, message, run_id, ts, name (+31 more)
 
 ### Community 99 - "Community 99"
 Cohesion: 0.06
@@ -796,8 +795,8 @@ Cohesion: 0.33
 Nodes (6): title, default, name, notNull, primaryKey, type
 
 ### Community 101 - "Community 101"
-Cohesion: 0.08
-Nodes (26): default, name, notNull, primaryKey, type, ai_criteria, deepseek_enabled, first_seen (+18 more)
+Cohesion: 0.06
+Nodes (38): external_id, first_seen, id, last_seen, notified, status, title, name (+30 more)
 
 ### Community 102 - "Community 102"
 Cohesion: 0.29
@@ -808,8 +807,8 @@ Cohesion: 0.12
 Nodes (16): context, level, run_id, name, notNull, primaryKey, type, name (+8 more)
 
 ### Community 104 - "Community 104"
-Cohesion: 0.05
-Nodes (47): name, notNull, primaryKey, type, area, description, district_canonical, embed_text_hash (+39 more)
+Cohesion: 0.06
+Nodes (32): description, embed_text_hash, images, kind, score, score_reasons, name, notNull (+24 more)
 
 ### Community 105 - "Community 105"
 Cohesion: 0.67
@@ -821,11 +820,11 @@ Nodes (14): dialect, enums, id, _meta, columns, schemas, tables, policies (+6 mo
 
 ### Community 107 - "Community 107"
 Cohesion: 0.12
-Nodes (19): default, name, notNull, primaryKey, type, captured_at, district, id (+11 more)
+Nodes (19): default, name, notNull, primaryKey, type, captured_at, data, id (+11 more)
 
 ### Community 109 - "Community 109"
-Cohesion: 0.07
-Nodes (33): max_area, max_price, min_area, min_rooms, poll_interval_min, search_url, name, name (+25 more)
+Cohesion: 0.06
+Nodes (37): max_area, max_price, max_rooms, min_area, min_price, min_rooms, search_url, name (+29 more)
 
 ### Community 110 - "Community 110"
 Cohesion: 0.10
@@ -849,7 +848,7 @@ Nodes (14): columns, name, nullsNotDistinct, checkConstraints, compositePrimaryK
 
 ### Community 128 - "Community 128"
 Cohesion: 0.07
-Nodes (32): max_area, max_price, max_rooms, min_area, min_rooms, search_url, name, name (+24 more)
+Nodes (32): max_area, max_rooms, min_area, min_price, min_rooms, search_url, name, name (+24 more)
 
 ### Community 129 - "Community 129"
 Cohesion: 0.07
@@ -868,8 +867,8 @@ Cohesion: 0.06
 Nodes (31): default, name, notNull, primaryKey, type, ai_criteria, deepseek_enabled, first_seen (+23 more)
 
 ### Community 133 - "Community 133"
-Cohesion: 0.33
-Nodes (6): notified, default, name, notNull, primaryKey, type
+Cohesion: 0.12
+Nodes (19): name, notNull, primaryKey, type, acquired_at, holder, id, source (+11 more)
 
 ### Community 134 - "Community 134"
 Cohesion: 0.10
@@ -897,7 +896,7 @@ Nodes (10): offer_snapshots_offer_id_offers_id_fk, columnsFrom, columnsTo, name,
 
 ### Community 140 - "Community 140"
 Cohesion: 0.07
-Nodes (33): name, notNull, primaryKey, type, acquired_at, holder, max_rooms, min_price (+25 more)
+Nodes (33): name, notNull, primaryKey, type, acquired_at, district, holder, rooms (+25 more)
 
 ### Community 141 - "Community 141"
 Cohesion: 0.20
@@ -1028,8 +1027,8 @@ Cohesion: 0.33
 Nodes (6): poll_interval_min, default, name, notNull, primaryKey, type
 
 ### Community 173 - "Community 173"
-Cohesion: 0.06
-Nodes (39): embedTextHash(), default, name, notNull, primaryKey, type, ai_criteria, max_area (+31 more)
+Cohesion: 0.07
+Nodes (28): embed_enabled, max_area, max_rooms, min_rooms, request_delay_ms, default, name, notNull (+20 more)
 
 ### Community 174 - "Community 174"
 Cohesion: 0.33
@@ -1048,8 +1047,8 @@ Cohesion: 0.33
 Nodes (8): Source, AddResult, addUrls(), normalizeHost(), resolveSource(), SOURCE_HOSTS, splitPasted(), res
 
 ### Community 178 - "Community 178"
-Cohesion: 0.08
-Nodes (26): first_seen, request_delay_ms, score_threshold, search_urls, default, name, notNull, primaryKey (+18 more)
+Cohesion: 0.33
+Nodes (6): score_threshold, default, name, notNull, primaryKey, type
 
 ### Community 179 - "Community 179"
 Cohesion: 0.33
@@ -1072,8 +1071,8 @@ Cohesion: 0.29
 Nodes (7): Paginated + Virtualized Infinite Scroll Plan, columnsForWidth / chunkRows pure helpers, In-memory ranking then slice window, Infinite scroll + paged accumulation, Page<T> { items, total } pagination contract, Rescore reconcile (re-fetch loaded window, 500 clamp), Stable ordering via id desc tiebreaker
 
 ### Community 184 - "Community 184"
-Cohesion: 0.33
-Nodes (6): last_seen, default, name, notNull, primaryKey, type
+Cohesion: 0.11
+Nodes (18): embedTextHash(), default, name, notNull, primaryKey, type, ai_criteria, max_price (+10 more)
 
 ### Community 185 - "Community 185"
 Cohesion: 0.33
@@ -1108,8 +1107,8 @@ Cohesion: 0.33
 Nodes (6): request_delay_ms, default, name, notNull, primaryKey, type
 
 ### Community 193 - "Community 193"
-Cohesion: 0.33
-Nodes (6): ts, default, name, notNull, primaryKey, type
+Cohesion: 0.12
+Nodes (16): name, notNull, primaryKey, type, area, max_price, score_reasons, primaryKey (+8 more)
 
 ### Community 194 - "Community 194"
 Cohesion: 0.33
@@ -1125,7 +1124,7 @@ Nodes (6): default, name, notNull, primaryKey, type, apprise_urls
 
 ### Community 197 - "Community 197"
 Cohesion: 0.33
-Nodes (6): title, default, name, notNull, primaryKey, type
+Nodes (6): default, name, notNull, primaryKey, type, ai_criteria
 
 ### Community 198 - "Community 198"
 Cohesion: 0.33
@@ -1177,15 +1176,15 @@ Nodes (6): images, default, name, notNull, primaryKey, type
 
 ### Community 210 - "Community 210"
 Cohesion: 0.33
-Nodes (6): embed_enabled, default, name, notNull, primaryKey, type
+Nodes (6): deepseek_enabled, default, name, notNull, primaryKey, type
 
 ### Community 211 - "Community 211"
 Cohesion: 0.33
-Nodes (6): images, default, name, notNull, primaryKey, type
+Nodes (6): poll_interval_min, default, name, notNull, primaryKey, type
 
 ### Community 212 - "Community 212"
-Cohesion: 0.33
-Nodes (6): status, default, name, notNull, primaryKey, type
+Cohesion: 0.08
+Nodes (26): extract_enabled, features, notified, status, default, name, notNull, primaryKey (+18 more)
 
 ### Community 213 - "Community 213"
 Cohesion: 0.33
@@ -1193,7 +1192,7 @@ Nodes (6): poll_interval_min, default, name, notNull, primaryKey, type
 
 ### Community 214 - "Community 214"
 Cohesion: 0.33
-Nodes (6): notified, default, name, notNull, primaryKey, type
+Nodes (6): score_threshold, default, name, notNull, primaryKey, type
 
 ### Community 215 - "Community 215"
 Cohesion: 0.33
@@ -1253,7 +1252,7 @@ Nodes (5): external_id, name, notNull, primaryKey, type
 
 ### Community 229 - "Community 229"
 Cohesion: 0.33
-Nodes (6): list_pages, default, name, notNull, primaryKey, type
+Nodes (6): title, default, name, notNull, primaryKey, type
 
 ### Community 230 - "Community 230"
 Cohesion: 0.33
@@ -1424,8 +1423,8 @@ Cohesion: 0.33
 Nodes (6): ts, default, name, notNull, primaryKey, type
 
 ### Community 272 - "Community 272"
-Cohesion: 0.40
-Nodes (5): score_reasons, name, notNull, primaryKey, type
+Cohesion: 0.33
+Nodes (6): first_seen, default, name, notNull, primaryKey, type
 
 ### Community 273 - "Community 273"
 Cohesion: 0.40
@@ -1513,11 +1512,11 @@ Nodes (5): code:yaml (services:), code:bash (git add docker-compose.yml), Task 2
 
 ### Community 294 - "Community 294"
 Cohesion: 0.33
-Nodes (6): extract_enabled, default, name, notNull, primaryKey, type
+Nodes (6): search_urls, default, name, notNull, primaryKey, type
 
 ### Community 295 - "Community 295"
-Cohesion: 0.50
-Nodes (4): Test DB isolation refuses real DB under NODE_ENV=test, PreToolUse guard hook, .claude/hooks/check.ts, .claude settings hooks
+Cohesion: 0.40
+Nodes (5): score, name, notNull, primaryKey, type
 
 ### Community 296 - "Community 296"
 Cohesion: 0.33
@@ -1529,15 +1528,15 @@ Nodes (6): embed_enabled, default, name, notNull, primaryKey, type
 
 ### Community 298 - "Community 298"
 Cohesion: 0.50
-Nodes (3): ./lib/searchUrls, cands, res
+Nodes (3): ./lib/searchUrls, k, p
 
 ### Community 299 - "Community 299"
 Cohesion: 0.33
 Nodes (6): extract_enabled, default, name, notNull, primaryKey, type
 
 ### Community 300 - "Community 300"
-Cohesion: 0.33
-Nodes (6): features, default, name, notNull, primaryKey, type
+Cohesion: 0.40
+Nodes (5): score, name, notNull, primaryKey, type
 
 ### Community 301 - "Community 301"
 Cohesion: 0.33
@@ -1562,6 +1561,10 @@ Nodes (6): list_pages, default, name, notNull, primaryKey, type
 ### Community 306 - "Community 306"
 Cohesion: 0.33
 Nodes (6): max_detail_fetches_per_run, default, name, notNull, primaryKey, type
+
+### Community 307 - "Community 307"
+Cohesion: 0.40
+Nodes (5): embedding, name, notNull, primaryKey, type
 
 ### Community 308 - "Community 308"
 Cohesion: 0.33
@@ -1627,10 +1630,6 @@ Nodes (6): message, default, name, notNull, primaryKey, type
 Cohesion: 0.33
 Nodes (6): code:bash (git add src/api/validate.ts test/validate.test.ts), code:ts (test("accepts an array of trojmiasto search urls", () => {), code:ts (const EDITABLE: (keyof Config)[] = [), code:ts (if ("searchUrls" in patch) {), code:ts (if ("pollIntervalMin" in patch) {), Task 2: Validate searchUrls + relax pollIntervalMin
 
-### Community 324 - "Community 324"
-Cohesion: 0.33
-Nodes (6): images, default, name, notNull, primaryKey, type
-
 ### Community 327 - "Community 327"
 Cohesion: 0.33
 Nodes (6): devDependencies, bun-plugin-tailwind, drizzle-kit, @electric-sql/pglite, tailwindcss, @types/bun
@@ -1670,10 +1669,6 @@ Nodes (5): external_id, name, notNull, primaryKey, type
 ### Community 337 - "Community 337"
 Cohesion: 0.40
 Nodes (5): kind, name, notNull, primaryKey, type
-
-### Community 338 - "Community 338"
-Cohesion: 0.33
-Nodes (6): notified, default, name, notNull, primaryKey, type
 
 ### Community 339 - "Community 339"
 Cohesion: 0.40
@@ -1732,20 +1727,20 @@ Cohesion: 0.50
 Nodes (4): code:ts (// test/api.test.ts), code:ts (// src/api/server.ts), code:bash (git add src/api/server.ts test/api.test.ts), Task 12: Bun API server
 
 ## Knowledge Gaps
-- **2858 isolated node(s):** `cands`, `res`, `res`, `SOURCE_HOSTS`, `AddResult` (+2853 more)
+- **2858 isolated node(s):** `k`, `p`, `res`, `SOURCE_HOSTS`, `AddResult` (+2853 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `embedTextHash()` connect `Community 173` to `Community 98`, `Community 104`, `Community 107`, `Community 15`, `Community 82`, `Community 147`, `Community 84`?**
+- **Why does `embedTextHash()` connect `Community 184` to `Community 98`, `Community 107`, `Community 14`, `Community 15`, `Community 82`, `Community 147`, `Community 84`?**
   _High betweenness centrality (0.245) - this node is a cross-community bridge._
-- **Why does `id` connect `Community 178` to `Community 98`, `Community 104`, `Community 10`, `Community 107`, `Community 173`, `Community 84`?**
+- **Why does `id` connect `Community 212` to `Community 98`, `Community 10`, `Community 107`, `Community 82`, `Community 84`, `Community 184`?**
   _High betweenness centrality (0.205) - this node is a cross-community bridge._
 - **Why does `OfferSnapshot` connect `Community 14` to `Community 8`, `Community 1`?**
   _High betweenness centrality (0.186) - this node is a cross-community bridge._
-- **What connects `cands`, `res`, `res` to the rest of the system?**
+- **What connects `k`, `p`, `res` to the rest of the system?**
   _2874 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.04850964348334307 - nodes in this community are weakly interconnected._

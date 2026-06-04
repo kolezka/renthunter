@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getConfig, saveConfig, type Config } from "./lib/api";
+  import SearchUrlList from "./SearchUrlList.svelte";
 
   let { onClose }: { onClose: () => void } = $props();
 
@@ -8,7 +9,6 @@
   let saved = $state(false);
   let error = $state("");
   let appriseText = $state("");
-  let searchUrlsText = $state("");
 
   type SectionId = "search" | "filters" | "ai" | "performance" | "notifications";
   const SECTIONS: { id: SectionId; label: string; blurb: string }[] = [
@@ -24,7 +24,6 @@
   onMount(async () => {
     cfg = await getConfig();
     appriseText = cfg.appriseUrls.join("\n");
-    searchUrlsText = cfg.searchUrls.join("\n");
   });
 
   async function submit(e: Event) {
@@ -33,13 +32,14 @@
     error = "";
     const patch: Partial<Config> = {
       ...cfg,
-      searchUrls: searchUrlsText.split("\n").map((s) => s.trim()).filter(Boolean),
+      // SearchUrlList only admits trimmed, recognised URLs, so this is a defensive
+      // pass in case the server ever echoes back a dirty/empty entry.
+      searchUrls: cfg.searchUrls.map((s) => s.trim()).filter(Boolean),
       appriseUrls: appriseText.split("\n").map((s) => s.trim()).filter(Boolean),
     };
     try {
       cfg = await saveConfig(patch);
       appriseText = cfg.appriseUrls.join("\n");
-      searchUrlsText = cfg.searchUrls.join("\n");
       saved = true;
       setTimeout(() => (saved = false), 1500);
     } catch (err) {
@@ -134,10 +134,7 @@
               </div>
 
               {#if active === "search"}
-                <label class="grid gap-[7px]">
-                  <span class={labelSpan}>Search URLs <em class="font-medium not-italic text-ink-3">· one per line · OLX / Otodom / Trójmiasto</em></span>
-                  <textarea bind:value={searchUrlsText} rows="5" placeholder="https://ogloszenia.trojmiasto.pl/…" class="{control} resize-y leading-normal"></textarea>
-                </label>
+                <SearchUrlList bind:urls={cfg.searchUrls} />
 
               {:else if active === "filters"}
                 <div class={grid}>
