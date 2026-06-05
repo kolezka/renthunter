@@ -286,8 +286,10 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
 }
 
 /** Project a full DB offer row down to the client-facing `ListOffer` shape,
- *  dropping `embedding`/`embedTextHash` (used only server-side for ranking/dedupe). */
-function toListOffer(o: Offer): ListOffer {
+ *  dropping `embedding`/`embedTextHash` (used only server-side for ranking/dedupe).
+ *  Reused at the API boundary (e.g. the single-offer refresh response) so every
+ *  offer payload the browser receives has the same embedding-free shape. */
+export function toListOffer(o: Offer): ListOffer {
   const out = {} as Record<string, unknown>;
   for (const k of Object.keys(listColumns)) out[k] = o[k as keyof Offer];
   return out as ListOffer;

@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { listOffers, getConfig, updateConfig, listLogs, searchOffers, getFacets, getOfferHistory } from "../db/queries";
+import { listOffers, getConfig, updateConfig, listLogs, searchOffers, getFacets, getOfferHistory, toListOffer } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
 import { embed } from "../embeddings/client";
 import type { Offer } from "../db/schema";
@@ -81,7 +81,9 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         if (!/^\d+$/.test(externalId)) return json({ error: "invalid offer id" }, 400);
         const updated = await refreshOfferById(externalId);
         if (!updated) return json({ error: "offer not found" }, 404);
-        return json(updated);
+        // Project to the embedding-free ListOffer shape so the refresh response
+        // matches the list/search payloads (no embedding/embedTextHash leak).
+        return json(toListOffer(updated));
       }
 
       if (path === "/api/offers/facets" && req.method === "GET") {
