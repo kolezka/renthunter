@@ -3,6 +3,7 @@ import type { Source } from "../scraper/sources/types";
 import { maybeScore } from "./check";
 import type { Logger } from "../log/logger";
 import { enrichOffer, type EnrichDeps } from "./enrich";
+import { buildOfferRow } from "./offer-row";
 
 export interface RefreshDeps extends EnrichDeps {
   getConfig: () => Promise<Config>;
@@ -33,17 +34,7 @@ export async function refreshOffer(externalId: string, deps: RefreshDeps): Promi
   const enriched = await enrichOffer(d, config, deps, existing.embedTextHash ?? null);
 
   const row: NewOffer = {
-    externalId,
-    url: existing.url,
-    source: existing.source,
-    title: d.title,
-    price: d.price,
-    area: d.area,
-    rooms: d.rooms,
-    district: d.district,
-    description: d.description,
-    images: d.images,
-    ...enriched,
+    ...buildOfferRow({ externalId, url: existing.url, source: existing.source }, d, enriched),
     score,
     scoreReasons: reasons,
   };
