@@ -16,11 +16,6 @@ export interface OfferDetail {
   images: string[];
 }
 
-export function extractExternalId(url: string): string | null {
-  const m = url.match(/-ogl(\d+)\.html/);
-  return m ? m[1]! : null;
-}
-
 /** Extract the value from a trojmiasto xogField block by CSS modifier class name */
 function xogFieldValue(html: string, modifier: string): string | null {
   // Matches: class="xogField xogField--<modifier>..." then finds xogField__value--big or xogField__value content
