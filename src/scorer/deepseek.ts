@@ -1,5 +1,4 @@
-import { TIMEOUTS } from "../scraper/timeout";
-import { withRetry } from "../scraper/retry";
+import { chatJson } from "./chat";
 
 export interface ScoreInput { description: string; criteria: string; }
 export interface ScoreResult { score: number; reasons: string; }
@@ -13,7 +12,6 @@ export interface ScoreOptions {
 }
 
 export async function scoreOffer(input: ScoreInput, opts: ScoreOptions): Promise<ScoreResult> {
-  const doFetch = opts.fetchImpl ?? fetch;
   const language = opts.language || "Polish";
   const system =
     "You rate apartment rental listings against the user's criteria. " +
@@ -23,28 +21,7 @@ export async function scoreOffer(input: ScoreInput, opts: ScoreOptions): Promise
     `User criteria:\n${input.criteria}\n\n` +
     `Listing description:\n${input.description}`;
 
-  const res = await withRetry(() =>
-    doFetch(`${opts.baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${opts.apiKey}`,
-      },
-      signal: AbortSignal.timeout(TIMEOUTS.ai),
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.2,
-      }),
-    }),
-  );
-  if (!res.ok) throw new Error(`DeepSeek HTTP ${res.status}`);
-  const data: any = await res.json();
-  const content: string = data?.choices?.[0]?.message?.content ?? "";
+  const content = await chatJson(opts, { system, user, temperature: 0.2 });
 
   let parsed: { score?: unknown; reasons?: unknown };
   try { parsed = JSON.parse(content); }
