@@ -51,8 +51,8 @@
   function onKey(e: KeyboardEvent) {
     if (e.key === "Enter") { e.preventDefault(); commitDraft(); }
   }
-  function remove(i: number) {
-    urls = urls.filter((_, idx) => idx !== i);
+  function remove(url: string) {
+    urls = urls.filter((u) => u !== url);
     skipNote = "";
   }
 </script>
@@ -66,7 +66,7 @@
     </p>
   {/if}
 
-  {#each urls as url, i (i)}
+  {#each urls as url (url)}
     {@const k = keyOf(url)}
     {@const p = parts(url)}
     <div
@@ -83,7 +83,7 @@
       >{TINT[k].label}</span>
       <button
         type="button"
-        onclick={() => remove(i)}
+        onclick={() => remove(url)}
         aria-label="Remove {p.host}"
         title="Remove"
         class="grid h-[30px] w-[30px] flex-none place-items-center rounded-[9px] text-ink-3 transition-colors duration-150 hover:bg-[rgba(255,90,90,0.12)] hover:text-[var(--color-bad)]"

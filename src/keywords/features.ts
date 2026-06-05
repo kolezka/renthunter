@@ -1,5 +1,6 @@
 import { normalizeText } from "./gazetteer";
 import { FEATURE_TAXONOMY, FEATURE_NOISE } from "../../config/features";
+import { chatJson } from "../scorer/chat";
 
 // alias (normalized) -> canonical. Built once from the taxonomy; the canonical
 // is registered as its own alias so already-canonical tags map to themselves.
@@ -46,7 +47,6 @@ export async function extractFeatures(
   input: ExtractFeaturesInput,
   opts: ExtractFeaturesOptions,
 ): Promise<string[]> {
-  const doFetch = opts.fetchImpl ?? fetch;
   const language = opts.language || "Polish";
   const system =
     "You extract apartment features from a rental listing. " +
@@ -56,27 +56,13 @@ export async function extractFeatures(
     `only invent a new tag for a feature none of these cover: ${CANONICAL_FEATURES.join(", ")}.`;
   const user = `Title:\n${input.title}\n\nDescription:\n${input.description}`;
 
-  const res = await doFetch(`${opts.baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${opts.apiKey}` },
-    body: JSON.stringify({
-      model: "deepseek-chat",
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.1,
-    }),
-  });
-  if (!res.ok) throw new Error(`DeepSeek HTTP ${res.status}`);
-  const data: any = await res.json();
-  const content: string = data?.choices?.[0]?.message?.content ?? "";
+  const content = await chatJson(opts, { system, user, temperature: 0.1 });
   try {
     const parsed = JSON.parse(content);
     const arr = Array.isArray(parsed.features) ? parsed.features : [];
     return canonicalizeFeatures(arr.map((f: unknown) => String(f)));
   } catch {
+    // feature extraction is non-fatal; degrade to [] on parse failure
     return [];
   }
 }

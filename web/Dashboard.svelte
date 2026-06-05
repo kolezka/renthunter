@@ -7,6 +7,10 @@
   import VirtualList from "./VirtualList.svelte";
   import type { Page } from "./lib/api";
 
+  // App owns the body scroll-lock for all modals; we report our offer-detail
+  // open state up via this $bindable so it can lock/unlock in one place.
+  let { detailOpen = $bindable(false) }: { detailOpen?: boolean } = $props();
+
   let offers: Offer[] = $state([]);
   let total = $state(0);
   let loadingMore = $state(false);
@@ -57,6 +61,7 @@
   let ws: WebSocket | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   let rescoreSafetyTimer: ReturnType<typeof setTimeout> | null = null;
+  let toastTimer: ReturnType<typeof setTimeout> | null = null;
   let wsRetry = 0;
 
   let facets = $state<Facets>({ districts: [], kinds: [], features: [], sources: [] });
@@ -69,12 +74,16 @@
   const sourceLabel = (s: string) => SOURCE_LABEL[s] ?? s;
   const sourceClass = (s: string) =>
     SOURCE_CLASS[s] ?? "border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2";
-  function openDetail(o: Offer) { selected = o; }
-  function closeDetail() { selected = null; }
+  // Set detailOpen alongside `selected` (not via $effect) so App's scroll-lock
+  // reacts in the same tick. Refresh/rescore reassign `selected` only when it's
+  // already non-null, so detailOpen stays correct without touching those paths.
+  function openDetail(o: Offer) { selected = o; detailOpen = true; }
+  function closeDetail() { selected = null; detailOpen = false; }
 
   function flash(msg: string) {
+    if (toastTimer) clearTimeout(toastTimer);
     toast = msg;
-    setTimeout(() => (toast = ""), 2500);
+    toastTimer = setTimeout(() => (toast = ""), 2500);
   }
 
   async function onRun() {
@@ -190,6 +199,7 @@
   onDestroy(() => {
     if (reconnectTimer) clearTimeout(reconnectTimer);
     if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
+    if (toastTimer) clearTimeout(toastTimer);
     if (ws) { ws.onclose = null; ws.close(); } // null onclose so teardown doesn't reconnect
   });
 

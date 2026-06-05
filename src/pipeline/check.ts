@@ -4,6 +4,7 @@ import type { ListItem, OfferDetail, Source } from "../scraper/sources/types";
 import { runPool } from "./pool";
 import type { Logger } from "../log/logger";
 import { enrichOffer, type EnrichDeps } from "./enrich";
+import { buildOfferRow } from "./offer-row";
 import { buildOfferNotification } from "../notify/message";
 
 export interface CheckDeps extends EnrichDeps {
@@ -83,19 +84,7 @@ export async function processOffer(
     const detailHtml = await deps.fetchPage(item.url);
     const d = src.parseDetail(detailHtml);
     const enriched = await enrichOffer(d, config, deps);
-    const base: NewOffer = {
-      externalId: item.externalId,
-      url: item.url,
-      source: item.source,
-      title: d.title,
-      price: d.price,
-      area: d.area,
-      rooms: d.rooms,
-      district: d.district,
-      description: d.description,
-      images: d.images,
-      ...enriched,
-    };
+    const base = buildOfferRow(item, d, enriched);
 
     if (!passesFilters(d, config)) {
       await deps.upsertOffer(base);

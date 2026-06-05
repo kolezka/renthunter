@@ -1,3 +1,5 @@
+import { TIMEOUTS } from "../scraper/timeout";
+
 export interface NotifyInput {
   appriseUrl: string;
   targets: string[];
@@ -12,6 +14,7 @@ export async function sendNotification(input: NotifyInput): Promise<void> {
   const res = await doFetch(`${input.appriseUrl}/notify`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    signal: AbortSignal.timeout(TIMEOUTS.notify),
     body: JSON.stringify({
       urls: input.targets.join(","),
       title: input.title,

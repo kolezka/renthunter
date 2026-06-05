@@ -1,10 +1,5 @@
 import { test, expect } from "bun:test";
-import { extractExternalId, parseListUrls, listPageUrls } from "../src/scraper/parse";
-
-test("extractExternalId pulls digits from ogl link", () => {
-  expect(extractExternalId("https://ogloszenia.trojmiasto.pl/x/foo-ogl66438940.html")).toBe("66438940");
-  expect(extractExternalId("https://example.com/no-id.html")).toBeNull();
-});
+import { parseListUrls, listPageUrls } from "../src/scraper/parse";
 
 test("parseListUrls returns unique offer links from fixture", async () => {
   const html = await Bun.file("test/fixtures/list.html").text();

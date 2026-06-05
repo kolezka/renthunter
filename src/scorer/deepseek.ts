@@ -1,3 +1,5 @@
+import { chatJson } from "./chat";
+
 export interface ScoreInput { description: string; criteria: string; }
 export interface ScoreResult { score: number; reasons: string; }
 export interface ScoreOptions {
@@ -10,7 +12,6 @@ export interface ScoreOptions {
 }
 
 export async function scoreOffer(input: ScoreInput, opts: ScoreOptions): Promise<ScoreResult> {
-  const doFetch = opts.fetchImpl ?? fetch;
   const language = opts.language || "Polish";
   const system =
     "You rate apartment rental listings against the user's criteria. " +
@@ -20,32 +21,12 @@ export async function scoreOffer(input: ScoreInput, opts: ScoreOptions): Promise
     `User criteria:\n${input.criteria}\n\n` +
     `Listing description:\n${input.description}`;
 
-  const res = await doFetch(`${opts.baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${opts.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "deepseek-chat",
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.2,
-    }),
-  });
-  if (!res.ok) throw new Error(`DeepSeek HTTP ${res.status}`);
-  const data: any = await res.json();
-  const content: string = data?.choices?.[0]?.message?.content ?? "";
+  const content = await chatJson(opts, { system, user, temperature: 0.2 });
 
-  try {
-    const parsed = JSON.parse(content);
-    const raw = Number(parsed.score);
-    const score = Number.isFinite(raw) ? Math.max(0, Math.min(100, Math.round(raw))) : 0;
-    return { score, reasons: String(parsed.reasons ?? "") };
-  } catch {
-    return { score: 0, reasons: "Failed to parse AI response (parse error)" };
-  }
+  let parsed: { score?: unknown; reasons?: unknown };
+  try { parsed = JSON.parse(content); }
+  catch { throw new Error("DeepSeek: failed to parse AI response"); }
+  const raw = Number(parsed.score);
+  if (!Number.isFinite(raw)) throw new Error("DeepSeek: response had no numeric score");
+  return { score: Math.max(0, Math.min(100, Math.round(raw))), reasons: String(parsed.reasons ?? "") };
 }

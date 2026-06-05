@@ -2,6 +2,7 @@
   import { SOURCE_LABEL, type Offer } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate } from "./lib/format";
   import OfferHistory from "./OfferHistory.svelte";
+  import Gallery from "./Gallery.svelte";
 
   let { offer, onClose, onRefresh, refreshing = false }: {
     offer: Offer;
@@ -10,43 +11,13 @@
     refreshing?: boolean;
   } = $props();
 
-  let idx = $state(0);
-  let broken = $state(new Set<number>());
-
-  // Reset gallery state whenever the offer changes (e.g. a refresh returning a
-  // different image set) so idx can't point past the new array.
-  $effect(() => {
-    offer.id; offer.images;
-    idx = 0;
-    broken = new Set<number>();
-  });
-
-  // Next non-broken index from `from` (wraps). If all are broken it returns a
-  // broken index, but the markup renders a placeholder there — no onerror loop.
-  function nextLive(from: number): number {
-    const all = offer.images ?? [];
-    if (!all.length) return 0;
-    let next = ((from % all.length) + all.length) % all.length;
-    for (let tries = all.length; broken.has(next) && tries > 0; tries--) next = (next + 1) % all.length;
-    return next;
-  }
-  function markBroken(i: number) { broken = new Set(broken).add(i); idx = nextLive(idx); }
-  function go(n: number) { if ((offer.images ?? []).length) idx = nextLive(n); }
-
-  // Same scaffolding as the Config modal: freeze the aurora + lock scroll while open.
-  $effect(() => {
-    document.body.style.overflow = "hidden";
-    document.documentElement.classList.add("modal-open");
-    return () => {
-      document.body.style.overflow = "";
-      document.documentElement.classList.remove("modal-open");
-    };
-  });
+  // Scroll-lock + aurora freeze are owned by App (it locks while any modal is
+  // open), so this component no longer touches document.body.
 
   const tagCls = "rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] px-[11px] py-1 text-[0.8rem] font-medium text-ink-2";
 </script>
 
-<svelte:window onkeydown={(e) => { if (e.key === "Escape") onClose(); if (e.key === "ArrowRight") go(idx + 1); if (e.key === "ArrowLeft") go(idx - 1); }} />
+<svelte:window onkeydown={(e) => { if (e.key === "Escape") onClose(); }} />
 
 <div
   class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/55 p-4 backdrop-blur-md sm:p-8"
@@ -61,40 +32,11 @@
       </button>
     </header>
 
-    <!-- Gallery -->
-    {#if (offer.images ?? []).length}
-      <div class="relative mb-4 overflow-hidden rounded-[16px] border border-[var(--glass-border)] bg-black/30">
-        {#each offer.images as src, i (src)}
-          {#if i === idx}
-            {#if broken.has(i)}
-              <div class="grid h-[clamp(220px,42vh,460px)] w-full place-items-center text-ink-3">Image unavailable</div>
-            {:else}
-              <img {src} alt={offer.title} loading="lazy" class="h-[clamp(220px,42vh,460px)] w-full object-cover" onerror={() => markBroken(i)} />
-            {/if}
-          {/if}
-        {/each}
-        {#if offer.images.length > 1}
-          <button class="absolute left-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65" onclick={() => go(idx - 1)} aria-label="Previous">‹</button>
-          <button class="absolute right-2 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm transition hover:bg-black/65" onclick={() => go(idx + 1)} aria-label="Next">›</button>
-          <div class="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-[0.72rem] font-semibold text-white">{idx + 1} / {offer.images.length}</div>
-        {/if}
-      </div>
-      {#if offer.images.length > 1}
-        <div class="mb-4 flex gap-2 overflow-x-auto pb-1">
-          {#each offer.images as src, i (src)}
-            {#if !broken.has(i)}
-              <button class="h-14 w-20 flex-shrink-0 overflow-hidden rounded-[10px] border-2 {i === idx ? 'border-[var(--color-aurora-indigo)]' : 'border-transparent'}" onclick={() => (idx = i)} aria-label={`Photo ${i + 1}`}>
-                <img {src} alt="" loading="lazy" class="h-full w-full object-cover" onerror={() => markBroken(i)} />
-              </button>
-            {/if}
-          {/each}
-        </div>
-      {/if}
-    {:else}
-      <div class="mb-4 grid h-[200px] w-full place-items-center rounded-[16px] border border-dashed border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-3">
-        No photos — refresh the offer to fetch them
-      </div>
-    {/if}
+    <!-- Gallery: keyed by offer.id so its internal idx/broken state resets when
+         the user switches offers, without a reset $effect. -->
+    {#key offer.id}
+      <Gallery images={offer.images ?? []} title={offer.title} />
+    {/key}
 
     <div class="mb-4 flex flex-wrap items-center gap-3">
       <div class="font-display text-[1.9rem] font-bold tracking-[-0.02em] [font-variant-numeric:tabular-nums]">{fmtPln(offer.price)} <span class="text-[0.95rem] font-semibold text-ink-3">PLN</span></div>

@@ -67,27 +67,6 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
     }
   }
 
-  if ("scoreThreshold" in patch) {
-    const v = patch.scoreThreshold;
-    if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > 100) {
-      return { ok: false, error: "scoreThreshold must be an integer 0-100" };
-    }
-  }
-
-  if ("pollIntervalMin" in patch) {
-    const v = patch.pollIntervalMin;
-    if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > 1440) {
-      return { ok: false, error: "pollIntervalMin must be an integer 0-1440 (0 = disabled)" };
-    }
-  }
-
-  if ("rescoreIntervalMin" in patch) {
-    const v = patch.rescoreIntervalMin;
-    if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > 10080) {
-      return { ok: false, error: "rescoreIntervalMin must be an integer 0-10080 (0 = disabled)" };
-    }
-  }
-
   if ("aiCriteria" in patch) {
     if (typeof patch.aiCriteria !== "string" || patch.aiCriteria.length > 5000) {
       return { ok: false, error: "aiCriteria must be a string up to 5000 chars" };
@@ -101,29 +80,27 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
     }
   }
 
-  if ("deepseekEnabled" in patch && typeof patch.deepseekEnabled !== "boolean") {
-    return { ok: false, error: "deepseekEnabled must be a boolean" };
+  for (const k of ["deepseekEnabled", "extractEnabled", "embedEnabled"] as const) {
+    if (k in patch && typeof patch[k] !== "boolean") {
+      return { ok: false, error: `${k} must be a boolean` };
+    }
   }
 
-  if ("extractEnabled" in patch && typeof patch.extractEnabled !== "boolean") {
-    return { ok: false, error: "extractEnabled must be a boolean" };
-  }
-
-  if ("embedEnabled" in patch && typeof patch.embedEnabled !== "boolean") {
-    return { ok: false, error: "embedEnabled must be a boolean" };
-  }
-
-  const intRanges: Record<string, [number, number]> = {
-    listPages: [1, 10],
-    maxDetailFetchesPerRun: [1, 500],
-    requestDelayMs: [0, 10000],
-    concurrencyLimit: [1, 16],
+  const intRanges: Record<string, { min: number; max: number; note?: string }> = {
+    scoreThreshold: { min: 0, max: 100 },
+    pollIntervalMin: { min: 0, max: 1440, note: "0 = disabled" },
+    rescoreIntervalMin: { min: 0, max: 10080, note: "0 = disabled" },
+    listPages: { min: 1, max: 10 },
+    maxDetailFetchesPerRun: { min: 1, max: 500 },
+    requestDelayMs: { min: 0, max: 10000 },
+    concurrencyLimit: { min: 1, max: 16 },
   };
-  for (const [k, [lo, hi]] of Object.entries(intRanges)) {
+  for (const [k, { min, max, note }] of Object.entries(intRanges)) {
     if (k in patch) {
       const v = patch[k];
-      if (typeof v !== "number" || !Number.isInteger(v) || v < lo || v > hi) {
-        return { ok: false, error: `${k} must be an integer ${lo}-${hi}` };
+      if (typeof v !== "number" || !Number.isInteger(v) || v < min || v > max) {
+        const suffix = note ? ` (${note})` : "";
+        return { ok: false, error: `${k} must be an integer ${min}-${max}${suffix}` };
       }
     }
   }
