@@ -1,4 +1,5 @@
 import { metaContent, firstJsonLd, ldImages } from "./html";
+import { makeListPageUrls } from "./sources/types";
 
 export interface ListItem {
   externalId: string;
@@ -144,16 +145,5 @@ export function parseListUrls(html: string): ListItem[] {
 /**
  * Build URLs for the first `pages` list pages. Page 1 is the search URL
  * verbatim; subsequent pages set the trojmiasto `strona` query param.
- * NOTE: the pagination param is `strona` — verify against a live page-2 URL
- * (Step 4) and change the single `set("strona", …)` line if the site differs.
  */
-export function listPageUrls(searchUrl: string, pages: number): string[] {
-  const n = Math.max(1, Math.floor(pages));
-  const urls = [searchUrl];
-  for (let p = 2; p <= n; p++) {
-    const u = new URL(searchUrl);
-    u.searchParams.set("strona", String(p));
-    urls.push(u.toString());
-  }
-  return urls;
-}
+export const listPageUrls = makeListPageUrls("strona");

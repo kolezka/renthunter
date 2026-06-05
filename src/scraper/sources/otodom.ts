@@ -1,4 +1,5 @@
 import type { Source, ListItem, OfferDetail } from "./types";
+import { makeListPageUrls } from "./types";
 
 const OTODOM_ORIGIN = "https://www.otodom.pl";
 
@@ -33,16 +34,7 @@ export function parseList(html: string): ListItem[] {
   return [...seen.values()];
 }
 
-export function listPageUrls(searchUrl: string, pages: number): string[] {
-  const n = Math.max(1, Math.floor(pages));
-  const urls = [searchUrl];
-  for (let p = 2; p <= n; p++) {
-    const u = new URL(searchUrl);
-    u.searchParams.set("page", String(p));
-    urls.push(u.toString());
-  }
-  return urls;
-}
+export const listPageUrls = makeListPageUrls("page");
 
 /** Otodom detail characteristics are `{ key, value, localizedValue }` rows. */
 function charValue(
