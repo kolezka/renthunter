@@ -1,5 +1,5 @@
 import type { Source, ListItem, OfferDetail } from "./types";
-import { makeListPageUrls } from "./types";
+import { makeListPageUrls } from "./pagination";
 
 const OTODOM_ORIGIN = "https://www.otodom.pl";
 

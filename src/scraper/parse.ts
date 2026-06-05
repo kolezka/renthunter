@@ -1,5 +1,5 @@
 import { metaContent, firstJsonLd, ldImages } from "./html";
-import { makeListPageUrls } from "./sources/types";
+import { makeListPageUrls } from "./sources/pagination";
 
 export interface ListItem {
   externalId: string;

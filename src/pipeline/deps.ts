@@ -17,7 +17,10 @@ import { embed } from "../embeddings/client";
 import { runCheck } from "./check";
 import { runRescore, type RescoreDeps } from "./rescore";
 import { progressBus } from "./progress";
-import { RUN_LOCK_STALE_MS } from "./run-lock";
+
+// A run lease older than this is considered stale and may be reclaimed.
+// Must exceed the longest possible run (trigger maxDuration=300s).
+const RUN_LOCK_STALE_MS = 15 * 60 * 1000;
 
 /** Compose the logged CheckDeps used by runCheck (trigger task + manual run). */
 export function buildCheckDeps(env: AppConfig, logger: Logger): CheckDeps {

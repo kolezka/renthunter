@@ -5,7 +5,9 @@ import type { EnrichFields } from "./enrich";
 /** Build the shared `NewOffer` base from an offer's identity, its parsed detail,
  *  and the enriched fields. Does NOT set `score`/`scoreReasons` — callers spread
  *  those on top when they have them (the crawl filter-fail path persists without
- *  a score, refresh always re-scores). */
+ *  a score, refresh always re-scores).
+ *  Note: `districtCanonical` and `kind` are NOT on `detail`; they arrive via the
+ *  `enriched` argument (from the gazetteer) and are applied by the spread below. */
 export function buildOfferRow(
   identity: { externalId: string; url: string; source: string },
   detail: OfferDetail,

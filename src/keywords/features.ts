@@ -62,6 +62,7 @@ export async function extractFeatures(
     const arr = Array.isArray(parsed.features) ? parsed.features : [];
     return canonicalizeFeatures(arr.map((f: unknown) => String(f)));
   } catch {
+    // feature extraction is non-fatal; degrade to [] on parse failure
     return [];
   }
 }

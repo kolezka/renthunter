@@ -1,5 +1,5 @@
 import type { Source, ListItem, OfferDetail } from "./types";
-import { makeListPageUrls } from "./types";
+import { makeListPageUrls } from "./pagination";
 import { metaContent, findJsonLd, ldImages } from "../html";
 
 const OLX_ORIGIN = "https://www.olx.pl";
