@@ -132,9 +132,10 @@ test("GET /api/offers/facets returns facet sets", async () => {
   await upsertOffer({ externalId: "facet:1", url: "u", source: "trojmiasto", title: "T", kind: "mieszkanie", districtCanonical: "Gdańsk Oliwa", features: ["winda"] });
   const res = await fetch(`${base}/api/offers/facets`);
   expect(res.status).toBe(200);
-  const body = (await res.json()) as { kinds: string[]; districts: string[] };
+  const body = (await res.json()) as { kinds: string[]; districts: string[]; features: { value: string; count: number }[] };
   expect(body.kinds).toContain("mieszkanie");
   expect(body.districts).toContain("Gdańsk Oliwa");
+  expect(body.features).toContainEqual({ value: "winda", count: 1 });
 });
 
 test("GET /api/offers/:id/history returns snapshots", async () => {
