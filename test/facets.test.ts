@@ -21,12 +21,18 @@ test("getFacets ignores inactive offers and null values", async () => {
   expect([...f.districts].sort()).toEqual(["wrzeszcz"]);
   expect([...f.kinds].sort()).toEqual(["mieszkanie"]);
   expect([...f.sources].sort()).toEqual(["olx"]);
-  expect([...f.features].sort()).toEqual(["balkon"]);
+  expect(f.features).toEqual([{ value: "balkon", count: 1 }]);
 });
 
-test("getFacets returns distinct features from active offers", async () => {
+test("getFacets returns features with counts ordered most-common-first", async () => {
   await db.insert(offers).values({ externalId: "a", url: "u", source: "olx", status: "active", features: ["balkon", "garaz"] });
   await db.insert(offers).values({ externalId: "b", url: "u", source: "olx", status: "active", features: ["balkon", "winda"] });
+  await db.insert(offers).values({ externalId: "c", url: "u", source: "olx", status: "active", features: ["balkon"] });
   const f = await getFacets();
-  expect([...f.features].sort()).toEqual(["balkon", "garaz", "winda"]);
+  // balkon=3 first; garaz & winda each =1, tie broken alphabetically
+  expect(f.features).toEqual([
+    { value: "balkon", count: 3 },
+    { value: "garaz", count: 1 },
+    { value: "winda", count: 1 },
+  ]);
 });
