@@ -16,7 +16,7 @@
   function pick(value: string) { onChange(toggleFeature(selected, value)); }
 
   function onKey(e: KeyboardEvent) {
-    if (e.key === "Enter" && matches.length) { pick(matches[0]!.value); query = ""; }
+    if (e.key === "Enter" && open && matches.length) { pick(matches[0]!.value); query = ""; }
     else if (e.key === "Escape") { open = false; }
   }
 
