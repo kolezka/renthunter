@@ -309,7 +309,7 @@ function searchOrderBy(sort: SearchParams["sort"]) {
 export async function getFacets(): Promise<{ districts: string[]; kinds: string[]; features: { value: string; count: number }[]; sources: string[] }> {
   // SELECT DISTINCT for the scalar facets so the DB collapses duplicates instead of
   // us pulling every active row's column and de-duping in JS. Features is a text[]
-  // column, so we unnest it to one row per element and DISTINCT that server-side.
+  // column, so we unnest it to one row per element, then GROUP BY + count() server-side.
   const active = eq(offers.status, "active");
   const distinct = (col: AnyPgColumn): Promise<{ v: string | null }[]> =>
     db.selectDistinct({ v: col }).from(offers).where(and(active, isNotNull(col)));
