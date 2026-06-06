@@ -2,7 +2,7 @@
   "/Users/me/Development/trojmiasto-wynajem/package.json": {
     "mtime": 1780491856.428413,
     "ast_hash": "12e34d87cb5521b99c460144360ef0f4",
-    "semantic_hash": ""
+    "semantic_hash": "12e34d87cb5521b99c460144360ef0f4"
   },
   "/Users/me/Development/trojmiasto-wynajem/tsconfig.json": {
     "mtime": 1780441086.8305058,
@@ -22,7 +22,7 @@
   "/Users/me/Development/trojmiasto-wynajem/test/rescore.test.ts": {
     "mtime": 1780516198.3070002,
     "ast_hash": "9265ccfd1fc8bb6e0ff8a45188bab2ef",
-    "semantic_hash": ""
+    "semantic_hash": "9265ccfd1fc8bb6e0ff8a45188bab2ef"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/check.test.ts": {
     "mtime": 1780451185.3041887,
@@ -35,19 +35,19 @@
     "semantic_hash": "bc9df536474ae7970a2e5ebbe62b4c3a"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/queries.test.ts": {
-    "mtime": 1780487986.5838823,
-    "ast_hash": "cb2c48f5051bcabcedb8bc7c9cad1df7",
-    "semantic_hash": "cb2c48f5051bcabcedb8bc7c9cad1df7"
+    "mtime": 1780709196.1712322,
+    "ast_hash": "d9d350c48470f873ef427a484caa9c09",
+    "semantic_hash": ""
   },
   "/Users/me/Development/trojmiasto-wynajem/test/scheduler.test.ts": {
     "mtime": 1780516198.3071778,
     "ast_hash": "4632280264413a49a66fd9933004ebd7",
-    "semantic_hash": ""
+    "semantic_hash": "4632280264413a49a66fd9933004ebd7"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/deepseek.test.ts": {
-    "mtime": 1780360531.1799364,
-    "ast_hash": "6404bc7e60b47ade248dc7fc6f7f494c",
-    "semantic_hash": "6404bc7e60b47ade248dc7fc6f7f494c"
+    "mtime": 1780619441.9457548,
+    "ast_hash": "d76acc4ba96584adda2c180f35055c0b",
+    "semantic_hash": "d76acc4ba96584adda2c180f35055c0b"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/progress.test.ts": {
     "mtime": 1780440810.049695,
@@ -60,14 +60,14 @@
     "semantic_hash": "3a3851bfdd5ef93708bc53d04de66c8a"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/parse-list.test.ts": {
-    "mtime": 1780402432.615673,
-    "ast_hash": "2856d38ebfe5b6b78150ef8b9ef76ac7",
-    "semantic_hash": "2856d38ebfe5b6b78150ef8b9ef76ac7"
+    "mtime": 1780619441.94764,
+    "ast_hash": "2e206197ea356a936673de0e0279c7f7",
+    "semantic_hash": "2e206197ea356a936673de0e0279c7f7"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/validate.test.ts": {
     "mtime": 1780516198.3074532,
     "ast_hash": "04218ef17d276eb065a4c0cafa3fb1ef",
-    "semantic_hash": ""
+    "semantic_hash": "04218ef17d276eb065a4c0cafa3fb1ef"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/setup.ts": {
     "mtime": 1780417141.869796,
@@ -75,9 +75,9 @@
     "semantic_hash": "4a8caa9de359913102872823620dfc35"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/run-lock.test.ts": {
-    "mtime": 1780402432.6166925,
-    "ast_hash": "c589c7e51aa826d48a5db57d35135866",
-    "semantic_hash": "c589c7e51aa826d48a5db57d35135866"
+    "mtime": 1780619441.947906,
+    "ast_hash": "abb3dc96346466d30ab8ddacf2eced38",
+    "semantic_hash": "abb3dc96346466d30ab8ddacf2eced38"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/refresh.test.ts": {
     "mtime": 1780451185.30614,
@@ -107,7 +107,7 @@
   "/Users/me/Development/trojmiasto-wynajem/test/logger.test.ts": {
     "mtime": 1780497212.353705,
     "ast_hash": "690f1a69e252373baebd721894231136",
-    "semantic_hash": ""
+    "semantic_hash": "690f1a69e252373baebd721894231136"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/sources/otodom.test.ts": {
     "mtime": 1780422814.3248887,
@@ -130,9 +130,9 @@
     "semantic_hash": "c02fd49cd285561cc6acc5f9392858c1"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/OfferDetail.svelte": {
-    "mtime": 1780496303.0004938,
-    "ast_hash": "137bb2a47a6922102e1e27789d258ca9",
-    "semantic_hash": ""
+    "mtime": 1780619441.9501114,
+    "ast_hash": "df74a545583a8570a11a2320fb00f189",
+    "semantic_hash": "df74a545583a8570a11a2320fb00f189"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/main.ts": {
     "mtime": 1780360531.185196,
@@ -142,22 +142,22 @@
   "/Users/me/Development/trojmiasto-wynajem/web/Logs.svelte": {
     "mtime": 1780496303.0000882,
     "ast_hash": "246393170099c9ced26bfa73b14d398d",
-    "semantic_hash": ""
+    "semantic_hash": "246393170099c9ced26bfa73b14d398d"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/App.svelte": {
-    "mtime": 1780496302.9990108,
-    "ast_hash": "2694a76eedb335952dca5fd086966af6",
-    "semantic_hash": ""
+    "mtime": 1780619441.9488769,
+    "ast_hash": "1b6b3e9f9e7fb4c53a1e36f688c00aeb",
+    "semantic_hash": "1b6b3e9f9e7fb4c53a1e36f688c00aeb"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/Config.svelte": {
-    "mtime": 1780516198.3076708,
-    "ast_hash": "fc4565b18978da745c2b5ea27517f689",
-    "semantic_hash": ""
+    "mtime": 1780619441.94935,
+    "ast_hash": "0736d9cd792525c6e987483793f0f65e",
+    "semantic_hash": "0736d9cd792525c6e987483793f0f65e"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/Dashboard.svelte": {
-    "mtime": 1780496302.9997377,
-    "ast_hash": "cc5bb307aa4f90d90540bb50b52e4de5",
-    "semantic_hash": ""
+    "mtime": 1780619441.9496424,
+    "ast_hash": "de47be06bc6e86847e1fb0fb26bba737",
+    "semantic_hash": "de47be06bc6e86847e1fb0fb26bba737"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/build.ts": {
     "mtime": 1780360543.989789,
@@ -165,14 +165,14 @@
     "semantic_hash": "72a4f7fe8a287c3310702ecb9dbdf5eb"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/lib/api.ts": {
-    "mtime": 1780516198.3078203,
-    "ast_hash": "f2cc5f47d3a710e1d5586f0b8dd82cc8",
+    "mtime": 1780708789.6611767,
+    "ast_hash": "6b4a1dd02d260bedb45de33223e5dafb",
     "semantic_hash": ""
   },
   "/Users/me/Development/trojmiasto-wynajem/web/lib/format.ts": {
     "mtime": 1780496303.0025032,
     "ast_hash": "624cc6a754f0a3590f984ec2eb617de8",
-    "semantic_hash": ""
+    "semantic_hash": "624cc6a754f0a3590f984ec2eb617de8"
   },
   "/Users/me/Development/trojmiasto-wynajem/.claude/settings.json": {
     "mtime": 1780443672.759193,
@@ -195,9 +195,9 @@
     "semantic_hash": "59be744cd1323d45d2e304406cd5425a"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scraper/parse.ts": {
-    "mtime": 1780422814.31911,
-    "ast_hash": "80c4e232f2d48a2a15d9f6f087afbf1d",
-    "semantic_hash": "80c4e232f2d48a2a15d9f6f087afbf1d"
+    "mtime": 1780619441.9432416,
+    "ast_hash": "87739694264418f812c9b25c1b0442fa",
+    "semantic_hash": "87739694264418f812c9b25c1b0442fa"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scraper/html.ts": {
     "mtime": 1780422814.3186235,
@@ -205,9 +205,9 @@
     "semantic_hash": "56f43d72e2869fecbaf1eebd8a10f0f5"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scraper/fetch.ts": {
-    "mtime": 1780360531.178658,
-    "ast_hash": "10bfbf0c712f7aaff1cc8226ba4e59d5",
-    "semantic_hash": "10bfbf0c712f7aaff1cc8226ba4e59d5"
+    "mtime": 1780619441.9426372,
+    "ast_hash": "36c0610c38f93d2d8160ed241aa4792c",
+    "semantic_hash": "36c0610c38f93d2d8160ed241aa4792c"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scraper/sources/trojmiasto.ts": {
     "mtime": 1780422814.3202403,
@@ -215,9 +215,9 @@
     "semantic_hash": "06e758beb251e20ad9e7f78a824e24b1"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scraper/sources/otodom.ts": {
-    "mtime": 1780422814.3197489,
-    "ast_hash": "aa1da924db3d3c9d33694bef45a811d0",
-    "semantic_hash": "aa1da924db3d3c9d33694bef45a811d0"
+    "mtime": 1780619441.9442985,
+    "ast_hash": "ea063f2a6521d232ceeee946999b52b6",
+    "semantic_hash": "ea063f2a6521d232ceeee946999b52b6"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scraper/sources/types.ts": {
     "mtime": 1780422814.3204498,
@@ -230,14 +230,14 @@
     "semantic_hash": "5728c41fce511c88c5a332c8c594ee9d"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scraper/sources/olx.ts": {
-    "mtime": 1780422814.3193789,
-    "ast_hash": "94c3961ae36af8221548650be6079e06",
-    "semantic_hash": "94c3961ae36af8221548650be6079e06"
+    "mtime": 1780619441.94398,
+    "ast_hash": "0fd626ed25aeb7422b82631bc956d627",
+    "semantic_hash": "0fd626ed25aeb7422b82631bc956d627"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/notify/apprise.ts": {
-    "mtime": 1780360531.1777465,
-    "ast_hash": "b9cd9640c450d48a2b305ac835172415",
-    "semantic_hash": "b9cd9640c450d48a2b305ac835172415"
+    "mtime": 1780619441.9399917,
+    "ast_hash": "18246818c459b481b648595fc0a4799e",
+    "semantic_hash": "18246818c459b481b648595fc0a4799e"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/pool.ts": {
     "mtime": 1780402432.6136343,
@@ -252,7 +252,7 @@
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/scheduler.ts": {
     "mtime": 1780516198.3064234,
     "ast_hash": "71b102d025cdddb6b6cb73df1eccb333",
-    "semantic_hash": ""
+    "semantic_hash": "71b102d025cdddb6b6cb73df1eccb333"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/filter.ts": {
     "mtime": 1780402432.6134088,
@@ -260,43 +260,38 @@
     "semantic_hash": "e2dc5a858d580344055ad654143fc8ec"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/refresh.ts": {
-    "mtime": 1780451185.303682,
-    "ast_hash": "6e11d71f5a38b71c3c1be958e2e02760",
-    "semantic_hash": "6e11d71f5a38b71c3c1be958e2e02760"
+    "mtime": 1780619441.9413946,
+    "ast_hash": "e453d3c2383bb0e8a8109fafcf2e20c8",
+    "semantic_hash": "e453d3c2383bb0e8a8109fafcf2e20c8"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/check.ts": {
-    "mtime": 1780516198.3057728,
-    "ast_hash": "23f2df44feca1938cd66ef24d9990e97",
-    "semantic_hash": ""
+    "mtime": 1780619441.9404576,
+    "ast_hash": "240b7773b1254d3409a8493e8b17dc3e",
+    "semantic_hash": "240b7773b1254d3409a8493e8b17dc3e"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/rescore.ts": {
     "mtime": 1780516198.3062594,
     "ast_hash": "cf13b3ce1c37532bee188095be89a77d",
-    "semantic_hash": ""
+    "semantic_hash": "cf13b3ce1c37532bee188095be89a77d"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/deps.ts": {
-    "mtime": 1780516198.3060157,
-    "ast_hash": "b5229b85b31b89e0a181dbbdc8460a0b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/src/pipeline/run-lock.ts": {
-    "mtime": 1780402432.614056,
-    "ast_hash": "e0e69c37632c9e241b45dcbcb1898462",
-    "semantic_hash": "e0e69c37632c9e241b45dcbcb1898462"
+    "mtime": 1780619441.940728,
+    "ast_hash": "eb1d8ee438d6fba29f3d1d2965556fcf",
+    "semantic_hash": "eb1d8ee438d6fba29f3d1d2965556fcf"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/scorer/deepseek.ts": {
-    "mtime": 1780496302.9987385,
-    "ast_hash": "5c6f0d38b65e7088abfa630811206a24",
-    "semantic_hash": ""
+    "mtime": 1780619441.9422176,
+    "ast_hash": "27bbeea11974ca659236b5b9b3041b42",
+    "semantic_hash": "27bbeea11974ca659236b5b9b3041b42"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/db/schema.ts": {
-    "mtime": 1780516198.3053045,
-    "ast_hash": "3aa53edd205e9030291b95f6d5cf7c1c",
-    "semantic_hash": ""
+    "mtime": 1780619441.9386442,
+    "ast_hash": "9126232999cadddd215d299be384cc27",
+    "semantic_hash": "9126232999cadddd215d299be384cc27"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/db/queries.ts": {
-    "mtime": 1780496302.995001,
-    "ast_hash": "f3b171c3b46edcdd3acbdbb7af573ade",
+    "mtime": 1780708756.071624,
+    "ast_hash": "66dbc62b1bb6af69ece0105ddce18c2b",
     "semantic_hash": ""
   },
   "/Users/me/Development/trojmiasto-wynajem/src/db/client.ts": {
@@ -305,19 +300,19 @@
     "semantic_hash": "c7dbe4678217ca098b8b76df42d9848e"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/api/validate.ts": {
-    "mtime": 1780516198.3051066,
-    "ast_hash": "623bd67a54e6f8ce449da30a6fae08b5",
-    "semantic_hash": ""
+    "mtime": 1780619441.9374824,
+    "ast_hash": "5caf50afea636585ebf0cfec944e82a8",
+    "semantic_hash": "5caf50afea636585ebf0cfec944e82a8"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/api/server.ts": {
-    "mtime": 1780497188.4448392,
-    "ast_hash": "207ba94e3608c916f56e1608146b50b7",
-    "semantic_hash": ""
+    "mtime": 1780619441.936945,
+    "ast_hash": "37b645bc5ad4c8769359d907ba998500",
+    "semantic_hash": "37b645bc5ad4c8769359d907ba998500"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/log/logger.ts": {
     "mtime": 1780497156.7508955,
     "ast_hash": "7639ef5c995bee188905a76e1b38381a",
-    "semantic_hash": ""
+    "semantic_hash": "7639ef5c995bee188905a76e1b38381a"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/0002_fixed_tenebrous.sql": {
     "mtime": 1780410774.1102781,
@@ -360,9 +355,9 @@
     "semantic_hash": "73b3bffc4e5e3b54d95f59bc1bf3f035"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/meta/_journal.json": {
-    "mtime": 1780516198.3048415,
-    "ast_hash": "79344557c92d1a86eb70b3819a83d2a1",
-    "semantic_hash": ""
+    "mtime": 1780619441.928633,
+    "ast_hash": "fcb939a33ceaed3494f2a3e5965228b9",
+    "semantic_hash": "fcb939a33ceaed3494f2a3e5965228b9"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/meta/0001_snapshot.json": {
     "mtime": 1780402432.6112523,
@@ -387,22 +382,22 @@
   "/Users/me/Development/trojmiasto-wynajem/docker-compose.dev.yml": {
     "mtime": 1780491856.426904,
     "ast_hash": "b50a592bfd1396c707b7f1ccd336c4ca",
-    "semantic_hash": ""
+    "semantic_hash": "b50a592bfd1396c707b7f1ccd336c4ca"
   },
   "/Users/me/Development/trojmiasto-wynajem/README.md": {
     "mtime": 1780492198.0678875,
     "ast_hash": "d64c045d1c2276560a4d3f7d7156593f",
-    "semantic_hash": ""
+    "semantic_hash": "d64c045d1c2276560a4d3f7d7156593f"
   },
   "/Users/me/Development/trojmiasto-wynajem/docker-compose.prod.yml": {
     "mtime": 1780491856.4271462,
     "ast_hash": "acdfcfe506cd91bcc523da14c6a5a2e6",
-    "semantic_hash": ""
+    "semantic_hash": "acdfcfe506cd91bcc523da14c6a5a2e6"
   },
   "/Users/me/Development/trojmiasto-wynajem/CLAUDE.md": {
     "mtime": 1780491856.4257402,
     "ast_hash": "5ec0fd201f9d32ec33928bb92a859815",
-    "semantic_hash": ""
+    "semantic_hash": "5ec0fd201f9d32ec33928bb92a859815"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/fixtures/otodom-detail.html": {
     "mtime": 1780422814.3229802,
@@ -437,22 +432,22 @@
   "/Users/me/Development/trojmiasto-wynajem/web/index.html": {
     "mtime": 1780496303.0017178,
     "ast_hash": "36e265e4acc58fc7e9c368925f62d225",
-    "semantic_hash": ""
+    "semantic_hash": "36e265e4acc58fc7e9c368925f62d225"
   },
   "/Users/me/Development/trojmiasto-wynajem/.claude/agents/migration-reviewer.md": {
     "mtime": 1780491856.4244745,
     "ast_hash": "8995fb0dfc5a431bb0ecb589a62807c9",
-    "semantic_hash": ""
+    "semantic_hash": "8995fb0dfc5a431bb0ecb589a62807c9"
   },
   "/Users/me/Development/trojmiasto-wynajem/.claude/skills/create-migration/SKILL.md": {
     "mtime": 1780491856.4249172,
     "ast_hash": "be0880a54045c0ba37bbc0d810784c87",
-    "semantic_hash": ""
+    "semantic_hash": "be0880a54045c0ba37bbc0d810784c87"
   },
   "/Users/me/Development/trojmiasto-wynajem/.claude/skills/deploy/SKILL.md": {
     "mtime": 1780491856.4252617,
     "ast_hash": "91a6fc267b5289cc57ff8ebe684cea62",
-    "semantic_hash": ""
+    "semantic_hash": "91a6fc267b5289cc57ff8ebe684cea62"
   },
   "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/plans/2026-06-02-offer-details.md": {
     "mtime": 1780410774.1095855,
@@ -512,7 +507,7 @@
   "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/specs/2026-06-02-docker-compose-design.md": {
     "mtime": 1780491856.4281707,
     "ast_hash": "1347deba8a342b33379b9b5fa8644fbd",
-    "semantic_hash": ""
+    "semantic_hash": "1347deba8a342b33379b9b5fa8644fbd"
   },
   "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/specs/2026-06-02-crawler-controls-design.md": {
     "mtime": 1780362154.3428898,
@@ -555,9 +550,9 @@
     "semantic_hash": "33be435e0a272d0ec9b3ad2c2fefb995"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/features.test.ts": {
-    "mtime": 1780451185.3052008,
-    "ast_hash": "18b2c5e70b1cad1ee34c76d276133bed",
-    "semantic_hash": "18b2c5e70b1cad1ee34c76d276133bed"
+    "mtime": 1780536948.664442,
+    "ast_hash": "960829b4e3f5ae67f5d47d3d1f511c38",
+    "semantic_hash": "960829b4e3f5ae67f5d47d3d1f511c38"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/cosine.test.ts": {
     "mtime": 1780451185.3045688,
@@ -565,14 +560,14 @@
     "semantic_hash": "562b93f7717568af685aaf7860a7a6dc"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/SearchBar.svelte": {
-    "mtime": 1780496303.0009732,
-    "ast_hash": "0b6b4b908dd9a2a978e2054413b80ee4",
+    "mtime": 1780709169.6242504,
+    "ast_hash": "2073c6d7e026e26a8ffee4399d7ab893",
     "semantic_hash": ""
   },
   "/Users/me/Development/trojmiasto-wynajem/web/OfferHistory.svelte": {
-    "mtime": 1780451185.3078063,
-    "ast_hash": "d9628a0279797586356c9c2b600b57b6",
-    "semantic_hash": "d9628a0279797586356c9c2b600b57b6"
+    "mtime": 1780619441.9502745,
+    "ast_hash": "00cd4067111b5af9e237cef1c70865bd",
+    "semantic_hash": "00cd4067111b5af9e237cef1c70865bd"
   },
   "/Users/me/Development/trojmiasto-wynajem/.claude/hooks/check.ts": {
     "mtime": 1780441478.8783793,
@@ -582,7 +577,7 @@
   "/Users/me/Development/trojmiasto-wynajem/src/pipeline/enrich.ts": {
     "mtime": 1780496302.998109,
     "ast_hash": "d4b70ba4e5f153d73765452561b831fc",
-    "semantic_hash": ""
+    "semantic_hash": "d4b70ba4e5f153d73765452561b831fc"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/embeddings/embedText.ts": {
     "mtime": 1780451185.301645,
@@ -590,9 +585,9 @@
     "semantic_hash": "6d14191fbba0f075c5ac8319c77ab1c2"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/embeddings/client.ts": {
-    "mtime": 1780451185.301071,
-    "ast_hash": "03a7703c9f349277e5b983461ad19992",
-    "semantic_hash": "03a7703c9f349277e5b983461ad19992"
+    "mtime": 1780619441.9390953,
+    "ast_hash": "231ec70df280a87a0618dc4e9b8e2682",
+    "semantic_hash": "231ec70df280a87a0618dc4e9b8e2682"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/embeddings/cosine.ts": {
     "mtime": 1780451185.3013651,
@@ -607,12 +602,12 @@
   "/Users/me/Development/trojmiasto-wynajem/src/keywords/gazetteer.ts": {
     "mtime": 1780496302.9960072,
     "ast_hash": "058a3e019b51aae1f76208fb27d8a868",
-    "semantic_hash": ""
+    "semantic_hash": "058a3e019b51aae1f76208fb27d8a868"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/keywords/features.ts": {
-    "mtime": 1780496302.9957013,
-    "ast_hash": "9d58ea10c5496af6b6d734df2f2ef6a1",
-    "semantic_hash": ""
+    "mtime": 1780619441.939596,
+    "ast_hash": "391aad7d1b874f056213a62259b4c33f",
+    "semantic_hash": "391aad7d1b874f056213a62259b4c33f"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/0005_search_and_history.sql": {
     "mtime": 1780451185.2978742,
@@ -652,7 +647,7 @@
   "/Users/me/Development/trojmiasto-wynajem/web/VirtualList.svelte": {
     "mtime": 1780493376.7763798,
     "ast_hash": "74a4c067a04e123058986b22836e9973",
-    "semantic_hash": ""
+    "semantic_hash": "74a4c067a04e123058986b22836e9973"
   },
   "/Users/me/Development/trojmiasto-wynajem/web/lib/virtual.svelte.ts": {
     "mtime": 1780486218.709078,
@@ -662,876 +657,241 @@
   "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/plans/2026-06-01-renthunter.md": {
     "mtime": 1780491856.4275851,
     "ast_hash": "6961a1a5f792b0a696116f16228dbe1e",
-    "semantic_hash": ""
+    "semantic_hash": "6961a1a5f792b0a696116f16228dbe1e"
   },
   "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/specs/2026-06-01-renthunter-design.md": {
     "mtime": 1780491856.42782,
     "ast_hash": "768584dd7cc4f4262064938a1a2d67c5",
-    "semantic_hash": ""
+    "semantic_hash": "768584dd7cc4f4262064938a1a2d67c5"
   },
   "/Users/me/Development/trojmiasto-wynajem/config/gazetteer.ts": {
     "mtime": 1780496302.9869463,
     "ast_hash": "ceb586ec842eb8a359b68cd8a9615fe1",
-    "semantic_hash": ""
+    "semantic_hash": "ceb586ec842eb8a359b68cd8a9615fe1"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/0006_output_language.sql": {
     "mtime": 1780496302.9872997,
     "ast_hash": "52ce778cf1643ded3f53c1de418d5543",
-    "semantic_hash": ""
+    "semantic_hash": "52ce778cf1643ded3f53c1de418d5543"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/meta/0006_snapshot.json": {
     "mtime": 1780496302.9876294,
     "ast_hash": "fd17eff3ef9e3c0702e7be882e251fc4",
-    "semantic_hash": ""
+    "semantic_hash": "fd17eff3ef9e3c0702e7be882e251fc4"
   },
   "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/specs/2026-06-03-scheduled-scoring-and-config-design.md": {
     "mtime": 1780501706.8658667,
     "ast_hash": "aab36a4f9fcd535b7b88e5469ffbcbed",
-    "semantic_hash": ""
+    "semantic_hash": "aab36a4f9fcd535b7b88e5469ffbcbed"
   },
   "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/plans/2026-06-03-scheduled-scoring-and-config.md": {
     "mtime": 1780502301.87226,
     "ast_hash": "209de2e381296757d6e663a61f059aa4",
-    "semantic_hash": ""
+    "semantic_hash": "209de2e381296757d6e663a61f059aa4"
   },
   "/Users/me/Development/trojmiasto-wynajem/test/notify-message.test.ts": {
     "mtime": 1780516198.3067322,
     "ast_hash": "7e5002d2489b29fbba63dd1d11cb1297",
-    "semantic_hash": ""
+    "semantic_hash": "7e5002d2489b29fbba63dd1d11cb1297"
   },
   "/Users/me/Development/trojmiasto-wynajem/src/notify/message.ts": {
     "mtime": 1780516198.3055224,
     "ast_hash": "31613aba058de1e55953e7b58304143d",
-    "semantic_hash": ""
+    "semantic_hash": "31613aba058de1e55953e7b58304143d"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/0007_rescore_interval.sql": {
     "mtime": 1780516198.3041635,
     "ast_hash": "235fef1733074177bb23ea915ddedc42",
-    "semantic_hash": ""
+    "semantic_hash": "235fef1733074177bb23ea915ddedc42"
   },
   "/Users/me/Development/trojmiasto-wynajem/drizzle/meta/0007_snapshot.json": {
     "mtime": 1780516198.304477,
     "ast_hash": "79ddb12d5e770399c30beb81ab26544b",
-    "semantic_hash": ""
+    "semantic_hash": "79ddb12d5e770399c30beb81ab26544b"
   },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/package.json": {
-    "mtime": 1780614074.6758714,
-    "ast_hash": "12e34d87cb5521b99c460144360ef0f4",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/tsconfig.json": {
-    "mtime": 1780614074.7121084,
-    "ast_hash": "dbfd85848277e7c0bb8920e6e1bb44fc",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/index.ts": {
-    "mtime": 1780614074.6745055,
-    "ast_hash": "30dc1c8733140d067c74eedf5f32fe87",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle.config.ts": {
-    "mtime": 1780614074.6605191,
-    "ast_hash": "3a2e2a8d9ae1eba48d893ad28fa4139e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/rescore.test.ts": {
-    "mtime": 1780614074.7067864,
-    "ast_hash": "9265ccfd1fc8bb6e0ff8a45188bab2ef",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/check.test.ts": {
-    "mtime": 1780614074.6940088,
-    "ast_hash": "c81dd61ce23536ad6075cb13301e12c3",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/parse-detail.test.ts": {
-    "mtime": 1780614074.7042212,
-    "ast_hash": "bc9df536474ae7970a2e5ebbe62b4c3a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/queries.test.ts": {
-    "mtime": 1780614074.7058885,
-    "ast_hash": "cb2c48f5051bcabcedb8bc7c9cad1df7",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/scheduler.test.ts": {
-    "mtime": 1780614074.7076635,
-    "ast_hash": "4632280264413a49a66fd9933004ebd7",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/deepseek.test.ts": {
-    "mtime": 1780614752.7681391,
-    "ast_hash": "d76acc4ba96584adda2c180f35055c0b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/progress.test.ts": {
-    "mtime": 1780614074.7054589,
-    "ast_hash": "b532e8187b08bd583b9b61100b3017ee",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/filter.test.ts": {
-    "mtime": 1780614074.6964452,
-    "ast_hash": "3a3851bfdd5ef93708bc53d04de66c8a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/enrich.test.ts": {
-    "mtime": 1780614074.695767,
-    "ast_hash": "ec82297665f6e0d6c59c8afd46b73e2d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/parse-list.test.ts": {
-    "mtime": 1780617862.3299534,
-    "ast_hash": "2e206197ea356a936673de0e0279c7f7",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/validate.test.ts": {
-    "mtime": 1780614074.711196,
-    "ast_hash": "04218ef17d276eb065a4c0cafa3fb1ef",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/gazetteer.test.ts": {
-    "mtime": 1780614074.7029777,
-    "ast_hash": "f63b88ac0821fb41e96fbec19b973871",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/setup.ts": {
-    "mtime": 1780614074.7085388,
-    "ast_hash": "4a8caa9de359913102872823620dfc35",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/embed-client.test.ts": {
-    "mtime": 1780614074.6952486,
-    "ast_hash": "11841f734d13dccc29c61aa43859ba0a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/embed-text.test.ts": {
-    "mtime": 1780614074.6954927,
-    "ast_hash": "8480bb08c85d6167a455d6b80ebe1fbe",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/snapshot.test.ts": {
-    "mtime": 1780614074.709107,
-    "ast_hash": "33be435e0a272d0ec9b3ad2c2fefb995",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/run-lock.test.ts": {
-    "mtime": 1780617852.0567646,
-    "ast_hash": "abb3dc96346466d30ab8ddacf2eced38",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/refresh.test.ts": {
-    "mtime": 1780614074.7064736,
-    "ast_hash": "6ddab9b649bcd8dd3ef1f0ae7ad56ebd",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/features.test.ts": {
-    "mtime": 1780614074.6961787,
-    "ast_hash": "960829b4e3f5ae67f5d47d3d1f511c38",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/apprise.test.ts": {
-    "mtime": 1780614074.6935327,
-    "ast_hash": "5c5a27c9a5153fc4cf11d315658b7e30",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/virtual.test.ts": {
-    "mtime": 1780614074.7116084,
-    "ast_hash": "ad88902fd671e44da0ea5fd5f8a0349d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/cosine.test.ts": {
-    "mtime": 1780614074.6947687,
-    "ast_hash": "562b93f7717568af685aaf7860a7a6dc",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/pool.test.ts": {
-    "mtime": 1780614074.7050428,
-    "ast_hash": "bebdaa680a8cb95a10cb5ebc3c3a1c5d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/config.test.ts": {
-    "mtime": 1780614074.6944005,
-    "ast_hash": "00a56788ca1a941f87edf922f2dc186e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/searchUrls.test.ts": {
-    "mtime": 1780614074.7080746,
-    "ast_hash": "b24df75faf5645e7e2316793e417496c",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/api.test.ts": {
-    "mtime": 1780614074.6932795,
-    "ast_hash": "fc1502f1de6dae13ccc33f3c721b2441",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/logger.test.ts": {
-    "mtime": 1780614074.703396,
-    "ast_hash": "690f1a69e252373baebd721894231136",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/notify-message.test.ts": {
-    "mtime": 1780614074.7037652,
-    "ast_hash": "7e5002d2489b29fbba63dd1d11cb1297",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/sources/otodom.test.ts": {
-    "mtime": 1780614074.7099607,
-    "ast_hash": "f00788b82f691cc564559e2aad4a8b47",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/sources/olx.test.ts": {
-    "mtime": 1780614074.7096581,
-    "ast_hash": "51e23e2de761306fe258ee440360b7fa",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/sources/registry.test.ts": {
-    "mtime": 1780614074.7103913,
-    "ast_hash": "429cdcef18c0a078f5ef1e4459bae19e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/sources/trojmiasto.test.ts": {
-    "mtime": 1780614074.7107422,
-    "ast_hash": "c02fd49cd285561cc6acc5f9392858c1",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/config/gazetteer.ts": {
-    "mtime": 1780614074.643897,
-    "ast_hash": "ceb586ec842eb8a359b68cd8a9615fe1",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/config/features.ts": {
-    "mtime": 1780614074.6432674,
-    "ast_hash": "ff6ac9cad9223b7663e3c10f4a37f312",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/OfferDetail.svelte": {
-    "mtime": 1780616817.0424933,
-    "ast_hash": "df74a545583a8570a11a2320fb00f189",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/main.ts": {
-    "mtime": 1780614074.7188091,
-    "ast_hash": "506822de51f3b85c26147cab65351e14",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/Logs.svelte": {
-    "mtime": 1780614074.7137394,
-    "ast_hash": "246393170099c9ced26bfa73b14d398d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/SearchUrlList.svelte": {
-    "mtime": 1780616854.8154976,
-    "ast_hash": "0e2e7e366d3d7f9fd4480f5c4f5ccc10",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/App.svelte": {
-    "mtime": 1780616902.7400656,
-    "ast_hash": "1b6b3e9f9e7fb4c53a1e36f688c00aeb",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/Config.svelte": {
-    "mtime": 1780616580.5936656,
-    "ast_hash": "0736d9cd792525c6e987483793f0f65e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/VirtualList.svelte": {
-    "mtime": 1780614074.7160146,
-    "ast_hash": "74a4c067a04e123058986b22836e9973",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/SearchBar.svelte": {
-    "mtime": 1780616593.5903153,
-    "ast_hash": "f31a5a542f7435a0718beff36a7c08b5",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/Dashboard.svelte": {
-    "mtime": 1780617389.6387792,
-    "ast_hash": "de47be06bc6e86847e1fb0fb26bba737",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/build.ts": {
-    "mtime": 1780614074.7166872,
-    "ast_hash": "72a4f7fe8a287c3310702ecb9dbdf5eb",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/OfferHistory.svelte": {
-    "mtime": 1780617405.0436342,
-    "ast_hash": "00cd4067111b5af9e237cef1c70865bd",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/lib/api.ts": {
-    "mtime": 1780616494.435227,
-    "ast_hash": "1e938316462f0bd757a4a19539cc817b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/lib/searchUrls.ts": {
-    "mtime": 1780614074.7181232,
-    "ast_hash": "f00084e3ad934f69925f9cfe8ced393a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/lib/format.ts": {
-    "mtime": 1780614074.7177613,
-    "ast_hash": "624cc6a754f0a3590f984ec2eb617de8",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/lib/virtual.svelte.ts": {
-    "mtime": 1780614074.7185311,
-    "ast_hash": "5106de9ed2dd7c770a327194eb7b1686",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/.claude/settings.json": {
-    "mtime": 1780614074.6372373,
-    "ast_hash": "54fd2f3386b6dfed249828a1f6f143d1",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/.claude/hooks/guard.ts": {
-    "mtime": 1780614074.63682,
-    "ast_hash": "d5535e96b57d556279d13a245df914ad",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/.claude/hooks/check.ts": {
-    "mtime": 1780614074.6364963,
-    "ast_hash": "7e0ae93339f12d6682bbae201851ae9f",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/scripts/backfill-features.ts": {
-    "mtime": 1780614074.6766264,
-    "ast_hash": "d080c9674e06d8e513a4e54739efe6ed",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/.vscode/settings.json": {
-    "mtime": 1780614074.6401558,
-    "ast_hash": "3d29a75fcf0ed7dfff86d3db8f92fc69",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/config.ts": {
-    "mtime": 1780614074.6788177,
-    "ast_hash": "59be744cd1323d45d2e304406cd5425a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/parse.ts": {
-    "mtime": 1780618364.683329,
-    "ast_hash": "87739694264418f812c9b25c1b0442fa",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/html.ts": {
-    "mtime": 1780614074.6902182,
-    "ast_hash": "56f43d72e2869fecbaf1eebd8a10f0f5",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/fetch.ts": {
-    "mtime": 1780614752.7673576,
-    "ast_hash": "36c0610c38f93d2d8160ed241aa4792c",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/sources/trojmiasto.ts": {
-    "mtime": 1780614074.6922958,
-    "ast_hash": "06e758beb251e20ad9e7f78a824e24b1",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/sources/otodom.ts": {
-    "mtime": 1780618366.1021235,
-    "ast_hash": "ea063f2a6521d232ceeee946999b52b6",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/sources/types.ts": {
-    "mtime": 1780618351.9451406,
-    "ast_hash": "fa82cb4188f50d4ac0960075cb001fd2",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/sources/registry.ts": {
-    "mtime": 1780614074.6918285,
-    "ast_hash": "5728c41fce511c88c5a332c8c594ee9d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/sources/olx.ts": {
-    "mtime": 1780618367.3514953,
-    "ast_hash": "0fd626ed25aeb7422b82631bc956d627",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/notify/apprise.ts": {
-    "mtime": 1780614752.7668498,
-    "ast_hash": "18246818c459b481b648595fc0a4799e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/notify/message.ts": {
-    "mtime": 1780614074.684639,
-    "ast_hash": "31613aba058de1e55953e7b58304143d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/pool.ts": {
-    "mtime": 1780614074.6867874,
-    "ast_hash": "eb8c4238c6a26714a26af07ed6dd9143",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/progress.ts": {
-    "mtime": 1780614074.687231,
-    "ast_hash": "7409012fe86106161fd29fa6243f0198",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/scheduler.ts": {
-    "mtime": 1780614074.688991,
-    "ast_hash": "71b102d025cdddb6b6cb73df1eccb333",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/filter.ts": {
-    "mtime": 1780614074.686334,
-    "ast_hash": "e2dc5a858d580344055ad654143fc8ec",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/refresh.ts": {
-    "mtime": 1780617788.1850007,
-    "ast_hash": "e453d3c2383bb0e8a8109fafcf2e20c8",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/enrich.ts": {
-    "mtime": 1780614074.685967,
-    "ast_hash": "d4b70ba4e5f153d73765452561b831fc",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/check.ts": {
-    "mtime": 1780617778.816079,
-    "ast_hash": "240b7773b1254d3409a8493e8b17dc3e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/rescore.ts": {
-    "mtime": 1780614074.6881413,
-    "ast_hash": "cf13b3ce1c37532bee188095be89a77d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/deps.ts": {
-    "mtime": 1780618330.8465397,
-    "ast_hash": "eb1d8ee438d6fba29f3d1d2965556fcf",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/embeddings/embedText.ts": {
-    "mtime": 1780614074.6824903,
-    "ast_hash": "6d14191fbba0f075c5ac8319c77ab1c2",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/embeddings/client.ts": {
-    "mtime": 1780614752.7665877,
-    "ast_hash": "231ec70df280a87a0618dc4e9b8e2682",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/embeddings/cosine.ts": {
-    "mtime": 1780614074.682206,
-    "ast_hash": "6f5779284e63ca170a93fe1bbee5aee1",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scorer/deepseek.ts": {
-    "mtime": 1780617692.5399039,
-    "ast_hash": "27bbeea11974ca659236b5b9b3041b42",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/db/schema.ts": {
-    "mtime": 1780616305.5617354,
-    "ast_hash": "9126232999cadddd215d299be384cc27",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/db/snapshot.ts": {
-    "mtime": 1780614074.6810088,
-    "ast_hash": "5f5291c97e6c43c0436e6dcbb50e0a21",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/db/queries.ts": {
-    "mtime": 1780618766.2104707,
-    "ast_hash": "599474d03f0361cc2d1662ef26ca25cd",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/db/client.ts": {
-    "mtime": 1780614074.67954,
-    "ast_hash": "c7dbe4678217ca098b8b76df42d9848e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/api/validate.ts": {
-    "mtime": 1780617929.0977845,
-    "ast_hash": "5caf50afea636585ebf0cfec944e82a8",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/api/server.ts": {
-    "mtime": 1780618773.0662904,
-    "ast_hash": "37b645bc5ad4c8769359d907ba998500",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/log/logger.ts": {
-    "mtime": 1780614074.683754,
-    "ast_hash": "7639ef5c995bee188905a76e1b38381a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/keywords/gazetteer.ts": {
-    "mtime": 1780614074.683275,
-    "ast_hash": "058a3e019b51aae1f76208fb27d8a868",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/keywords/features.ts": {
-    "mtime": 1780618377.188521,
-    "ast_hash": "391aad7d1b874f056213a62259b4c33f",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0006_output_language.sql": {
-    "mtime": 1780614074.6635747,
-    "ast_hash": "52ce778cf1643ded3f53c1de418d5543",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0005_search_and_history.sql": {
-    "mtime": 1780614074.6631567,
-    "ast_hash": "20ade0ae88d997eea287f528d99841da",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0002_fixed_tenebrous.sql": {
-    "mtime": 1780614074.6618686,
-    "ast_hash": "2051e920da36b9d815dbd2ce5170de6a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0003_multisource.sql": {
-    "mtime": 1780614074.6624167,
-    "ast_hash": "4785443ddb1fcc29eb21388fdc685d25",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0007_rescore_interval.sql": {
-    "mtime": 1780614074.663996,
-    "ast_hash": "235fef1733074177bb23ea915ddedc42",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0004_multiportal.sql": {
-    "mtime": 1780614074.6626713,
-    "ast_hash": "f9ab2fb5b87fab9d6498d08f2446abac",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0000_narrow_mongoose.sql": {
-    "mtime": 1780614074.6609182,
-    "ast_hash": "184011bd234e331d4f6078729f00752e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0001_simple_machine_man.sql": {
-    "mtime": 1780614074.661255,
-    "ast_hash": "e527a12babb8a9818e83621ab22b932b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0007_snapshot.json": {
-    "mtime": 1780614074.667307,
-    "ast_hash": "79ddb12d5e770399c30beb81ab26544b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0003_snapshot.json": {
-    "mtime": 1780614074.6658673,
-    "ast_hash": "5ca56a207f4ba2d25543427eacd234d9",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0004_snapshot.json": {
-    "mtime": 1780614074.666137,
-    "ast_hash": "62b26f9a07781c0dd6f6a204bcc603af",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0000_snapshot.json": {
-    "mtime": 1780614074.6646168,
-    "ast_hash": "73b3bffc4e5e3b54d95f59bc1bf3f035",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/_journal.json": {
-    "mtime": 1780615359.1739564,
-    "ast_hash": "fcb939a33ceaed3494f2a3e5965228b9",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0001_snapshot.json": {
-    "mtime": 1780614074.6650846,
-    "ast_hash": "32fa98cd3dfe0cc8a9f5b6c5a3e7b445",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0005_snapshot.json": {
-    "mtime": 1780614074.6665628,
-    "ast_hash": "716fd10a136cea72b410aa8724ce593d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0002_snapshot.json": {
-    "mtime": 1780614074.6654134,
-    "ast_hash": "19034d2efeb785eeee69120ba59921a2",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0006_snapshot.json": {
-    "mtime": 1780614074.6669807,
-    "ast_hash": "fd17eff3ef9e3c0702e7be882e251fc4",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/sources.txt": {
-    "mtime": 1780614074.6771777,
-    "ast_hash": "8dc0e7a2d4684b4a7bfc25ee76007824",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docker-compose.dev.yml": {
-    "mtime": 1780614074.6441984,
-    "ast_hash": "b50a592bfd1396c707b7f1ccd336c4ca",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/README.md": {
-    "mtime": 1780614074.6415367,
-    "ast_hash": "d64c045d1c2276560a4d3f7d7156593f",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docker-compose.prod.yml": {
-    "mtime": 1780614074.6443942,
-    "ast_hash": "acdfcfe506cd91bcc523da14c6a5a2e6",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/CLAUDE.md": {
-    "mtime": 1780614074.6404066,
-    "ast_hash": "5ec0fd201f9d32ec33928bb92a859815",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/fixtures/otodom-detail.html": {
-    "mtime": 1780614074.701644,
-    "ast_hash": "b411e4674feb93fbd5e92fc1279ec1ab",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/fixtures/list.html": {
-    "mtime": 1780614074.699084,
-    "ast_hash": "a8b4e20ac2f1bc5b258efcb19ac81d71",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/fixtures/olx-detail.html": {
-    "mtime": 1780614074.6997387,
-    "ast_hash": "c3adf6b05b5bb9a21e2a260683df8439",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/fixtures/otodom-list.html": {
-    "mtime": 1780614074.7025092,
-    "ast_hash": "1683a0468871ac2edf09fcce777f8bbd",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/fixtures/detail.html": {
-    "mtime": 1780614074.6972432,
-    "ast_hash": "48e841ee76000541e018882b6ca6418b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/fixtures/olx-list.html": {
-    "mtime": 1780614074.7003348,
-    "ast_hash": "b56d8d3597a189ce4d64e1525da755db",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/index.html": {
-    "mtime": 1780614074.7169511,
-    "ast_hash": "36e265e4acc58fc7e9c368925f62d225",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/.claude/agents/migration-reviewer.md": {
-    "mtime": 1780614074.6359305,
-    "ast_hash": "8995fb0dfc5a431bb0ecb589a62807c9",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/.claude/skills/create-migration/SKILL.md": {
-    "mtime": 1780614074.6376615,
-    "ast_hash": "be0880a54045c0ba37bbc0d810784c87",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/.claude/skills/deploy/SKILL.md": {
-    "mtime": 1780614074.638017,
-    "ast_hash": "91a6fc267b5289cc57ff8ebe684cea62",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-02-offer-details.md": {
-    "mtime": 1780614074.6485138,
-    "ast_hash": "632c4b78d58346ae32f4854d379a9224",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-02-multi-portal.md": {
-    "mtime": 1780614074.6479945,
-    "ast_hash": "ee9461d69b6ed56321c32bed0c2dc26e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-03-keyword-extraction-vector-search-history.md": {
-    "mtime": 1780614074.64991,
-    "ast_hash": "c8856f12666446f3f88035dd186ab96e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-02-run-lock.md": {
-    "mtime": 1780614074.6493418,
-    "ast_hash": "e740f14ff16ff7dcdf9cfd37a95e87c9",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-02-logs-page.md": {
-    "mtime": 1780614074.6472144,
-    "ast_hash": "0cc1d4d87072827cd32d1755bc20e532",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-03-scheduled-scoring-and-config.md": {
-    "mtime": 1780614074.6519153,
-    "ast_hash": "209de2e381296757d6e663a61f059aa4",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-02-crawler-scheduler-multisource.md": {
-    "mtime": 1780614074.6465802,
-    "ast_hash": "ca60b82707b995d96ee9611a07bc3f5c",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-02-crawler-controls.md": {
-    "mtime": 1780614074.6459758,
-    "ast_hash": "22c2a22e8d55368f228f27691479777b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-01-renthunter.md": {
-    "mtime": 1780614074.64525,
-    "ast_hash": "6961a1a5f792b0a696116f16228dbe1e",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-03-rescore-offers.md": {
-    "mtime": 1780614074.6512442,
-    "ast_hash": "7a2a2769c03c0bfdb4b8fd05cd0d3828",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-03-paginated-virtual-scroll.md": {
-    "mtime": 1780614074.6507225,
-    "ast_hash": "830f230d3f1c6da6910dcf01e65c11f1",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-02-run-lock-design.md": {
-    "mtime": 1780614074.6577644,
-    "ast_hash": "6ff3ac266d73e00da5d518cfeccf0a95",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-01-renthunter-design.md": {
-    "mtime": 1780614074.653933,
-    "ast_hash": "768584dd7cc4f4262064938a1a2d67c5",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-03-keyword-extraction-vector-search-history-design.md": {
-    "mtime": 1780614074.6582792,
-    "ast_hash": "d49377085e4437c9a813c0954400a87d",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-04-search-url-input-design.md": {
-    "mtime": 1780614074.6601467,
-    "ast_hash": "a4f3497aa333fdf2c62622f9d23e6442",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-02-offer-details-design.md": {
-    "mtime": 1780614074.6574478,
-    "ast_hash": "caad4eae68304d38d49c890900667a14",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-02-crawler-scheduler-design.md": {
-    "mtime": 1780614074.6552763,
-    "ast_hash": "332a4333c3e4a0d8ce8b9b87df032aed",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-03-scheduled-scoring-and-config-design.md": {
-    "mtime": 1780614074.659705,
-    "ast_hash": "aab36a4f9fcd535b7b88e5469ffbcbed",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-03-paginated-virtual-scroll-design.md": {
-    "mtime": 1780614074.658752,
-    "ast_hash": "bc7ac0b0737211ee92ec8fafb061711a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-02-multi-portal-design.md": {
-    "mtime": 1780614074.6570022,
-    "ast_hash": "155e2958d6423855aac391b31380e0f1",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-02-docker-compose-design.md": {
-    "mtime": 1780614074.6558979,
-    "ast_hash": "1347deba8a342b33379b9b5fa8644fbd",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-02-crawler-controls-design.md": {
-    "mtime": 1780614074.6545959,
-    "ast_hash": "7e814ee0df729b82b19fa659f2afe7bc",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-03-rescore-offers-design.md": {
-    "mtime": 1780614074.6592536,
-    "ast_hash": "815d9c7450e822619d8492aad0462f6c",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/specs/2026-06-02-logs-page-design.md": {
-    "mtime": 1780614074.6564193,
-    "ast_hash": "c8ebd3194e50e297839e74eaf6d4ce0f",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/docs/superpowers/plans/2026-06-04-post-review-fixes.md": {
-    "mtime": 1780614094.3024392,
-    "ast_hash": "d2477c768a3c4862c9f6785c438c9d4c",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/mark-inactive.test.ts": {
-    "mtime": 1780614752.7684622,
-    "ast_hash": "68fec947ce5f99a4f9bb787d34569d77",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/fetch-timeout.test.ts": {
-    "mtime": 1780614752.7682967,
-    "ast_hash": "0eefc2aab7af4523dd9693b06704109a",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/timeout.ts": {
-    "mtime": 1780614752.767766,
-    "ast_hash": "b426fd2f49be3738441277e9278fbb93",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/ai-retry.test.ts": {
-    "mtime": 1780614752.7679443,
-    "ast_hash": "09f8d7fa19af236ba64e92006ad014b4",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/retry.ts": {
-    "mtime": 1780615085.0185113,
-    "ast_hash": "fae96edc03f9b9d4c50ee5fb0ebb5eab",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/upsert-offer.test.ts": {
-    "mtime": 1780614752.7686462,
-    "ast_hash": "53e614bc7b628263b70fff1294bffafe",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/0008_review_indexes.sql": {
-    "mtime": 1780615324.4802256,
-    "ast_hash": "f9b8b04dd8d4fb11aa2886b2d1a7c505",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/drizzle/meta/0008_snapshot.json": {
-    "mtime": 1780615359.1736977,
-    "ast_hash": "b9397e3df3b3356d468a1d26e0733b9b",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/list-offers.test.ts": {
-    "mtime": 1780616331.6226456,
-    "ast_hash": "4b06a5fcdca4c475517cb18dfaa98c25",
-    "semantic_hash": ""
-  },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/list-projection.test.ts": {
-    "mtime": 1780615560.2140872,
+  "/Users/me/Development/trojmiasto-wynajem/test/list-projection.test.ts": {
+    "mtime": 1780619441.9469624,
     "ast_hash": "8b447ab986e85f4624823dafb4090cdb",
-    "semantic_hash": ""
+    "semantic_hash": "8b447ab986e85f4624823dafb4090cdb"
   },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/facets.test.ts": {
-    "mtime": 1780615657.2084858,
-    "ast_hash": "c90988797dbd1bd2cbbe88978e9d0c38",
-    "semantic_hash": ""
+  "/Users/me/Development/trojmiasto-wynajem/test/fetch-timeout.test.ts": {
+    "mtime": 1780619441.9464285,
+    "ast_hash": "0eefc2aab7af4523dd9693b06704109a",
+    "semantic_hash": "0eefc2aab7af4523dd9693b06704109a"
   },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/test/web-api.test.ts": {
-    "mtime": 1780617413.9917397,
+  "/Users/me/Development/trojmiasto-wynajem/test/mark-inactive.test.ts": {
+    "mtime": 1780619441.9472215,
+    "ast_hash": "68fec947ce5f99a4f9bb787d34569d77",
+    "semantic_hash": "68fec947ce5f99a4f9bb787d34569d77"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/test/web-api.test.ts": {
+    "mtime": 1780619441.9485471,
     "ast_hash": "4c35969f847db91a34bf2e5508f93a2c",
+    "semantic_hash": "4c35969f847db91a34bf2e5508f93a2c"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/test/upsert-offer.test.ts": {
+    "mtime": 1780619441.948135,
+    "ast_hash": "53e614bc7b628263b70fff1294bffafe",
+    "semantic_hash": "53e614bc7b628263b70fff1294bffafe"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/test/facets.test.ts": {
+    "mtime": 1780708591.26628,
+    "ast_hash": "1bf29087ac7225cc561e4a3b8bd255c3",
     "semantic_hash": ""
   },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/web/Gallery.svelte": {
-    "mtime": 1780617438.3429537,
+  "/Users/me/Development/trojmiasto-wynajem/test/ai-retry.test.ts": {
+    "mtime": 1780619441.945376,
+    "ast_hash": "09f8d7fa19af236ba64e92006ad014b4",
+    "semantic_hash": "09f8d7fa19af236ba64e92006ad014b4"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/test/searchUrls.test.ts": {
+    "mtime": 1780602134.3752952,
+    "ast_hash": "b24df75faf5645e7e2316793e417496c",
+    "semantic_hash": "b24df75faf5645e7e2316793e417496c"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/test/list-offers.test.ts": {
+    "mtime": 1780619441.9466443,
+    "ast_hash": "4b06a5fcdca4c475517cb18dfaa98c25",
+    "semantic_hash": "4b06a5fcdca4c475517cb18dfaa98c25"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/config/features.ts": {
+    "mtime": 1780536909.9575927,
+    "ast_hash": "ff6ac9cad9223b7663e3c10f4a37f312",
+    "semantic_hash": "ff6ac9cad9223b7663e3c10f4a37f312"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/web/SearchUrlList.svelte": {
+    "mtime": 1780619441.9511297,
+    "ast_hash": "0e2e7e366d3d7f9fd4480f5c4f5ccc10",
+    "semantic_hash": "0e2e7e366d3d7f9fd4480f5c4f5ccc10"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/web/Gallery.svelte": {
+    "mtime": 1780619441.9498224,
     "ast_hash": "6ce52653db006257e97596097f02b866",
-    "semantic_hash": ""
+    "semantic_hash": "6ce52653db006257e97596097f02b866"
   },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scorer/chat.ts": {
-    "mtime": 1780617677.6354785,
-    "ast_hash": "8cca34cbb079548d8aa2e6a50b57cbd6",
-    "semantic_hash": ""
+  "/Users/me/Development/trojmiasto-wynajem/web/lib/searchUrls.ts": {
+    "mtime": 1780602134.384292,
+    "ast_hash": "f00084e3ad934f69925f9cfe8ced393a",
+    "semantic_hash": "f00084e3ad934f69925f9cfe8ced393a"
   },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/pipeline/offer-row.ts": {
-    "mtime": 1780618380.787484,
-    "ast_hash": "688b279f7d71a81d2fc7f7b3796fdb03",
-    "semantic_hash": ""
+  "/Users/me/Development/trojmiasto-wynajem/scripts/backfill-features.ts": {
+    "mtime": 1780536345.7454166,
+    "ast_hash": "d080c9674e06d8e513a4e54739efe6ed",
+    "semantic_hash": "d080c9674e06d8e513a4e54739efe6ed"
   },
-  "/Users/me/Development/trojmiasto-wynajem/.claude/worktrees/post-review-fixes/src/scraper/sources/pagination.ts": {
-    "mtime": 1780618346.052095,
+  "/Users/me/Development/trojmiasto-wynajem/src/scraper/retry.ts": {
+    "mtime": 1780619441.9435382,
+    "ast_hash": "fae96edc03f9b9d4c50ee5fb0ebb5eab",
+    "semantic_hash": "fae96edc03f9b9d4c50ee5fb0ebb5eab"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/src/scraper/timeout.ts": {
+    "mtime": 1780619441.9450219,
+    "ast_hash": "b426fd2f49be3738441277e9278fbb93",
+    "semantic_hash": "b426fd2f49be3738441277e9278fbb93"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/src/scraper/sources/pagination.ts": {
+    "mtime": 1780619441.9447527,
     "ast_hash": "877b1a0c2b5350979ed31ec9d2263f8a",
+    "semantic_hash": "877b1a0c2b5350979ed31ec9d2263f8a"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/src/pipeline/offer-row.ts": {
+    "mtime": 1780619441.941099,
+    "ast_hash": "688b279f7d71a81d2fc7f7b3796fdb03",
+    "semantic_hash": "688b279f7d71a81d2fc7f7b3796fdb03"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/src/scorer/chat.ts": {
+    "mtime": 1780619441.941848,
+    "ast_hash": "8cca34cbb079548d8aa2e6a50b57cbd6",
+    "semantic_hash": "8cca34cbb079548d8aa2e6a50b57cbd6"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/drizzle/0008_review_indexes.sql": {
+    "mtime": 1780619441.9278963,
+    "ast_hash": "f9b8b04dd8d4fb11aa2886b2d1a7c505",
+    "semantic_hash": "f9b8b04dd8d4fb11aa2886b2d1a7c505"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/drizzle/meta/0008_snapshot.json": {
+    "mtime": 1780619441.9281743,
+    "ast_hash": "b9397e3df3b3356d468a1d26e0733b9b",
+    "semantic_hash": "b9397e3df3b3356d468a1d26e0733b9b"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/plans/2026-06-04-search-url-input.md": {
+    "mtime": 1780541729.5959244,
+    "ast_hash": "0b392496b7fe1563cfd5b201c2c9b1af",
+    "semantic_hash": "0b392496b7fe1563cfd5b201c2c9b1af"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/plans/2026-06-04-post-review-fixes.md": {
+    "mtime": 1780619441.927434,
+    "ast_hash": "d2477c768a3c4862c9f6785c438c9d4c",
+    "semantic_hash": "d2477c768a3c4862c9f6785c438c9d4c"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/specs/2026-06-04-search-url-input-design.md": {
+    "mtime": 1780537600.8228102,
+    "ast_hash": "a4f3497aa333fdf2c62622f9d23e6442",
+    "semantic_hash": "a4f3497aa333fdf2c62622f9d23e6442"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/.playwright-mcp/page-2026-06-04T01-18-03-098Z.yml": {
+    "mtime": 1780535883.100259,
+    "ast_hash": "dc987cc9100f0c7e13491862724db6b7",
+    "semantic_hash": "dc987cc9100f0c7e13491862724db6b7"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/.playwright-mcp/page-2026-06-04T01-17-51-849Z.yml": {
+    "mtime": 1780535871.850366,
+    "ast_hash": "80a76fef70a0359641096cad550144b3",
+    "semantic_hash": "80a76fef70a0359641096cad550144b3"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/.playwright-mcp/page-2026-06-04T01-18-23-011Z.yml": {
+    "mtime": 1780535903.011481,
+    "ast_hash": "eece3666279fba50b2c17a32066887ba",
+    "semantic_hash": "eece3666279fba50b2c17a32066887ba"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/settings-redesign-ai.png": {
+    "mtime": 1780535891.2350483,
+    "ast_hash": "d48fbc7f64d81040052a1ed15a1cbdb9",
+    "semantic_hash": "d48fbc7f64d81040052a1ed15a1cbdb9"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/settings-redesign-ai2.png": {
+    "mtime": 1780535908.330456,
+    "ast_hash": "b6f5b9fa59ce8d0185dbb3569ffdf0e0",
+    "semantic_hash": "b6f5b9fa59ce8d0185dbb3569ffdf0e0"
+  },
+  "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/plans/2026-06-06-searchable-features-filter.md": {
+    "mtime": 1780708471.50263,
+    "ast_hash": "4f8f44131dfeadd2d47f465fbaff2f89",
+    "semantic_hash": ""
+  },
+  "/Users/me/Development/trojmiasto-wynajem/docs/superpowers/specs/2026-06-06-searchable-features-filter-design.md": {
+    "mtime": 1780708082.2661643,
+    "ast_hash": "272763672013f2643ac1431a21827317",
+    "semantic_hash": ""
+  },
+  "/Users/me/Development/trojmiasto-wynajem/test/featureFilter.test.ts": {
+    "mtime": 1780708864.7442615,
+    "ast_hash": "a4e546aa688e4dc01c5f6d3fd27f80c2",
+    "semantic_hash": ""
+  },
+  "/Users/me/Development/trojmiasto-wynajem/web/lib/featureFilter.ts": {
+    "mtime": 1780708875.4155626,
+    "ast_hash": "de1e505b26d810ccc6f63d640a37b64c",
+    "semantic_hash": ""
+  },
+  "/Users/me/Development/trojmiasto-wynajem/web/FeatureFilter.svelte": {
+    "mtime": 1780709120.5309298,
+    "ast_hash": "c54ac1c2e5a935674ab8b75d2116ea09",
+    "semantic_hash": ""
+  },
+  "/Users/me/Development/trojmiasto-wynajem/.playwright-mcp/page-2026-06-06T01-30-35-034Z.yml": {
+    "mtime": 1780709435.0453365,
+    "ast_hash": "c659695a734e93cbf336de0a3826106a",
+    "semantic_hash": ""
+  },
+  "/Users/me/Development/trojmiasto-wynajem/.playwright-mcp/page-2026-06-06T01-32-11-295Z.yml": {
+    "mtime": 1780709531.296524,
+    "ast_hash": "742ca7ca44a429ef4e3cf430a0f62e31",
+    "semantic_hash": ""
+  },
+  "/Users/me/Development/trojmiasto-wynajem/.playwright-mcp/page-2026-06-06T01-31-18-236Z.yml": {
+    "mtime": 1780709478.2372088,
+    "ast_hash": "bc370b02885b1fa2cd554d960826eac2",
     "semantic_hash": ""
   }
 }
