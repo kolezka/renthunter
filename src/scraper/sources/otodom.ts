@@ -1,4 +1,4 @@
-import type { Source, ListItem, OfferDetail } from "./types";
+import type { SourceParser, ListItem, OfferDetail } from "./types";
 import { makeListPageUrls } from "./pagination";
 
 const OTODOM_ORIGIN = "https://www.otodom.pl";
@@ -104,9 +104,8 @@ export function parseDetail(html: string): OfferDetail {
   return { title, price, area, rooms, district, description, images };
 }
 
-export const otodom: Source = {
+export const otodom: SourceParser = {
   id: "otodom",
-  hosts: ["www.otodom.pl", "otodom.pl"],
   listPageUrls,
   parseList,
   parseDetail,

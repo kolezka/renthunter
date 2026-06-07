@@ -1,4 +1,4 @@
-import type { Source, ListItem, OfferDetail } from "./types";
+import type { SourceParser, ListItem, OfferDetail } from "./types";
 import { makeListPageUrls } from "./pagination";
 import { metaContent, findJsonLd, ldImages } from "../html";
 
@@ -83,10 +83,8 @@ export function parseDetail(html: string): OfferDetail {
   return { title, price, area, rooms, district, description, images };
 }
 
-export const nieruchomosciOnline: Source = {
+export const nieruchomosciOnline: SourceParser = {
   id: "nieruchomosci-online",
-  hosts: ["www.nieruchomosci-online.pl", "nieruchomosci-online.pl"],
-  hostSuffixes: ["nieruchomosci-online.pl"],
   listPageUrls,
   parseList,
   parseDetail,

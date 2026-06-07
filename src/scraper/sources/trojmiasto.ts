@@ -1,9 +1,8 @@
-import type { Source, ListItem } from "./types";
+import type { SourceParser, ListItem } from "./types";
 import { parseListUrls, parseDetail, listPageUrls } from "../parse";
 
-export const trojmiasto: Source = {
+export const trojmiasto: SourceParser = {
   id: "trojmiasto",
-  hosts: ["ogloszenia.trojmiasto.pl"],
   listPageUrls,
   parseList(html: string): ListItem[] {
     return parseListUrls(html).map((it) => ({

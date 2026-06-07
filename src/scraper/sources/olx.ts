@@ -1,4 +1,4 @@
-import type { Source, ListItem, OfferDetail } from "./types";
+import type { SourceParser, ListItem, OfferDetail } from "./types";
 import { makeListPageUrls } from "./pagination";
 import { metaContent, findJsonLd, ldImages } from "../html";
 
@@ -86,9 +86,8 @@ export function parseDetail(html: string): OfferDetail {
   return { title, price, area, rooms, district, description, images };
 }
 
-export const olx: Source = {
+export const olx: SourceParser = {
   id: "olx",
-  hosts: ["www.olx.pl", "olx.pl"],
   listPageUrls,
   parseList,
   parseDetail,

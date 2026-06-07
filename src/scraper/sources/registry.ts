@@ -1,10 +1,22 @@
-import type { Source } from "./types";
+import type { Source, SourceParser } from "./types";
+import { SOURCE_META } from "./catalog";
 import { trojmiasto } from "./trojmiasto";
 import { olx } from "./olx";
 import { otodom } from "./otodom";
 import { nieruchomosciOnline } from "./nieruchomosci-online";
 
-export const SOURCES: Source[] = [trojmiasto, olx, otodom, nieruchomosciOnline];
+// Parser modules carry only parsing logic; host/label metadata lives in the
+// catalog. Compose each parser with its catalog entry to form a full Source.
+const PARSERS: SourceParser[] = [trojmiasto, olx, otodom, nieruchomosciOnline];
+
+export const SOURCES: Source[] = PARSERS.map((p) => {
+  const meta = SOURCE_META[p.id];
+  return {
+    ...p,
+    hosts: [...meta.hosts],
+    ...(meta.hostSuffixes ? { hostSuffixes: [...meta.hostSuffixes] } : {}),
+  };
+});
 
 /** Strip a leading "www." so "www.olx.pl" and "olx.pl" both match. */
 export function normalizeHost(host: string): string {

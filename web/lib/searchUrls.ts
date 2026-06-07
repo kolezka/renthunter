@@ -1,16 +1,13 @@
 import type { Source } from "./api";
+import { SOURCE_CATALOG } from "../../src/scraper/sources/catalog";
 
-// Mirror of host lists in src/scraper/sources/registry.ts.
-// KEEP IN SYNC: if a source's hosts change there, change them here too. This is a
-// client-side UX convenience only — src/api/validate.ts remains the security gate.
-// Only search-URL hosts are listed (nieruchomosci-online searches live on www);
-// detail pages there sit on per-city subdomains, which the client never validates.
-export const SOURCE_HOSTS: Record<Source, string[]> = {
-  trojmiasto: ["ogloszenia.trojmiasto.pl"],
-  olx: ["www.olx.pl", "olx.pl"],
-  otodom: ["otodom.pl", "www.otodom.pl"],
-  "nieruchomosci-online": ["www.nieruchomosci-online.pl", "nieruchomosci-online.pl"],
-};
+// Search-URL hosts, derived from the shared catalog (single source of truth,
+// also used by the backend). This is a client-side UX convenience only —
+// src/api/validate.ts remains the security gate. Only search-URL hosts matter
+// here; detail pages on per-city subdomains are never validated client-side.
+export const SOURCE_HOSTS: Record<Source, string[]> = Object.fromEntries(
+  SOURCE_CATALOG.map((m) => [m.id, [...m.hosts]]),
+) as Record<Source, string[]>;
 
 /** Strip a leading "www." and lowercase, so "www.olx.pl" and "olx.pl" match. */
 export function normalizeHost(host: string): string {

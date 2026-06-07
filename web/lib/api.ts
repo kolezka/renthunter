@@ -1,10 +1,11 @@
-export type Source = "trojmiasto" | "olx" | "otodom" | "nieruchomosci-online";
-export const SOURCE_LABEL: Record<Source, string> = {
-  trojmiasto: "Trójmiasto",
-  olx: "OLX",
-  otodom: "Otodom",
-  "nieruchomosci-online": "Nieruchomości-online",
-};
+import { SOURCE_CATALOG, type SourceId } from "../../src/scraper/sources/catalog";
+
+// Source identity, labels and hosts come from the shared catalog (the single
+// source of truth, also used by the backend) — keep no separate list here.
+export type Source = SourceId;
+export const SOURCE_LABEL: Record<Source, string> = Object.fromEntries(
+  SOURCE_CATALOG.map((m) => [m.id, m.label]),
+) as Record<Source, string>;
 
 export interface Offer {
   id: number; externalId: string; title: string;
