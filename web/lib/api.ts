@@ -91,7 +91,11 @@ export async function rescoreAll(): Promise<{ runId: string }> {
   return postJson<{ runId: string }>("/api/rescore", {}, "Rescore");
 }
 
-export interface Facets { districts: string[]; kinds: string[]; features: string[]; sources: string[] }
+export interface FeatureFacet { value: string; count: number }
+export interface Facets {
+  districts: string[]; kinds: string[]; sources: string[];
+  features: FeatureFacet[];
+}
 export interface SearchQuery {
   q?: string; districts?: string[]; kinds?: string[]; features?: string[]; sources?: string[];
   sort?: "score" | "newest" | "price" | "area";

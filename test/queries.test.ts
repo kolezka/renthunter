@@ -205,7 +205,7 @@ test("getFacets returns distinct districts/kinds/features", async () => {
   const f = await getFacets();
   expect(f.districts).toContain("Gdańsk Wrzeszcz");
   expect(f.kinds.sort()).toEqual(["kawalerka", "mieszkanie"]);
-  expect(f.features.sort()).toEqual(["balkon", "garaż"]);
+  expect(f.features.map((x) => x.value).sort()).toEqual(["balkon", "garaż"]);
 });
 
 test("listOffers paginates with stable order and reports total", async () => {

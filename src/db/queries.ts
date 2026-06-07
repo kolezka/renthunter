@@ -306,10 +306,10 @@ function searchOrderBy(sort: SearchParams["sort"]) {
   }
 }
 
-export async function getFacets(): Promise<{ districts: string[]; kinds: string[]; features: string[]; sources: string[] }> {
+export async function getFacets(): Promise<{ districts: string[]; kinds: string[]; features: { value: string; count: number }[]; sources: string[] }> {
   // SELECT DISTINCT for the scalar facets so the DB collapses duplicates instead of
   // us pulling every active row's column and de-duping in JS. Features is a text[]
-  // column, so we unnest it to one row per element and DISTINCT that server-side.
+  // column, so we unnest it to one row per element, then GROUP BY + count() server-side.
   const active = eq(offers.status, "active");
   const distinct = (col: AnyPgColumn): Promise<{ v: string | null }[]> =>
     db.selectDistinct({ v: col }).from(offers).where(and(active, isNotNull(col)));
@@ -318,19 +318,23 @@ export async function getFacets(): Promise<{ districts: string[]; kinds: string[
     distinct(offers.kind),
     distinct(offers.source),
     db.execute(sql`
-      SELECT DISTINCT unnest(${offers.features}) AS v
+      SELECT unnest(${offers.features}) AS v, count(*)::int AS n
       FROM ${offers}
       WHERE ${active}
+      GROUP BY v
+      ORDER BY n DESC, v ASC
     `),
   ]);
   // Driver envelope differs: postgres-js returns a bare row array, drizzle-pglite
   // returns { rows: [...] }. Normalize before reading.
-  const featureRows = (Array.isArray(featureResult) ? featureResult : (featureResult as { rows?: unknown[] }).rows ?? []) as { v: string | null }[];
+  const featureRows = (Array.isArray(featureResult) ? featureResult : (featureResult as { rows?: unknown[] }).rows ?? []) as { v: string | null; n: number | string }[];
   return {
     districts: districtRows.map((r) => r.v).filter((v): v is string => v != null),
     kinds: kindRows.map((r) => r.v).filter((v): v is string => v != null),
     sources: sourceRows.map((r) => r.v).filter((v): v is string => v != null),
-    features: featureRows.map((r) => r.v).filter((v): v is string => v != null),
+    features: featureRows
+      .filter((r): r is { v: string; n: number | string } => r.v != null)
+      .map((r) => ({ value: r.v, count: Number(r.n) })),
   };
 }
 

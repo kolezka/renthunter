@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
   import { SOURCE_LABEL, type Facets, type SearchQuery } from "./lib/api";
+  import FeatureFilter from "./FeatureFilter.svelte";
   let { facets, onChange }: { facets: Facets; onChange: (q: SearchQuery) => void } = $props();
 
   let q = $state("");
@@ -55,14 +56,16 @@
       {/each}
     </div>
   {/if}
-  {#if facets.kinds.length || facets.features.length}
+  {#if facets.kinds.length}
     <div class="flex flex-wrap gap-2">
       {#each facets.kinds as k (k)}
         <button class={chip(kinds.includes(k))} onclick={() => { kinds = toggle(kinds, k); emit(); }}>{k}</button>
       {/each}
-      {#each facets.features as f (f)}
-        <button class={chip(features.includes(f))} onclick={() => { features = toggle(features, f); emit(); }}>{f}</button>
-      {/each}
     </div>
   {/if}
+  <FeatureFilter
+    features={facets.features}
+    selected={features}
+    onChange={(next) => { features = next; emit(); }}
+  />
 </div>
