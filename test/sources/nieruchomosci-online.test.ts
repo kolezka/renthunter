@@ -21,3 +21,16 @@ test("listPageUrls paginates with &p=N", () => {
   expect(urls[0]).toBe(base);
   expect(urls[1]).toContain("p=2");
 });
+
+test("parseDetail extracts core fields from Apartment JSON-LD", async () => {
+  const html = await Bun.file("test/fixtures/nieruchomosci-online-detail.html").text();
+  const d = nieruchomosciOnline.parseDetail(html);
+  // Ground-truth values captured from the live fixture.
+  expect(d.title).toContain("Mikrokawalerka");
+  expect(d.price).toBe(2250);
+  expect(d.area).toBe(21);
+  expect(d.rooms).toBe(1);
+  expect(d.district).toBe("Gdańsk");
+  expect(d.images.length).toBeGreaterThan(0);
+  expect(d.description.length).toBeGreaterThan(0);
+});
