@@ -15,6 +15,12 @@ describe("resolveSource", () => {
     expect(resolveSource("https://www.olx.pl/nieruchomosci/")).toBe("olx");
     expect(resolveSource("https://www.otodom.pl/pl/wyniki/wynajem")).toBe("otodom");
   });
+  test("recognizes nieruchomosci-online by its www search host, with and without www.", () => {
+    expect(
+      resolveSource("https://www.nieruchomosci-online.pl/szukaj.html?3,mieszkanie,wynajem,,Gdańsk"),
+    ).toBe("nieruchomosci-online");
+    expect(resolveSource("https://nieruchomosci-online.pl/szukaj.html")).toBe("nieruchomosci-online");
+  });
   test("returns null for unsupported host", () => {
     expect(resolveSource("https://www.allegro.pl/x")).toBeNull();
   });

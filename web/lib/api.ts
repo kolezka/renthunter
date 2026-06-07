@@ -1,8 +1,9 @@
-export type Source = "trojmiasto" | "olx" | "otodom";
+export type Source = "trojmiasto" | "olx" | "otodom" | "nieruchomosci-online";
 export const SOURCE_LABEL: Record<Source, string> = {
   trojmiasto: "Trójmiasto",
   olx: "OLX",
   otodom: "Otodom",
+  "nieruchomosci-online": "Nieruchomości-online",
 };
 
 export interface Offer {

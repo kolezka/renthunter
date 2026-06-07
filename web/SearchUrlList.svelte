@@ -15,6 +15,7 @@
     trojmiasto: { rgb: "232,160,90", label: "Trójmiasto" },
     olx: { rgb: "124,196,98", label: "OLX" },
     otodom: { rgb: "120,150,245", label: "Otodom" },
+    "nieruchomosci-online": { rgb: "224,122,160", label: "Nieruchomości-online" },
     unknown: { rgb: "150,158,176", label: "Unknown" },
   };
 
@@ -98,7 +99,7 @@
     <input
       bind:value={draft}
       onkeydown={onKey}
-      placeholder="Paste an OLX / Otodom / Trójmiasto search URL…"
+      placeholder="Paste an OLX / Otodom / Trójmiasto / Nieruchomości-online search URL…"
       class="min-w-0 flex-1 rounded-[13px] border border-[var(--glass-border)] bg-black/25 px-[13px] py-[11px] text-[0.84rem] text-ink transition-[border-color,box-shadow,background] duration-200 placeholder:text-ink-3 focus:border-[rgba(47,109,255,0.7)] focus:bg-black/35 focus:shadow-[0_0_0_3px_rgba(47,109,255,0.18)] focus:outline-none"
     />
     <button
@@ -114,7 +115,7 @@
     {#if draftInvalid}
       <p class="flex items-center gap-2 px-1 text-[0.74rem] text-[var(--color-bad)]">
         <span class="h-[6px] w-[6px] flex-none rounded-full bg-current"></span>
-        {hostLabel(draft.trim())} isn't a supported source — only OLX, Otodom &amp; Trójmiasto work.
+        {hostLabel(draft.trim())} isn't a supported source — only OLX, Otodom, Trójmiasto &amp; Nieruchomości-online work.
       </p>
     {:else if detected}
       <p class="flex items-center gap-2 px-1 text-[0.74rem] text-[var(--color-good)]">
