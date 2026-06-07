@@ -18,6 +18,18 @@ export function resolveSource(url: string): Source | null {
   for (const s of SOURCES) {
     if (s.hosts.some((h) => normalizeHost(h) === norm)) return s;
   }
+  // Fall back to domain-suffix matching for sources whose detail pages live on
+  // per-city subdomains (e.g. gdansk.nieruchomosci-online.pl).
+  for (const s of SOURCES) {
+    if (
+      s.hostSuffixes?.some((suf) => {
+        const n = normalizeHost(suf);
+        return norm === n || norm.endsWith("." + n);
+      })
+    ) {
+      return s;
+    }
+  }
   return null;
 }
 

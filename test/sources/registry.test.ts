@@ -13,3 +13,16 @@ test("resolveSource tolerates www. prefix and returns null for unknown host", ()
 test("allowedHosts includes every source host", () => {
   expect(allowedHosts().has("ogloszenia.trojmiasto.pl")).toBe(true);
 });
+
+test("resolveSource matches nieruchomosci-online city subdomains by suffix", () => {
+  expect(
+    resolveSource("https://gdansk.nieruchomosci-online.pl/mieszkanie,m3/123.html")?.id,
+  ).toBe("nieruchomosci-online");
+  expect(
+    resolveSource("https://www.nieruchomosci-online.pl/szukaj.html?3,mieszkanie")?.id,
+  ).toBe("nieruchomosci-online");
+});
+
+test("allowedHosts includes the nieruchomosci-online host", () => {
+  expect(allowedHosts().has("nieruchomosci-online.pl")).toBe(true);
+});
