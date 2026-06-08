@@ -4,4 +4,8 @@ web/dist
 .env
 test
 docs
-drizzle
+.claude
+.playwright-mcp
+graphify-out
+# NOTE: do NOT ignore `drizzle/` — the image runs `drizzle-kit migrate` on start,
+# which needs the migration files. Excluding it leaves the DB with no tables.

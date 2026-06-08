@@ -15,9 +15,9 @@
     "db:studio": "bunx drizzle-kit studio",
     "compose:dev": "docker compose -f docker-compose.dev.yml up",
     "compose:dev:down": "docker compose -f docker-compose.dev.yml down",
-    "compose:prod": "docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build",
-    "compose:prod:down": "docker compose --env-file .env.production -f docker-compose.prod.yml down",
-    "compose:prod:logs": "docker compose --env-file .env.production -f docker-compose.prod.yml logs -f"
+    "compose:prod": "docker compose --env-file .env.production up -d --build",
+    "compose:prod:down": "docker compose --env-file .env.production down",
+    "compose:prod:logs": "docker compose --env-file .env.production logs -f"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.1",

@@ -46,6 +46,14 @@ backups/
 # superpowers brainstorming companion artifacts
 .superpowers/
 
+# superpowers specs/plans — local design docs, kept out of the repo (and purged
+# from history). Brainstorming/planning output lives here but isn't shipped.
+docs/superpowers/
+
+# Claude Code worktrees + tooling scratch
+.claude/worktrees/
+.playwright-mcp/
+
 # graphify knowledge graph — track the portable outputs (overrides the global
 # ~/.gitignore_global rule that excludes graphify-out/). Skip the regenerated AST
 # cache, the ever-growing dated snapshots, the bulky HTML viewer, per-run cost

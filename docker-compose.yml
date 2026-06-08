@@ -1,0 +1,120 @@
+# Production / Coolify stack — self-contained, no external scheduler or cloud queue.
+#
+# Coolify (Docker Compose build pack): point the resource at this file. Coolify
+# builds the `app` image from the Dockerfile, runs db/apprise/ollama as managed
+# containers, and routes HTTPS to `app` through its reverse proxy — assign a domain
+# to the `app` service in the Coolify UI (no host port is published here). Set the
+# required env vars (POSTGRES_PASSWORD, …) in the app's Environment Variables tab.
+#
+# Manual (non-Coolify) host deploy:
+#   cp .env.production.example .env.production   # then fill in POSTGRES_PASSWORD etc.
+#   docker compose --env-file .env.production up -d --build
+#   # front `app` (3000) with a reverse proxy / TLS (Caddy, Traefik, nginx).
+#
+# The scheduled crawl runs IN-PROCESS in the app (src/pipeline/scheduler.ts), driven
+# by config.pollIntervalMin from the DB (editable in the panel; 0 = off). Postgres,
+# Apprise and Ollama are internal-only — never exposed off the compose network.
+name: renthunter
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: renthunter-db
+    restart: unless-stopped
+    environment:
+      # USER/DB are fixed constants (literals, not ${...}) so Coolify's env tab
+      # only ever shows POSTGRES_PASSWORD as something the operator configures.
+      POSTGRES_USER: renthunter
+      POSTGRES_DB: renthunter
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U renthunter -d renthunter"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    # Internal-only: no host port; reachable only on the compose network.
+
+  apprise:
+    image: caronc/apprise:latest
+    container_name: renthunter-apprise
+    restart: unless-stopped
+    # Internal-only: only the app reaches it over the compose network.
+
+  # Local, free embeddings provider (OpenAI-compatible /v1/embeddings). Internal-only.
+  # Semantic search runs on this — no paid embeddings key required.
+  ollama:
+    image: ollama/ollama:latest
+    container_name: renthunter-ollama
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Internal-only.
+
+  # One-shot: pull the embedding model once Ollama is healthy, then exit.
+  # Idempotent — a no-op if the model is already in the ollama volume.
+  ollama-pull:
+    image: ollama/ollama:latest
+    container_name: renthunter-ollama-pull
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["/bin/sh", "-c", "ollama pull ${EMBED_MODEL:-bge-m3}"]
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: renthunter:latest
+    container_name: renthunter-app
+    restart: unless-stopped
+    # No host-port mapping — Coolify's reverse proxy talks to the container directly
+    # on the compose network; assign a domain to this service in the Coolify UI.
+    # `expose` documents the contract and mirrors EXPOSE 3000 in the Dockerfile.
+    expose:
+      - "3000"
+    environment:
+      DATABASE_URL: postgres://renthunter:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your env}@db:5432/renthunter
+      PORT: "3000"
+      APPRISE_URL: http://apprise:8000
+      # Embeddings — default to the internal Ollama service (free). Override to use OpenAI/Jina.
+      EMBED_BASE_URL: ${EMBED_BASE_URL:-http://ollama:11434/v1}
+      EMBED_API_KEY: ${EMBED_API_KEY:-ollama}
+      EMBED_MODEL: ${EMBED_MODEL:-bge-m3}
+      # Optional — DeepSeek AI scoring. Leave empty to run filters-only.
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      # Optional — route all scraping through a self-hosted browserless instance
+      # (renders JS + uses its egress IP, bypassing IP blocks). Empty = direct fetch.
+      BROWSERLESS_URL: ${BROWSERLESS_URL:-}
+      BROWSERLESS_TOKEN: ${BROWSERLESS_TOKEN:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      apprise:
+        condition: service_started
+      # Wait for Ollama to be up. Embeddings still degrade gracefully if the model
+      # pull hasn't finished yet.
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      # The slim image has no curl/wget; use bun itself to probe the API.
+      test: ["CMD", "bun", "-e", "fetch('http://127.0.0.1:3000/api/config').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+volumes:
+  pgdata:
+  ollama:

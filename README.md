@@ -15,8 +15,12 @@ The pipeline is a single in-process flow, lock-guarded so only one crawl runs at
 time (`src/pipeline/`):
 
 1. **Scrape** — fetch list pages from the configured search URLs across every enabled
-   source (`src/scraper/sources/`: `trojmiasto`, `olx`, `otodom`). Each source is a
-   small adapter behind a shared registry.
+   source (`src/scraper/sources/`: `trojmiasto`, `olx`, `otodom`, `nieruchomosci-online`).
+   Each source is a small adapter behind a shared registry. Fetching goes through a single
+   `fetchPage()` (`src/scraper/fetch.ts`); set `BROWSERLESS_URL` to route every request
+   through a self-hosted [browserless](https://www.browserless.io/) instance — it renders
+   the page and returns HTML from its own egress IP, which bypasses IP blocks on a flagged
+   server and handles JS-heavy portals. Empty = plain direct fetch.
 2. **Filter** — drop offers failing the hard criteria (price / area / rooms range)
    before any expensive work (`pipeline/filter.ts`).
 3. **Enrich** — for new offers, fetch the detail page (bounded concurrency via
@@ -82,20 +86,35 @@ bun run compose:dev          # docker compose -f docker-compose.dev.yml up
 
 ### Production (dedicated server)
 
-Self-contained: `db` + `apprise` + `app`. The scheduled crawl runs **in-process**
-inside the app (`src/pipeline/scheduler.ts`, driven by the DB `pollIntervalMin`
-setting) — there is no separate scheduler service. Postgres and Apprise are
-internal-only.
+`docker-compose.yml` is the production stack: `db` + `apprise` + `ollama` + `app`,
+self-contained. The scheduled crawl runs **in-process** inside the app
+(`src/pipeline/scheduler.ts`, driven by the DB `pollIntervalMin` setting) — there is
+no separate scheduler service. Postgres, Apprise and Ollama are internal-only.
 
 ```bash
 cp .env.production.example .env.production   # then fill in POSTGRES_PASSWORD etc.
 bun run compose:prod                         # up -d --build, reads .env.production
 ```
 
-- The app is published on `${APP_PORT:-3000}` — put a reverse proxy (Caddy/Traefik/
-  nginx) in front of it for TLS.
+- The `app` service listens on `3000` (no host port is published) — put a reverse
+  proxy (Caddy/Traefik/nginx) in front of it for TLS, or publish a port yourself.
 - The app auto-applies migrations (`drizzle-kit migrate`) on start.
 - Logs: `bun run compose:prod:logs` · Stop: `bun run compose:prod:down`.
+
+### Production (Coolify)
+
+`docker-compose.yml` is Coolify-ready (Docker Compose build pack):
+
+1. Create a resource from this Git repo and pick **Docker Compose** (it uses
+   `docker-compose.yml` by default).
+2. In the `app` service, **assign a domain** — Coolify's reverse proxy terminates TLS
+   and routes to the exposed port `3000`; no host port is published, so the internal
+   services (`db`, `apprise`, `ollama`) stay off the public network.
+3. Set the environment variables in the app's **Environment Variables** tab —
+   `POSTGRES_PASSWORD` is required; everything else (DeepSeek, browserless, embeddings)
+   is optional. See `.env.production.example` for the full list.
+4. Deploy. Migrations run automatically on start; `pgdata` and `ollama` are persistent
+   named volumes.
 
 ## Run on the host (without Docker)
 
@@ -124,6 +143,8 @@ Two kinds of configuration:
   | `DEEPSEEK_API_KEY` / `DEEPSEEK_BASE_URL` | AI scoring | `https://api.deepseek.com` |
   | `EMBED_BASE_URL` / `EMBED_API_KEY` / `EMBED_MODEL` | Embeddings for semantic search | `https://api.openai.com/v1`, `text-embedding-3-small` |
   | `APPRISE_URL` | Apprise API endpoint | `http://localhost:8000` |
+  | `BROWSERLESS_URL` | Self-hosted browserless base URL; when set, all scraping is routed through its `/content` endpoint (bypasses IP blocks). Empty = direct fetch | — |
+  | `BROWSERLESS_TOKEN` | `?token=` for browserless, if your instance requires auth | — |
 
   See `.env.example` (host) and `.env.production.example` (prod compose).
 
@@ -132,7 +153,8 @@ Two kinds of configuration:
 ```
 src/
   api/         Bun.serve HTTP + WebSocket server, routes
-  scraper/     source adapters (trojmiasto, olx, otodom) + HTML parsing
+  scraper/     source adapters (trojmiasto, olx, otodom, nieruchomosci-online) +
+               HTML parsing; fetch.ts routes via direct fetch or self-hosted browserless
   pipeline/    crawl orchestration: filter, enrich, score, notify, scheduler, run-lock
   scorer/      DeepSeek AI scoring
   embeddings/  embedding client + cosine ranking
