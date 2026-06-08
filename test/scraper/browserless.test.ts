@@ -24,6 +24,11 @@ test("buildBrowserlessRequest omits the token param when empty", () => {
   expect(endpoint).toBe("http://host:3000/content?stealth=true&blockAds=true");
 });
 
+test("buildBrowserlessRequest strips trailing slashes from base URL", () => {
+  const { endpoint } = buildBrowserlessRequest(TARGET, { url: "http://host:3000/" });
+  expect(endpoint).toStartWith("http://host:3000/content?");
+});
+
 test("fetchPage routes through browserless when configured", async () => {
   let seenUrl: string | undefined;
   let seenInit: RequestInit | undefined;
@@ -59,5 +64,5 @@ test("fetchPage throws on a non-ok browserless response", async () => {
   const spy = (): Promise<Response> => Promise.resolve(new Response("nope", { status: 500 }));
   await expect(
     fetchPage(TARGET, { fetchImpl: spy, browserless: { url: "http://host:3000" } }),
-  ).rejects.toThrow();
+  ).rejects.toThrow("HTTP 500");
 });

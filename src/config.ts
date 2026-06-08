@@ -7,7 +7,7 @@ export interface AppConfig {
   embedBaseUrl: string;
   embedApiKey: string;
   embedModel: string;
-  browserless: { url: string; token: string };
+  browserless: { url: string; token?: string };
 }
 
 export function loadConfig(env: Record<string, string | undefined> = process.env): AppConfig {
@@ -27,7 +27,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     embedModel: env.EMBED_MODEL ?? "text-embedding-3-small",
     browserless: {
       url: env.BROWSERLESS_URL ?? "",
-      token: env.BROWSERLESS_TOKEN ?? "",
+      token: env.BROWSERLESS_TOKEN || undefined,
     },
   };
 }
