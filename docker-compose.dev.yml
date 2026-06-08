@@ -81,7 +81,7 @@ services:
     ports:
       # Bind to all interfaces so other devices on the LAN can reach the app
       # (e.g. http://<your-host-LAN-ip>:3000). DB/apprise below stay loopback-only.
-      - "0.0.0.0:3001:3000"
+      - "0.0.0.0:3005:3000"
     volumes:
       - .:/app
       # Anonymous volume: keep the container's linux node_modules, don't share the
