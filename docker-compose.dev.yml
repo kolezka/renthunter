@@ -30,8 +30,13 @@ services:
 
   # Local, free embeddings provider (OpenAI-compatible /v1/embeddings). The app
   # points EMBED_BASE_URL here, so semantic search needs no paid API key.
+  #
+  # Opt-in: only started with `--profile embeddings` (or COMPOSE_PROFILES=embeddings).
+  # A plain `docker compose -f docker-compose.dev.yml up` runs WITHOUT Ollama; enable
+  # the profile AND the Embeddings toggle in the panel to use semantic search.
   ollama:
     image: ollama/ollama:latest
+    profiles: ["embeddings"]
     ports:
       # Loopback-only: reachable from the host for debugging, not from the network.
       - "127.0.0.1:11434:11434"
@@ -47,6 +52,7 @@ services:
   # Idempotent — a no-op if the model is already in the ollama volume.
   ollama-pull:
     image: ollama/ollama:latest
+    profiles: ["embeddings"]
     depends_on:
       ollama:
         condition: service_healthy
@@ -87,15 +93,14 @@ services:
       # Anonymous volume: keep the container's linux node_modules, don't share the
       # host's darwin one (native deps would break across platforms).
       - /app/node_modules
+    # No depends_on for ollama: embeddings are opt-in (see the ollama service) and
+    # the app degrades gracefully when the embed provider is unreachable, so boot
+    # must not block on an Ollama that may not be running.
     depends_on:
       db:
         condition: service_healthy
       apprise:
         condition: service_started
-      # Wait for Ollama to be up (network alias). Embeddings still degrade
-      # gracefully if the model pull hasn't finished yet.
-      ollama:
-        condition: service_healthy
 
 volumes:
   pgdata:

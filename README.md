@@ -86,15 +86,28 @@ bun run compose:dev          # docker compose -f docker-compose.dev.yml up
 
 ### Production (dedicated server)
 
-`docker-compose.yml` is the production stack: `db` + `apprise` + `ollama` + `app`,
+`docker-compose.yml` is the production stack: `db` + `apprise` + `app`,
 self-contained. The scheduled crawl runs **in-process** inside the app
 (`src/pipeline/scheduler.ts`, driven by the DB `pollIntervalMin` setting) — there is
-no separate scheduler service. Postgres, Apprise and Ollama are internal-only.
+no separate scheduler service. Postgres and Apprise are internal-only.
 
 ```bash
 cp .env.production.example .env.production   # then fill in POSTGRES_PASSWORD etc.
 bun run compose:prod                         # up -d --build, reads .env.production
 ```
+
+**Embeddings (semantic search) are opt-in.** By default no Ollama container runs and
+the in-panel Embeddings toggle is off, so a plain deploy needs zero embedding setup.
+To enable semantic search you need **both** layers:
+
+1. **Run the provider** — start the `ollama` + `ollama-pull` containers via the
+   `embeddings` compose profile: `COMPOSE_PROFILES=embeddings` in your env (or
+   `--profile embeddings` on the `up` command).
+2. **Turn on Embeddings** in the UI **Konfiguracja** panel.
+
+Without the profile, the app still boots fine — it just skips embedding (it never
+blocks on or requires Ollama). Point `EMBED_BASE_URL`/`EMBED_API_KEY`/`EMBED_MODEL` at
+a paid OpenAI-compatible provider instead of Ollama if you prefer.
 
 - The `app` service listens on `3000` (no host port is published) — put a reverse
   proxy (Caddy/Traefik/nginx) in front of it for TLS, or publish a port yourself.
@@ -109,12 +122,14 @@ bun run compose:prod                         # up -d --build, reads .env.product
    `docker-compose.yml` by default).
 2. In the `app` service, **assign a domain** — Coolify's reverse proxy terminates TLS
    and routes to the exposed port `3000`; no host port is published, so the internal
-   services (`db`, `apprise`, `ollama`) stay off the public network.
+   services (`db`, `apprise`) stay off the public network.
 3. Set the environment variables in the app's **Environment Variables** tab —
    `POSTGRES_PASSWORD` is required; everything else (DeepSeek, browserless, embeddings)
-   is optional. See `.env.production.example` for the full list.
+   is optional. See `.env.production.example` for the full list. To enable semantic
+   search, add `COMPOSE_PROFILES=embeddings` (starts the internal Ollama provider) and
+   turn on Embeddings in the panel.
 4. Deploy. Migrations run automatically on start; `pgdata` and `ollama` are persistent
-   named volumes.
+   named volumes (the `ollama` volume is only populated when the embeddings profile runs).
 
 ## Run on the host (without Docker)
 

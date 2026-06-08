@@ -53,7 +53,7 @@ export const config = pgTable("config", {
   requestDelayMs: integer("request_delay_ms").notNull().default(0),
   concurrencyLimit: integer("concurrency_limit").notNull().default(1),
   extractEnabled: boolean("extract_enabled").notNull().default(true),
-  embedEnabled: boolean("embed_enabled").notNull().default(true),
+  embedEnabled: boolean("embed_enabled").notNull().default(false),
 });
 
 export type Offer = typeof offers.$inferSelect;

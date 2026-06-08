@@ -31,6 +31,21 @@ test("enrichOffer skips extraction when disabled and never throws on provider er
   expect(r.embedding).toBeNull();
 });
 
+test("enrichOffer skips embedding entirely when embedEnabled is false", async () => {
+  let embedCalls = 0;
+  const r = await enrichOffer(
+    { title: "Kawalerka Wrzeszcz", price: 2000, area: 30, rooms: 1, district: "Gdańsk", description: "blisko morza", images: [] },
+    { extractEnabled: true, embedEnabled: false } as any,
+    { ...deps, embed: async () => { embedCalls++; return [0.1, 0.2]; } },
+  );
+  expect(embedCalls).toBe(0);          // never touches the embed provider (no Ollama needed)
+  expect(r.embedding).toBeNull();
+  expect(r.embedTextHash).toBeNull();
+  // gazetteer + feature extraction still run — only embedding is gated
+  expect(r.districtCanonical).toBe("Gdańsk Wrzeszcz");
+  expect(r.features).toEqual(["balkon"]);
+});
+
 test("enrichOffer skips embedding when the embed-text hash is unchanged", async () => {
   let embedCalls = 0;
   const d = { title: "Kawalerka Wrzeszcz", price: 2000, area: 30, rooms: 1, district: "Gdańsk", description: "blisko morza", images: [] };
