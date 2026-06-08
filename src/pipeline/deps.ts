@@ -22,12 +22,19 @@ import { progressBus } from "./progress";
 // Must exceed the longest possible run (trigger maxDuration=300s).
 const RUN_LOCK_STALE_MS = 15 * 60 * 1000;
 
+/** Bind the browserless config (if any) into a fetchPage closure matching the
+ *  injected (url) => Promise<string> shape. Empty url → direct fetch. */
+function makeFetchPage(env: AppConfig) {
+  const browserless = env.browserless.url ? env.browserless : undefined;
+  return (url: string) => fetchPage(url, { browserless });
+}
+
 /** Compose the logged CheckDeps used by runCheck (trigger task + manual run). */
 export function buildCheckDeps(env: AppConfig, logger: Logger): CheckDeps {
   return withLogging(
     {
       getConfig, getKnownExternalIds, upsertOffer, markNotified, markInactive,
-      fetchPage, resolveSource, scoreOffer, sendNotification,
+      fetchPage: makeFetchPage(env), resolveSource, scoreOffer, sendNotification,
       appriseUrl: env.appriseUrl,
       deepseekApiKey: env.deepseekApiKey,
       deepseekBaseUrl: env.deepseekBaseUrl,
@@ -44,7 +51,7 @@ export function buildRefreshDeps(env: AppConfig, logger: Logger): RefreshDeps {
   return {
     getConfig,
     getOffer: getOfferByExternalId,
-    fetchPage,
+    fetchPage: makeFetchPage(env),
     resolveSource,
     scoreOffer,
     upsertOffer,
