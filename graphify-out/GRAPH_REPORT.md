@@ -1,16 +1,16 @@
-# Graph Report - browserless-fetch  (2026-06-08)
+# Graph Report - embeddings-optional-ollama  (2026-06-08)
 
 ## Corpus Check
-- 168 files · ~224,632 words
+- 137 files · ~148,388 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4653 nodes · 5153 edges · 581 communities (578 shown, 3 thin omitted)
+- 4737 nodes · 5248 edges · 577 communities (575 shown, 2 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2afdd71a`
+- Built from commit: `2f12ed46`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -581,15 +581,12 @@
 - [[_COMMUNITY_Community 563|Community 563]]
 - [[_COMMUNITY_Community 564|Community 564]]
 - [[_COMMUNITY_Community 565|Community 565]]
+- [[_COMMUNITY_Community 566|Community 566]]
 - [[_COMMUNITY_Community 572|Community 572]]
-- [[_COMMUNITY_Community 573|Community 573]]
-- [[_COMMUNITY_Community 574|Community 574]]
 - [[_COMMUNITY_Community 575|Community 575]]
 - [[_COMMUNITY_Community 576|Community 576]]
 - [[_COMMUNITY_Community 577|Community 577]]
-- [[_COMMUNITY_Community 578|Community 578]]
 - [[_COMMUNITY_Community 579|Community 579]]
-- [[_COMMUNITY_Community 580|Community 580]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `columns` - 23 edges
@@ -608,18 +605,18 @@
   test/queries.test.ts → src/db/queries.ts
 - `localDay()` --calls--> `pad()`  [INFERRED]
   src/log/logger.ts → test/logger.test.ts
-- `ServerOptions` --references--> `Offer`  [EXTRACTED]
-  src/api/server.ts → src/db/schema.ts
-- `parseDetail()` --calls--> `metaContent()`  [EXTRACTED]
-  src/scraper/parse.ts → src/scraper/html.ts
-- `parseDetail()` --calls--> `ldImages()`  [EXTRACTED]
-  src/scraper/parse.ts → src/scraper/html.ts
+- `createDb()` --calls--> `loadConfig()`  [EXTRACTED]
+  src/db/client.ts → src/config.ts
+- `makeFetchPage()` --calls--> `fetchPage()`  [EXTRACTED]
+  src/pipeline/deps.ts → src/scraper/fetch.ts
+- `runCheck()` --calls--> `runPool()`  [EXTRACTED]
+  src/pipeline/check.ts → src/pipeline/pool.ts
 
-## Communities (581 total, 3 thin omitted)
+## Communities (577 total, 2 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.06
-Nodes (58): createServer(), DB, appendLog(), ensureConfig(), getActiveScorableOffers(), getConfig(), getFacets(), getKnownExternalIds() (+50 more)
+Cohesion: 0.07
+Nodes (50): createServer(), createDb(), DB, getDb(), appendLog(), ensureConfig(), getActiveScorableOffers(), getConfig() (+42 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.18
@@ -647,7 +644,7 @@ Nodes (42): code:ts (export interface RescoreSummary { scored: number; errors: n
 
 ### Community 7 - "Community 7"
 Cohesion: 0.07
-Nodes (48): Config, NewOffer, Offer, Logger, CheckDeps, CheckSummary, interleaveBySource(), maybeScore() (+40 more)
+Nodes (40): Config, NewOffer, buildEmbedText(), EmbedTextFields, embedTextHash(), Logger, buildOfferNotification(), OfferNotification (+32 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.07
@@ -662,12 +659,12 @@ Cohesion: 0.13
 Nodes (15): offers_status_idx, offers_status_score_idx, columns, concurrently, isUnique, method, name, with (+7 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.28
-Nodes (10): findJsonLd(), ldImages(), metaContent(), SourceId, listPageUrls, parseDetail(), listPageUrls, parseDetail() (+2 more)
+Cohesion: 0.15
+Nodes (19): findJsonLd(), firstJsonLd(), ldImages(), metaContent(), ListItem, OfferDetail, parseDetail(), xogFieldValue() (+11 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.12
-Nodes (25): defaultRefresh(), defaultRunCrawler(), defaultRunRescore(), DIST, env, g, server, ServerOptions (+17 more)
+Cohesion: 0.14
+Nodes (22): defaultRefresh(), defaultRunCrawler(), defaultRunRescore(), DIST, env, g, server, acquireRunLock() (+14 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.08
@@ -686,16 +683,16 @@ Cohesion: 0.08
 Nodes (25): Browserless Fetch Support Implementation Plan, code:ts (/** Default per-call network timeouts (ms). */), code:ts (fetchPage: makeFetchPage(env), resolveSource, scoreOffer, se), code:ts (fetchPage: makeFetchPage(env),), code:bash (git add src/pipeline/deps.ts), code:block13 (# Optional: route all scrape fetches through a self-hosted b), code:yaml (BROWSERLESS_URL: ${BROWSERLESS_URL:-}), code:bash (git add .env.example docker-compose.dev.yml) (+17 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.18
-Nodes (9): Listener, progressBus, RescoreSummary, a, b, seen, ua, ub (+1 more)
+Cohesion: 0.08
+Nodes (24): ServerOptions, Offer, runPool(), Listener, progressBus, RescoreEvent, RescoreSummary, RescoreDeps (+16 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.08
 Nodes (23): Architektura, Cel, code:block1 (interface SchedulerDeps {), code:block2 (const stop = startScheduler(buildSchedulerDeps(env));), Crawler Scheduler (in-process) + Multi-source — Design Spec, Docker, Granica i testowalność, Integracja w `src/api/server.ts` (+15 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.14
-Nodes (20): Config, Facets, getConfig(), getFacets(), getJson(), getLogs(), getOfferHistory(), getOffers() (+12 more)
+Cohesion: 0.11
+Nodes (26): Config, Facets, FeatureFacet, getConfig(), getFacets(), getJson(), getLogs(), getOfferHistory() (+18 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.09
@@ -706,16 +703,16 @@ Cohesion: 0.13
 Nodes (15): scripts, build, compose:dev, compose:dev:down, compose:prod, compose:prod:down, compose:prod:logs, db:generate (+7 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.05
-Nodes (40): compilerOptions, allowImportingTsExtensions, allowJs, jsx, lib, module, moduleDetection, moduleResolution (+32 more)
+Cohesion: 0.11
+Nodes (19): compilerOptions, allowImportingTsExtensions, allowJs, jsx, lib, module, moduleDetection, moduleResolution (+11 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.10
 Nodes (19): code:ts (import { test, expect } from "bun:test";), code:ts (export function resolveSource(url: string): Source | null {), code:bash (git add src/scraper/sources/registry.ts test/sources/registr), code:bash (git add graphify-out), code:ts (export type SourceId = "trojmiasto" | "olx" | "otodom" | "ni), code:ts (export interface Source {), code:ts (import type { Source, ListItem, OfferDetail } from "./types"), code:ts (import type { Source } from "./types";) (+11 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.14
-Nodes (15): firstJsonLd(), ListItem, listPageUrls, parseDetail(), parseListUrls(), xogFieldValue(), makeListPageUrls(), d (+7 more)
+Cohesion: 0.17
+Nodes (12): listPageUrls, parseListUrls(), SourceId, d, items, urls, trojmiasto, ListItem (+4 more)
 
 ### Community 25 - "Community 25"
 Cohesion: 0.11
@@ -790,8 +787,8 @@ Cohesion: 0.12
 Nodes (16): context, level, run_id, name, notNull, primaryKey, type, name (+8 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.06
-Nodes (30): code:bash (bun run compose:dev          # docker compose -f docker-comp), code:bash (cp .env.production.example .env.production   # then fill in ), code:bash (bun install), code:block4 (src/), Configuration, Development (hot reload), How it works, Notes (+22 more)
+Cohesion: 0.04
+Nodes (46): code:bash (bun run compose:dev          # docker compose -f docker-comp), code:bash (cp .env.production.example .env.production   # then fill in ), code:bash (bun install), code:block4 (src/), Configuration, Development (hot reload), How it works, Notes (+38 more)
 
 ### Community 44 - "Community 44"
 Cohesion: 0.13
@@ -846,8 +843,8 @@ Cohesion: 0.13
 Nodes (15): scripts, build, compose:dev, compose:dev:down, compose:prod, compose:prod:down, compose:prod:logs, db:generate (+7 more)
 
 ### Community 57 - "Community 57"
-Cohesion: 0.25
-Nodes (11): ./lib/api, ./lib/featureFilter, ./lib/format, ./lib/api, ./lib/featureFilter, ./lib/format, next, ./FeatureFilter.svelte (+3 more)
+Cohesion: 0.06
+Nodes (42): dependencies, bun-plugin-svelte, drizzle-orm, postgres, svelte, @tanstack/virtual-core, dependencies, bun-plugin-svelte (+34 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.13
@@ -862,8 +859,8 @@ Cohesion: 0.13
 Nodes (14): 1. Server — `src/db/queries.ts`, `getFacets()`, 2. Types & API client — `web/lib/api.ts`, 3. New component — `web/FeatureFilter.svelte`, 4. Wiring — `web/SearchBar.svelte`, Architecture, code:sql (SELECT unnest(features) AS v, count(*) AS n), code:ts (export interface FeatureFacet { value: string; count: number), code:svelte (<FeatureFilter) (+6 more)
 
 ### Community 61 - "Community 61"
-Cohesion: 0.33
-Nodes (6): dependencies, bun-plugin-svelte, drizzle-orm, postgres, svelte, @tanstack/virtual-core
+Cohesion: 0.10
+Nodes (17): baseConfig, bySource, cfg, { deps }, { deps, logs }, { deps, notified }, { deps, notified, upserts }, { deps, upserts } (+9 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.14
@@ -890,8 +887,8 @@ Cohesion: 0.15
 Nodes (12): code:ts (// test/mark-inactive.test.ts), code:ts (// test/upsert-offer.test.ts), code:ts (// src/db/queries.ts — replace upsertOffer (lines 28-71)), code:bash (git add src/db/queries.ts test/upsert-offer.test.ts), code:ts (// src/db/queries.ts — replace markInactive (lines 89-99)), code:bash (git add src/db/queries.ts test/mark-inactive.test.ts), Deferred / explicitly out of scope (logged, not silently dropped), Finalization (+4 more)
 
 ### Community 68 - "Community 68"
-Cohesion: 0.15
-Nodes (13): code:ts (// test/list-offers.test.ts), code:ts (// src/db/queries.ts — listOffers (replace the in-JS slice v), code:bash (git add src/db/queries.ts test/list-offers.test.ts), code:ts (// test/list-projection.test.ts), code:ts (// src/db/queries.ts — near the top, after imports), code:bash (git add src/db/queries.ts test/list-projection.test.ts), code:ts (// test/facets.test.ts), code:ts (// src/db/queries.ts — getFacets) (+5 more)
+Cohesion: 0.13
+Nodes (15): code:ts (// offers table — add as the table-config callback (3rd arg ), code:sql (-- drizzle/0008_review_indexes.sql), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (git add src/db/schema.ts drizzle/0008_review_indexes.sql dri), code:ts (// test/list-offers.test.ts), code:ts (// src/db/queries.ts — listOffers (replace the in-JS slice v), code:bash (git add src/db/queries.ts test/list-offers.test.ts) (+7 more)
 
 ### Community 69 - "Community 69"
 Cohesion: 0.15
@@ -915,7 +912,7 @@ Nodes (11): context, level, name, notNull, primaryKey, type, name, notNull (+3 m
 
 ### Community 74 - "Community 74"
 Cohesion: 0.18
-Nodes (11): event, level, name, notNull, primaryKey, type, name, notNull (+3 more)
+Nodes (11): context, event, name, notNull, primaryKey, type, name, notNull (+3 more)
 
 ### Community 75 - "Community 75"
 Cohesion: 0.18
@@ -958,12 +955,12 @@ Cohesion: 0.18
 Nodes (10): code:svelte (<script lang="ts">), code:bash (git add web/OfferHistory.svelte web/OfferDetail.svelte web/D), code:yaml (EMBED_BASE_URL: ${EMBED_BASE_URL:-https://api.openai.com/v1}), code:bash (git add docker-compose.dev.yml docker-compose.prod.yml web/C), Conventions (verified in this repo — follow exactly), File Structure, Final verification, Keyword Extraction + Vector Search + Change History — Implementation Plan (+2 more)
 
 ### Community 85 - "Community 85"
-Cohesion: 0.22
-Nodes (12): EDITABLE, isNonNegNumberOrNull(), safeStaticPath(), validateConfigPatch(), ValidationResult, allowedHosts(), normalizeHost(), PARSERS (+4 more)
+Cohesion: 0.14
+Nodes (17): EDITABLE, isNonNegNumberOrNull(), safeStaticPath(), validateConfigPatch(), ValidationResult, olx, d, ids (+9 more)
 
 ### Community 86 - "Community 86"
-Cohesion: 0.10
-Nodes (20): APIs, code:ts#index.test.ts (import { test, expect } from "bun:test";), code:ts#index.ts (import index from "./index.html"), code:html#index.html (<html>), code:tsx#frontend.tsx (import React from "react";), code:sh (bun --hot ./index.ts), Frontend, graphify (+12 more)
+Cohesion: 0.06
+Nodes (30): APIs, code:ts#index.test.ts (import { test, expect } from "bun:test";), code:ts#index.ts (import index from "./index.html"), code:html#index.html (<html>), code:tsx#frontend.tsx (import React from "react";), code:sh (bun --hot ./index.ts), Frontend, graphify (+22 more)
 
 ### Community 87 - "Community 87"
 Cohesion: 0.20
@@ -1078,8 +1075,8 @@ Cohesion: 0.20
 Nodes (10): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+2 more)
 
 ### Community 115 - "Community 115"
-Cohesion: 0.18
-Nodes (9): Offer, ./lib/virtual.svelte, ./lib/virtual.svelte, cols, marginTop, ro, rows, ./VirtualList.svelte (+1 more)
+Cohesion: 0.11
+Nodes (19): compilerOptions, allowImportingTsExtensions, allowJs, jsx, lib, module, moduleDetection, moduleResolution (+11 more)
 
 ### Community 116 - "Community 116"
 Cohesion: 0.20
@@ -1174,8 +1171,8 @@ Cohesion: 0.29
 Nodes (3): pln, tier, tierClass
 
 ### Community 139 - "Community 139"
-Cohesion: 0.15
-Nodes (12): module, name, peerDependencies, typescript, private, type, module, name (+4 more)
+Cohesion: 0.11
+Nodes (18): module, name, peerDependencies, typescript, private, type, module, name (+10 more)
 
 ### Community 140 - "Community 140"
 Cohesion: 0.29
@@ -1914,16 +1911,16 @@ Cohesion: 0.33
 Nodes (6): ts, default, name, notNull, primaryKey, type
 
 ### Community 324 - "Community 324"
-Cohesion: 0.40
-Nodes (5): context, name, notNull, primaryKey, type
+Cohesion: 0.11
+Nodes (19): compilerOptions, allowImportingTsExtensions, allowJs, jsx, lib, module, moduleDetection, moduleResolution (+11 more)
 
 ### Community 325 - "Community 325"
 Cohesion: 0.33
 Nodes (6): id, default, name, notNull, primaryKey, type
 
 ### Community 326 - "Community 326"
-Cohesion: 0.19
-Nodes (9): isDue(), nextDelayMs(), SchedulerConfig, SchedulerDeps, startScheduler(), AppConfig, { deps, calls }, { deps, calls, setClock } (+1 more)
+Cohesion: 0.14
+Nodes (11): isDue(), nextDelayMs(), SchedulerConfig, SchedulerDeps, startScheduler(), AppConfig, c, cfg (+3 more)
 
 ### Community 327 - "Community 327"
 Cohesion: 0.33
@@ -2058,8 +2055,8 @@ Cohesion: 0.33
 Nodes (6): code:ts (// test/ai-retry.test.ts), code:ts (// src/scraper/retry.ts (new)), code:ts (// src/scorer/deepseek.ts — wrap the fetch and fix the catch), code:ts (// src/embeddings/client.ts — replace the fetch + final retu), code:bash (git add src/scraper/retry.ts src/scorer/deepseek.ts src/embe), Task 3: Retry transient AI failures; stop persisting a fabricated `score: 0`
 
 ### Community 360 - "Community 360"
-Cohesion: 0.33
-Nodes (6): code:ts (// offers table — add as the table-config callback (3rd arg ), code:sql (-- drizzle/0008_review_indexes.sql), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (git add src/db/schema.ts drizzle/0008_review_indexes.sql dri), Task 5: Add the missing indexes (hand-authored migration)
+Cohesion: 0.13
+Nodes (15): scripts, build, compose:dev, compose:dev:down, compose:prod, compose:prod:down, compose:prod:logs, db:generate (+7 more)
 
 ### Community 361 - "Community 361"
 Cohesion: 0.27
@@ -2246,8 +2243,8 @@ Cohesion: 0.40
 Nodes (5): run_id, name, notNull, primaryKey, type
 
 ### Community 407 - "Community 407"
-Cohesion: 0.24
-Nodes (8): buildEmbedText(), EmbedTextFields, embedTextHash(), a, b, c, offer, t
+Cohesion: 0.33
+Nodes (6): devDependencies, bun-plugin-tailwind, drizzle-kit, @electric-sql/pglite, tailwindcss, @types/bun
 
 ### Community 408 - "Community 408"
 Cohesion: 0.40
@@ -2330,8 +2327,8 @@ Cohesion: 0.40
 Nodes (5): run_id, name, notNull, primaryKey, type
 
 ### Community 428 - "Community 428"
-Cohesion: 0.39
-Nodes (6): FeatureFacet, filterFeatures(), popularFeatures(), toggleFeature(), facets, sel
+Cohesion: 0.40
+Nodes (5): level, name, notNull, primaryKey, type
 
 ### Community 429 - "Community 429"
 Cohesion: 0.40
@@ -2542,8 +2539,8 @@ Cohesion: 0.40
 Nodes (5): embedding, name, notNull, primaryKey, type
 
 ### Community 481 - "Community 481"
-Cohesion: 0.33
-Nodes (5): buildOfferNotification(), OfferNotification, long, { title }, { title, body }
+Cohesion: 0.50
+Nodes (3): NotifyInput, sendNotification(), fakeFetch
 
 ### Community 482 - "Community 482"
 Cohesion: 0.40
@@ -2758,8 +2755,8 @@ Cohesion: 0.50
 Nodes (3): dialect, entries, version
 
 ### Community 537 - "Community 537"
-Cohesion: 0.40
-Nodes (5): ./lib/searchUrls, ./lib/searchUrls, k, p, ./SearchUrlList.svelte
+Cohesion: 0.50
+Nodes (3): exclude, exclude, exclude
 
 ### Community 538 - "Community 538"
 Cohesion: 0.50
@@ -2873,17 +2870,13 @@ Nodes (3): code:ts (export interface LogEntry {), code:bash (git add web/lib/api
 Cohesion: 0.47
 Nodes (4): cosineSimilarity(), rankByCosine(), items, ranked
 
+### Community 566 - "Community 566"
+Cohesion: 0.50
+Nodes (4): code:ts (// test/facets.test.ts), code:ts (// src/db/queries.ts — getFacets), code:bash (git add src/db/queries.ts test/facets.test.ts), Task 8: Compute facets in SQL
+
 ### Community 572 - "Community 572"
 Cohesion: 0.33
 Nodes (6): id, default, name, notNull, primaryKey, type
-
-### Community 573 - "Community 573"
-Cohesion: 0.33
-Nodes (5): nieruchomosciOnline, d, ids, items, urls
-
-### Community 574 - "Community 574"
-Cohesion: 0.33
-Nodes (4): FilterableOffer, FilterBounds, cfg, cfgMax
 
 ### Community 575 - "Community 575"
 Cohesion: 0.40
@@ -2891,38 +2884,34 @@ Nodes (5): context, name, notNull, primaryKey, type
 
 ### Community 576 - "Community 576"
 Cohesion: 0.23
-Nodes (8): EmbedOptions, NotifyInput, sendNotification(), chatJson(), ChatOptions, withRetry(), TIMEOUTS, fakeFetch
+Nodes (8): embed(), EmbedOptions, chatJson(), ChatOptions, withRetry(), TIMEOUTS, fetchImpl, opts
 
 ### Community 577 - "Community 577"
 Cohesion: 0.40
 Nodes (5): level, name, notNull, primaryKey, type
-
-### Community 578 - "Community 578"
-Cohesion: 0.33
-Nodes (5): olx, d, ids, items, urls
 
 ### Community 579 - "Community 579"
 Cohesion: 0.40
 Nodes (5): event, name, notNull, primaryKey, type
 
 ## Knowledge Gaps
-- **3468 isolated node(s):** `name`, `module`, `type`, `private`, `dev` (+3463 more)
+- **3533 isolated node(s):** `name`, `module`, `type`, `private`, `dev` (+3528 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `columns` connect `Community 342` to `Community 514`, `Community 515`, `Community 516`, `Community 517`, `Community 518`, `Community 325`, `Community 335`, `Community 336`, `Community 337`, `Community 338`, `Community 339`, `Community 340`, `Community 341`, `Community 343`, `Community 344`, `Community 345`, `Community 346`, `Community 347`, `Community 348`, `Community 349`, `Community 113`?**
-  _High betweenness centrality (0.008) - this node is a cross-community bridge._
-- **Why does `./VirtualList.svelte` connect `Community 115` to `Community 57`, `Community 19`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
-- **Why does `id` connect `Community 325` to `Community 321`, `Community 327`, `Community 82`, `Community 83`, `Community 342`?**
+- **Why does `id` connect `Community 572` to `Community 33`, `Community 34`, `Community 42`, `Community 305`, `Community 313`?**
+  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `columns` connect `Community 313` to `Community 33`, `Community 314`, `Community 315`, `Community 316`, `Community 572`, `Community 317`, `Community 318`, `Community 64`, `Community 320`, `Community 319`, `Community 487`, `Community 488`, `Community 489`, `Community 490`, `Community 491`, `Community 492`, `Community 493`, `Community 494`, `Community 495`, `Community 496`, `Community 497`, `Community 498`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
 - **What connects `name`, `module`, `type` to the rest of the system?**
-  _3468 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _3533 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.05821917808219178 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07390873015873016 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**

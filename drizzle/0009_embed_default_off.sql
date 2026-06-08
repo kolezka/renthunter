@@ -1,0 +1,1 @@
+ALTER TABLE "config" ALTER COLUMN "embed_enabled" SET DEFAULT false;

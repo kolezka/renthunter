@@ -45,10 +45,16 @@ services:
 
   # Local, free embeddings provider (OpenAI-compatible /v1/embeddings). Internal-only.
   # Semantic search runs on this — no paid embeddings key required.
+  #
+  # Opt-in: only started when the `embeddings` profile is active. A default
+  # `docker compose up` (or Coolify without COMPOSE_PROFILES) runs WITHOUT Ollama.
+  # Enable with `--profile embeddings` (or COMPOSE_PROFILES=embeddings) AND turn the
+  # Embeddings toggle on in the panel — both layers are required for semantic search.
   ollama:
     image: ollama/ollama:latest
     container_name: renthunter-ollama
     restart: unless-stopped
+    profiles: ["embeddings"]
     volumes:
       - ollama:/root/.ollama
     healthcheck:
@@ -63,6 +69,7 @@ services:
   ollama-pull:
     image: ollama/ollama:latest
     container_name: renthunter-ollama-pull
+    profiles: ["embeddings"]
     depends_on:
       ollama:
         condition: service_healthy
@@ -98,15 +105,14 @@ services:
       # (renders JS + uses its egress IP, bypassing IP blocks). Empty = direct fetch.
       BROWSERLESS_URL: ${BROWSERLESS_URL:-}
       BROWSERLESS_TOKEN: ${BROWSERLESS_TOKEN:-}
+    # NOTE: no depends_on for ollama. Embeddings are opt-in (see the ollama service)
+    # and the app degrades gracefully when the embed provider is unreachable, so it
+    # must never block boot on Ollama — which may not be running at all.
     depends_on:
       db:
         condition: service_healthy
       apprise:
         condition: service_started
-      # Wait for Ollama to be up. Embeddings still degrade gracefully if the model
-      # pull hasn't finished yet.
-      ollama:
-        condition: service_healthy
     healthcheck:
       # The slim image has no curl/wget; use bun itself to probe the API.
       test: ["CMD", "bun", "-e", "fetch('http://127.0.0.1:3000/api/config').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
