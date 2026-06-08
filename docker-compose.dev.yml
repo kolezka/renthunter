@@ -76,6 +76,8 @@ services:
       EMBED_MODEL: ${EMBED_MODEL:-bge-m3}
       APPRISE_URL: http://apprise:8000
       PORT: "3000"
+      BROWSERLESS_URL: ${BROWSERLESS_URL:-}
+      BROWSERLESS_TOKEN: ${BROWSERLESS_TOKEN:-}
     ports:
       # Bind to all interfaces so other devices on the LAN can reach the app
       # (e.g. http://<your-host-LAN-ip>:3000). DB/apprise below stay loopback-only.
