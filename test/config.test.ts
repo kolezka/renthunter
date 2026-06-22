@@ -29,3 +29,8 @@ test("loadConfig embedBaseUrl defaults to OpenAI", () => {
   const c = loadConfig({ DATABASE_URL: "x" });
   expect(c.embedBaseUrl).toBe("https://api.openai.com/v1");
 });
+
+test("loadConfig reads SCORER_MODEL with a deepseek/deepseek-chat default", () => {
+  expect(loadConfig({ DATABASE_URL: "x" }).scorerModel).toBe("deepseek/deepseek-chat");
+  expect(loadConfig({ DATABASE_URL: "x", SCORER_MODEL: "qwen3:30b-a3b" }).scorerModel).toBe("qwen3:30b-a3b");
+});
