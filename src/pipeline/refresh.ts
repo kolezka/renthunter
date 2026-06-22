@@ -12,7 +12,7 @@ export interface RefreshDeps extends EnrichDeps {
   resolveSource: (url: string) => Source | null;
   scoreOffer: (
     input: { description: string; criteria: string },
-    opts: { apiKey: string; baseUrl: string },
+    opts: { apiKey: string; baseUrl: string; model?: string },
   ) => Promise<{ score: number; reasons: string }>;
   upsertOffer: (o: NewOffer) => Promise<void>;
   deepseekApiKey: string;

@@ -72,3 +72,17 @@ test("enrichOffer re-embeds when prior hash differs", async () => {
   expect(embedCalls).toBe(1);
   expect(r.embedding).toEqual([0.1, 0.2]);
 });
+
+test("enrichOffer passes the configured chat model to extractFeatures", async () => {
+  let sentModel: string | undefined;
+  const local = {
+    ...deps,
+    deepseekModel: "deepseek/deepseek-chat",
+    extractFeatures: async (_i: any, o: any) => { sentModel = o.model; return ["balkon"]; },
+  };
+  await enrichOffer(
+    { title: "Kawalerka Wrzeszcz", price: 2000, area: 30, rooms: 1, district: "Gdańsk", description: "blisko morza", images: [] },
+    { extractEnabled: true, embedEnabled: false } as any, local,
+  );
+  expect(sentModel).toBe("deepseek/deepseek-chat");
+});

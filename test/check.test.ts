@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { runCheck, type CheckDeps } from "../src/pipeline/check";
+import { runCheck, maybeScore, type CheckDeps } from "../src/pipeline/check";
 import type { Source } from "../src/scraper/sources/types";
 import type { LogInput } from "../src/log/logger";
 
@@ -309,4 +309,18 @@ test("fresh selection interleaves sources so a later source is not starved by th
   expect(upserts.length).toBe(4);                 // cap respected
   expect(sources.has("trojmiasto")).toBe(true);
   expect(sources.has("otodom")).toBe(true);       // the later source is NOT starved
+});
+
+test("maybeScore passes the configured model to scoreOffer", async () => {
+  let sentModel: string | undefined;
+  const deps = {
+    scoreOffer: async (_i: any, o: any) => { sentModel = o.model; return { score: 1, reasons: "x" }; },
+    deepseekApiKey: "k", deepseekBaseUrl: "https://d", deepseekModel: "deepseek/deepseek-chat",
+  };
+  await maybeScore(
+    { description: "d" } as any,
+    { deepseekEnabled: true, aiCriteria: "c", outputLanguage: "Polish" } as any,
+    deps,
+  );
+  expect(sentModel).toBe("deepseek/deepseek-chat");
 });
