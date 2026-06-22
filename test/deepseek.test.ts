@@ -35,3 +35,23 @@ test("scoreOffer throws on non-JSON content (no fabricated score 0)", async () =
     ),
   ).rejects.toThrow();
 });
+
+test("scoreOffer sends the configured model in the request body", async () => {
+  let sentBody = "";
+  const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
+    sentBody = String(init?.body ?? "");
+    return new Response(JSON.stringify({ choices: [{ message: { content: '{"score":1,"reasons":"x"}' } }] }), { status: 200 });
+  };
+  await scoreOffer({ description: "x", criteria: "y" }, { ...opts, model: "deepseek/deepseek-chat", fetchImpl });
+  expect(JSON.parse(sentBody).model).toBe("deepseek/deepseek-chat");
+});
+
+test("scoreOffer falls back to deepseek-chat when no model is given", async () => {
+  let sentBody = "";
+  const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
+    sentBody = String(init?.body ?? "");
+    return new Response(JSON.stringify({ choices: [{ message: { content: '{"score":1,"reasons":"x"}' } }] }), { status: 200 });
+  };
+  await scoreOffer({ description: "x", criteria: "y" }, { ...opts, fetchImpl });
+  expect(JSON.parse(sentBody).model).toBe("deepseek-chat");
+});

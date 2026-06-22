@@ -6,6 +6,7 @@ const MODEL = "deepseek-chat";
 export interface ChatOptions {
   apiKey: string;
   baseUrl: string;
+  model?: string;
   fetchImpl?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 }
 
@@ -22,7 +23,7 @@ export async function chatJson(
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${opts.apiKey}` },
       signal: AbortSignal.timeout(TIMEOUTS.ai),
       body: JSON.stringify({
-        model: MODEL,
+        model: opts.model ?? MODEL,
         messages: [
           { role: "system", content: msg.system },
           { role: "user", content: msg.user },

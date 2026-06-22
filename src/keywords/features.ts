@@ -40,6 +40,7 @@ export interface ExtractFeaturesOptions {
   /** Language the extracted feature tags are written in. Defaults to "Polish"
    *  because listings are Polish; configurable via the `outputLanguage` setting. */
   language?: string;
+  model?: string;
   fetchImpl?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 }
 
