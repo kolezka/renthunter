@@ -76,6 +76,7 @@ services:
       DATABASE_URL: postgres://renthunter:${POSTGRES_PASSWORD:-renthunter}@db:5432/renthunter
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      SCORER_MODEL: ${SCORER_MODEL:-deepseek/deepseek-chat}
       # Default to the local Ollama service (free). Override these to use OpenAI/Jina.
       EMBED_BASE_URL: ${EMBED_BASE_URL:-http://ollama:11434/v1}
       EMBED_API_KEY: ${EMBED_API_KEY:-ollama}

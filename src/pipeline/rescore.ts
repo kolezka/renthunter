@@ -10,7 +10,7 @@ export interface RescoreDeps {
   getActiveScorableOffers: () => Promise<Offer[]>;
   scoreOffer: (
     input: { description: string; criteria: string },
-    opts: { apiKey: string; baseUrl: string; language?: string },
+    opts: { apiKey: string; baseUrl: string; model?: string; language?: string },
   ) => Promise<{ score: number; reasons: string }>;
   updateOfferScore: (externalId: string, score: number | null, reasons: string | null) => Promise<void>;
   sendNotification: (input: { appriseUrl: string; targets: string[]; title: string; body: string }) => Promise<void>;
@@ -20,6 +20,7 @@ export interface RescoreDeps {
   emitProgress?: (e: RescoreEvent) => void;
   deepseekApiKey: string;
   deepseekBaseUrl: string;
+  deepseekModel?: string;
   log: Logger;
 }
 
@@ -43,7 +44,7 @@ export async function runRescore(deps: RescoreDeps): Promise<RescoreSummary> {
     try {
       const { score, reasons } = await deps.scoreOffer(
         { description: offer.description ?? "", criteria: config.aiCriteria },
-        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, language: config.outputLanguage },
+        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, model: deps.deepseekModel, language: config.outputLanguage },
       );
       await deps.updateOfferScore(offer.externalId, score, reasons);
       if (deps.notifyOnQualify && score >= config.scoreThreshold && !offer.notified) {

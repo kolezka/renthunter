@@ -17,7 +17,7 @@ export interface CheckDeps extends EnrichDeps {
   resolveSource: (url: string) => Source | null;
   scoreOffer: (
     input: { description: string; criteria: string },
-    opts: { apiKey: string; baseUrl: string; language?: string },
+    opts: { apiKey: string; baseUrl: string; model?: string; language?: string },
   ) => Promise<{ score: number; reasons: string }>;
   sendNotification: (input: {
     appriseUrl: string; targets: string[]; title: string; body: string;
@@ -60,12 +60,12 @@ function interleaveBySource(items: ListItem[]): ListItem[] {
 export async function maybeScore(
   detail: OfferDetail,
   config: Config,
-  deps: Pick<CheckDeps, "scoreOffer" | "deepseekApiKey" | "deepseekBaseUrl">,
+  deps: Pick<CheckDeps, "scoreOffer" | "deepseekApiKey" | "deepseekBaseUrl" | "deepseekModel">,
 ): Promise<{ score: number | null; reasons: string | null }> {
   if (!config.deepseekEnabled) return { score: null, reasons: null };
   const r = await deps.scoreOffer(
     { description: detail.description, criteria: config.aiCriteria },
-    { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, language: config.outputLanguage },
+    { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, model: deps.deepseekModel, language: config.outputLanguage },
   );
   return { score: r.score, reasons: r.reasons };
 }

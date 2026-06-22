@@ -5,9 +5,10 @@ import { extractKeywords } from "../keywords/gazetteer";
 import { buildEmbedText, embedTextHash } from "../embeddings/embedText";
 
 export interface EnrichDeps {
-  extractFeatures: (i: { title: string; description: string }, o: { apiKey: string; baseUrl: string; language?: string }) => Promise<string[]>;
+  extractFeatures: (i: { title: string; description: string }, o: { apiKey: string; baseUrl: string; model?: string; language?: string }) => Promise<string[]>;
   embed: (text: string, o: { baseUrl: string; apiKey: string; model: string }) => Promise<number[]>;
   deepseekApiKey: string; deepseekBaseUrl: string;
+  deepseekModel?: string;
   embedBaseUrl: string; embedApiKey: string; embedModel: string;
   log: Logger;
 }
@@ -33,7 +34,7 @@ export async function enrichOffer(
     try {
       features = await deps.extractFeatures(
         { title: d.title, description: d.description },
-        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, language: config.outputLanguage },
+        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, model: deps.deepseekModel, language: config.outputLanguage },
       );
     } catch (err) {
       await deps.log.log({ level: "warn", event: "enrich.features.error", message: String(err) });

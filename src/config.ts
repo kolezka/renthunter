@@ -2,6 +2,7 @@ export interface AppConfig {
   databaseUrl: string;
   deepseekApiKey: string;
   deepseekBaseUrl: string;
+  scorerModel: string;
   appriseUrl: string;
   port: number;
   embedBaseUrl: string;
@@ -20,6 +21,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     databaseUrl: require("DATABASE_URL"),
     deepseekApiKey: env.DEEPSEEK_API_KEY ?? "",
     deepseekBaseUrl: env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com",
+    scorerModel: env.SCORER_MODEL ?? "deepseek/deepseek-chat",
     appriseUrl: env.APPRISE_URL ?? "http://localhost:8000",
     port: Number(env.PORT ?? "3000"),
     embedBaseUrl: env.EMBED_BASE_URL ?? "https://api.openai.com/v1",

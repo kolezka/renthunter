@@ -8,6 +8,7 @@ export interface ScoreOptions {
   /** Language the model is asked to write `reasons` in. Defaults to "Polish"
    *  because listings are Polish; configurable via the `outputLanguage` setting. */
   language?: string;
+  model?: string;
   fetchImpl?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 }
 

@@ -68,3 +68,13 @@ test("extractFeatures steers the model with the canonical tag list", async () =>
   expect(sentBody).toContain("winda");
   expect(sentBody).toContain("blisko morza");
 });
+
+test("extractFeatures sends the configured model in the request body", async () => {
+  let sentBody = "";
+  const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
+    sentBody = String(init?.body ?? "");
+    return new Response(JSON.stringify({ choices: [{ message: { content: '{"features":[]}' } }] }), { status: 200 });
+  };
+  await extractFeatures({ title: "t", description: "d" }, { ...opts, model: "deepseek/deepseek-chat", fetchImpl });
+  expect(JSON.parse(sentBody).model).toBe("deepseek/deepseek-chat");
+});

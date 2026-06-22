@@ -156,12 +156,39 @@ Two kinds of configuration:
   | `DATABASE_URL` | Postgres connection (required) | — |
   | `PORT` | App HTTP port | `3000` |
   | `DEEPSEEK_API_KEY` / `DEEPSEEK_BASE_URL` | AI scoring | `https://api.deepseek.com` |
+  | `SCORER_MODEL` | Chat model name sent for scoring + feature extraction | `deepseek/deepseek-chat` |
   | `EMBED_BASE_URL` / `EMBED_API_KEY` / `EMBED_MODEL` | Embeddings for semantic search | `https://api.openai.com/v1`, `text-embedding-3-small` |
   | `APPRISE_URL` | Apprise API endpoint | `http://localhost:8000` |
   | `BROWSERLESS_URL` | Self-hosted browserless base URL; when set, all scraping is routed through its `/content` endpoint (bypasses IP blocks). Empty = direct fetch | — |
   | `BROWSERLESS_TOKEN` | `?token=` for browserless, if your instance requires auth | — |
 
   See `.env.example` (host) and `.env.production.example` (prod compose).
+
+### Routing AI through a LiteLLM proxy
+
+Both AI surfaces are plain **OpenAI-compatible** HTTP clients, so they can point at a
+[LiteLLM](https://docs.litellm.ai/) proxy instead of calling providers directly — one
+gateway and one key for chat **and** embeddings. Set the base URLs to the proxy's `/v1`
+endpoint and pick the model names LiteLLM exposes:
+
+```
+# Chat (scoring + feature extraction)
+DEEPSEEK_BASE_URL=https://<your-litellm-host>/v1
+DEEPSEEK_API_KEY=sk-<your-litellm-key>
+SCORER_MODEL=deepseek/deepseek-chat
+
+# Embeddings (semantic search) — the embed model must be registered in LiteLLM.
+# bge-m3 (multilingual, 1024-dim) is a good default; pull it into the LiteLLM-backing
+# Ollama (`ollama pull bge-m3`) and register it as an Embedding-mode model.
+EMBED_BASE_URL=https://<your-litellm-host>/v1
+EMBED_API_KEY=sk-<your-litellm-key>
+EMBED_MODEL=bge-m3
+```
+
+`SCORER_MODEL` defaults to `deepseek/deepseek-chat`; when unset entirely the chat client
+falls back to `deepseek-chat`, so a direct `https://api.deepseek.com` setup keeps working
+unchanged. Use a model that reliably emits JSON for `response_format: json_object` — the
+scorer and feature extractor both depend on it.
 
 ## Project layout
 

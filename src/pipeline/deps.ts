@@ -38,6 +38,7 @@ export function buildCheckDeps(env: AppConfig, logger: Logger): CheckDeps {
       appriseUrl: env.appriseUrl,
       deepseekApiKey: env.deepseekApiKey,
       deepseekBaseUrl: env.deepseekBaseUrl,
+      deepseekModel: env.scorerModel,
       extractFeatures, embed,
       embedBaseUrl: env.embedBaseUrl, embedApiKey: env.embedApiKey, embedModel: env.embedModel,
       log: logger,
@@ -57,6 +58,7 @@ export function buildRefreshDeps(env: AppConfig, logger: Logger): RefreshDeps {
     upsertOffer,
     deepseekApiKey: env.deepseekApiKey,
     deepseekBaseUrl: env.deepseekBaseUrl,
+    deepseekModel: env.scorerModel,
     extractFeatures, embed,
     embedBaseUrl: env.embedBaseUrl, embedApiKey: env.embedApiKey, embedModel: env.embedModel,
     log: logger,
@@ -100,6 +102,7 @@ export function buildRescoreDeps(env: AppConfig, logger: Logger, runId: string):
     emitProgress: (e) => progressBus.emit(e),
     deepseekApiKey: env.deepseekApiKey,
     deepseekBaseUrl: env.deepseekBaseUrl,
+    deepseekModel: env.scorerModel,
     log: logger,
   };
 }
