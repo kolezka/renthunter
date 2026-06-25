@@ -252,3 +252,12 @@ test("searchOffers slices after cosine ranking", async () => {
   expect(page.total).toBe(2);
   expect(page.items.map((o) => o.externalId)).toEqual(["near"]);
 });
+
+test("getConfig returns LiteLLM model/endpoint columns with defaults", async () => {
+  await db.delete(config);
+  await ensureConfig("https://search.example");
+  const cfg = await getConfig();
+  expect(cfg.scorerModel).toBe("deepseek/deepseek-chat");
+  expect(cfg.embedModel).toBe("bge-m3");
+  expect(cfg.aiBaseUrl).toBe("");
+});

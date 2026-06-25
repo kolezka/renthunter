@@ -54,6 +54,9 @@ export const config = pgTable("config", {
   concurrencyLimit: integer("concurrency_limit").notNull().default(1),
   extractEnabled: boolean("extract_enabled").notNull().default(true),
   embedEnabled: boolean("embed_enabled").notNull().default(false),
+  scorerModel: text("scorer_model").notNull().default("deepseek/deepseek-chat"),
+  embedModel: text("embed_model").notNull().default("bge-m3"),
+  aiBaseUrl: text("ai_base_url").notNull().default(""),
 });
 
 export type Offer = typeof offers.$inferSelect;
