@@ -1,16 +1,16 @@
-# Graph Report - embeddings-optional-ollama  (2026-06-08)
+# Graph Report - litellm-ui-ai-settings  (2026-06-25)
 
 ## Corpus Check
-- 137 files · ~148,388 words
+- 141 files · ~152,700 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4737 nodes · 5248 edges · 577 communities (575 shown, 2 thin omitted)
+- 5607 nodes · 6152 edges · 695 communities (693 shown, 2 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2f12ed46`
+- Built from commit: `88f1eef9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -583,44 +583,162 @@
 - [[_COMMUNITY_Community 565|Community 565]]
 - [[_COMMUNITY_Community 566|Community 566]]
 - [[_COMMUNITY_Community 572|Community 572]]
+- [[_COMMUNITY_Community 573|Community 573]]
+- [[_COMMUNITY_Community 574|Community 574]]
 - [[_COMMUNITY_Community 575|Community 575]]
 - [[_COMMUNITY_Community 576|Community 576]]
 - [[_COMMUNITY_Community 577|Community 577]]
+- [[_COMMUNITY_Community 578|Community 578]]
 - [[_COMMUNITY_Community 579|Community 579]]
+- [[_COMMUNITY_Community 580|Community 580]]
+- [[_COMMUNITY_Community 581|Community 581]]
+- [[_COMMUNITY_Community 582|Community 582]]
+- [[_COMMUNITY_Community 583|Community 583]]
+- [[_COMMUNITY_Community 584|Community 584]]
+- [[_COMMUNITY_Community 585|Community 585]]
+- [[_COMMUNITY_Community 586|Community 586]]
+- [[_COMMUNITY_Community 587|Community 587]]
+- [[_COMMUNITY_Community 588|Community 588]]
+- [[_COMMUNITY_Community 589|Community 589]]
+- [[_COMMUNITY_Community 590|Community 590]]
+- [[_COMMUNITY_Community 591|Community 591]]
+- [[_COMMUNITY_Community 592|Community 592]]
+- [[_COMMUNITY_Community 593|Community 593]]
+- [[_COMMUNITY_Community 594|Community 594]]
+- [[_COMMUNITY_Community 595|Community 595]]
+- [[_COMMUNITY_Community 596|Community 596]]
+- [[_COMMUNITY_Community 597|Community 597]]
+- [[_COMMUNITY_Community 598|Community 598]]
+- [[_COMMUNITY_Community 599|Community 599]]
+- [[_COMMUNITY_Community 600|Community 600]]
+- [[_COMMUNITY_Community 601|Community 601]]
+- [[_COMMUNITY_Community 602|Community 602]]
+- [[_COMMUNITY_Community 603|Community 603]]
+- [[_COMMUNITY_Community 604|Community 604]]
+- [[_COMMUNITY_Community 605|Community 605]]
+- [[_COMMUNITY_Community 606|Community 606]]
+- [[_COMMUNITY_Community 607|Community 607]]
+- [[_COMMUNITY_Community 608|Community 608]]
+- [[_COMMUNITY_Community 609|Community 609]]
+- [[_COMMUNITY_Community 610|Community 610]]
+- [[_COMMUNITY_Community 611|Community 611]]
+- [[_COMMUNITY_Community 612|Community 612]]
+- [[_COMMUNITY_Community 613|Community 613]]
+- [[_COMMUNITY_Community 614|Community 614]]
+- [[_COMMUNITY_Community 615|Community 615]]
+- [[_COMMUNITY_Community 616|Community 616]]
+- [[_COMMUNITY_Community 617|Community 617]]
+- [[_COMMUNITY_Community 618|Community 618]]
+- [[_COMMUNITY_Community 619|Community 619]]
+- [[_COMMUNITY_Community 620|Community 620]]
+- [[_COMMUNITY_Community 621|Community 621]]
+- [[_COMMUNITY_Community 622|Community 622]]
+- [[_COMMUNITY_Community 623|Community 623]]
+- [[_COMMUNITY_Community 624|Community 624]]
+- [[_COMMUNITY_Community 625|Community 625]]
+- [[_COMMUNITY_Community 626|Community 626]]
+- [[_COMMUNITY_Community 627|Community 627]]
+- [[_COMMUNITY_Community 628|Community 628]]
+- [[_COMMUNITY_Community 629|Community 629]]
+- [[_COMMUNITY_Community 630|Community 630]]
+- [[_COMMUNITY_Community 631|Community 631]]
+- [[_COMMUNITY_Community 632|Community 632]]
+- [[_COMMUNITY_Community 633|Community 633]]
+- [[_COMMUNITY_Community 634|Community 634]]
+- [[_COMMUNITY_Community 635|Community 635]]
+- [[_COMMUNITY_Community 636|Community 636]]
+- [[_COMMUNITY_Community 637|Community 637]]
+- [[_COMMUNITY_Community 638|Community 638]]
+- [[_COMMUNITY_Community 639|Community 639]]
+- [[_COMMUNITY_Community 640|Community 640]]
+- [[_COMMUNITY_Community 641|Community 641]]
+- [[_COMMUNITY_Community 642|Community 642]]
+- [[_COMMUNITY_Community 643|Community 643]]
+- [[_COMMUNITY_Community 644|Community 644]]
+- [[_COMMUNITY_Community 645|Community 645]]
+- [[_COMMUNITY_Community 646|Community 646]]
+- [[_COMMUNITY_Community 647|Community 647]]
+- [[_COMMUNITY_Community 648|Community 648]]
+- [[_COMMUNITY_Community 649|Community 649]]
+- [[_COMMUNITY_Community 650|Community 650]]
+- [[_COMMUNITY_Community 651|Community 651]]
+- [[_COMMUNITY_Community 652|Community 652]]
+- [[_COMMUNITY_Community 653|Community 653]]
+- [[_COMMUNITY_Community 654|Community 654]]
+- [[_COMMUNITY_Community 655|Community 655]]
+- [[_COMMUNITY_Community 656|Community 656]]
+- [[_COMMUNITY_Community 657|Community 657]]
+- [[_COMMUNITY_Community 658|Community 658]]
+- [[_COMMUNITY_Community 659|Community 659]]
+- [[_COMMUNITY_Community 660|Community 660]]
+- [[_COMMUNITY_Community 661|Community 661]]
+- [[_COMMUNITY_Community 662|Community 662]]
+- [[_COMMUNITY_Community 663|Community 663]]
+- [[_COMMUNITY_Community 664|Community 664]]
+- [[_COMMUNITY_Community 665|Community 665]]
+- [[_COMMUNITY_Community 666|Community 666]]
+- [[_COMMUNITY_Community 667|Community 667]]
+- [[_COMMUNITY_Community 668|Community 668]]
+- [[_COMMUNITY_Community 669|Community 669]]
+- [[_COMMUNITY_Community 670|Community 670]]
+- [[_COMMUNITY_Community 671|Community 671]]
+- [[_COMMUNITY_Community 672|Community 672]]
+- [[_COMMUNITY_Community 673|Community 673]]
+- [[_COMMUNITY_Community 674|Community 674]]
+- [[_COMMUNITY_Community 675|Community 675]]
+- [[_COMMUNITY_Community 676|Community 676]]
+- [[_COMMUNITY_Community 677|Community 677]]
+- [[_COMMUNITY_Community 678|Community 678]]
+- [[_COMMUNITY_Community 679|Community 679]]
+- [[_COMMUNITY_Community 680|Community 680]]
+- [[_COMMUNITY_Community 681|Community 681]]
+- [[_COMMUNITY_Community 682|Community 682]]
+- [[_COMMUNITY_Community 683|Community 683]]
+- [[_COMMUNITY_Community 684|Community 684]]
+- [[_COMMUNITY_Community 685|Community 685]]
+- [[_COMMUNITY_Community 686|Community 686]]
+- [[_COMMUNITY_Community 687|Community 687]]
+- [[_COMMUNITY_Community 688|Community 688]]
+- [[_COMMUNITY_Community 689|Community 689]]
+- [[_COMMUNITY_Community 690|Community 690]]
+- [[_COMMUNITY_Community 691|Community 691]]
+- [[_COMMUNITY_Community 692|Community 692]]
+- [[_COMMUNITY_Community 693|Community 693]]
+- [[_COMMUNITY_Community 694|Community 694]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `columns` - 23 edges
+1. `columns` - 25 edges
 2. `columns` - 23 edges
 3. `columns` - 23 edges
 4. `columns` - 23 edges
-5. `columns` - 22 edges
-6. `columns` - 22 edges
-7. `columns` - 21 edges
-8. `columns` - 20 edges
-9. `compilerOptions` - 19 edges
-10. `compilerOptions` - 19 edges
+5. `columns` - 23 edges
+6. `columns` - 23 edges
+7. `columns` - 23 edges
+8. `columns` - 22 edges
+9. `columns` - 22 edges
+10. `columns` - 22 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `seedSearch()` --calls--> `upsertOffer()`  [EXTRACTED]
   test/queries.test.ts → src/db/queries.ts
 - `localDay()` --calls--> `pad()`  [INFERRED]
   src/log/logger.ts → test/logger.test.ts
-- `createDb()` --calls--> `loadConfig()`  [EXTRACTED]
-  src/db/client.ts → src/config.ts
+- `chatJson()` --calls--> `withRetry()`  [EXTRACTED]
+  src/scorer/chat.ts → src/scraper/retry.ts
 - `makeFetchPage()` --calls--> `fetchPage()`  [EXTRACTED]
   src/pipeline/deps.ts → src/scraper/fetch.ts
 - `runCheck()` --calls--> `runPool()`  [EXTRACTED]
   src/pipeline/check.ts → src/pipeline/pool.ts
 
-## Communities (577 total, 2 thin omitted)
+## Communities (695 total, 2 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (50): createServer(), createDb(), DB, getDb(), appendLog(), ensureConfig(), getActiveScorableOffers(), getConfig() (+42 more)
+Cohesion: 0.11
+Nodes (19): compilerOptions, allowImportingTsExtensions, allowJs, jsx, lib, module, moduleDetection, moduleResolution (+11 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.18
-Nodes (11): FEATURE_NOISE, FEATURE_TAXONOMY, ALIAS_TO_CANON, CANONICAL_FEATURES, canonicalizeFeatures(), extractFeatures(), ExtractFeaturesInput, ExtractFeaturesOptions (+3 more)
+Cohesion: 0.17
+Nodes (12): FEATURE_NOISE, FEATURE_TAXONOMY, ALIAS_TO_CANON, CANONICAL_FEATURES, canonicalizeFeatures(), extractFeatures(), ExtractFeaturesInput, ExtractFeaturesOptions (+4 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.04
@@ -644,7 +762,7 @@ Nodes (42): code:ts (export interface RescoreSummary { scored: number; errors: n
 
 ### Community 7 - "Community 7"
 Cohesion: 0.07
-Nodes (40): Config, NewOffer, buildEmbedText(), EmbedTextFields, embedTextHash(), Logger, buildOfferNotification(), OfferNotification (+32 more)
+Nodes (41): Config, NewOffer, buildEmbedText(), EmbedTextFields, embedTextHash(), Logger, buildOfferNotification(), OfferNotification (+33 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.07
@@ -655,16 +773,16 @@ Cohesion: 0.08
 Nodes (26): appLogger, combineLoggers(), createFileLogger(), dbLogger, fileLogger, formatLogLine(), localDay(), LogInput (+18 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.13
-Nodes (15): offers_status_idx, offers_status_score_idx, columns, concurrently, isUnique, method, name, with (+7 more)
+Cohesion: 0.11
+Nodes (18): default, name, notNull, primaryKey, type, captured_at, id, offer_id (+10 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.15
 Nodes (19): findJsonLd(), firstJsonLd(), ldImages(), metaContent(), ListItem, OfferDetail, parseDetail(), xogFieldValue() (+11 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.14
-Nodes (22): defaultRefresh(), defaultRunCrawler(), defaultRunRescore(), DIST, env, g, server, acquireRunLock() (+14 more)
+Cohesion: 0.12
+Nodes (27): defaultRefresh(), defaultRunCrawler(), defaultRunRescore(), DIST, env, g, server, createDb() (+19 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.08
@@ -683,8 +801,8 @@ Cohesion: 0.08
 Nodes (25): Browserless Fetch Support Implementation Plan, code:ts (/** Default per-call network timeouts (ms). */), code:ts (fetchPage: makeFetchPage(env), resolveSource, scoreOffer, se), code:ts (fetchPage: makeFetchPage(env),), code:bash (git add src/pipeline/deps.ts), code:block13 (# Optional: route all scrape fetches through a self-hosted b), code:yaml (BROWSERLESS_URL: ${BROWSERLESS_URL:-}), code:bash (git add .env.example docker-compose.dev.yml) (+17 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.08
-Nodes (24): ServerOptions, Offer, runPool(), Listener, progressBus, RescoreEvent, RescoreSummary, RescoreDeps (+16 more)
+Cohesion: 0.09
+Nodes (25): ServerOptions, Offer, runPool(), Listener, progressBus, RescoreEvent, RescoreSummary, RescoreDeps (+17 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.08
@@ -787,8 +905,8 @@ Cohesion: 0.12
 Nodes (16): context, level, run_id, name, notNull, primaryKey, type, name (+8 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.04
-Nodes (46): code:bash (bun run compose:dev          # docker compose -f docker-comp), code:bash (cp .env.production.example .env.production   # then fill in ), code:bash (bun install), code:block4 (src/), Configuration, Development (hot reload), How it works, Notes (+38 more)
+Cohesion: 0.10
+Nodes (19): code:bash (bun run compose:dev          # docker compose -f docker-comp), code:bash (cp .env.production.example .env.production   # then fill in ), code:bash (bun install), code:block4 (# Single key routes BOTH deepseek/* scoring and bge-m3 embed), code:block5 (# Chat (scoring + feature extraction)), code:block6 (src/), Configuration, Development (hot reload) (+11 more)
 
 ### Community 44 - "Community 44"
 Cohesion: 0.13
@@ -843,8 +961,8 @@ Cohesion: 0.13
 Nodes (15): scripts, build, compose:dev, compose:dev:down, compose:prod, compose:prod:down, compose:prod:logs, db:generate (+7 more)
 
 ### Community 57 - "Community 57"
-Cohesion: 0.06
-Nodes (42): dependencies, bun-plugin-svelte, drizzle-orm, postgres, svelte, @tanstack/virtual-core, dependencies, bun-plugin-svelte (+34 more)
+Cohesion: 0.05
+Nodes (54): dependencies, bun-plugin-svelte, drizzle-orm, postgres, svelte, @tanstack/virtual-core, dependencies, bun-plugin-svelte (+46 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.13
@@ -887,8 +1005,8 @@ Cohesion: 0.15
 Nodes (12): code:ts (// test/mark-inactive.test.ts), code:ts (// test/upsert-offer.test.ts), code:ts (// src/db/queries.ts — replace upsertOffer (lines 28-71)), code:bash (git add src/db/queries.ts test/upsert-offer.test.ts), code:ts (// src/db/queries.ts — replace markInactive (lines 89-99)), code:bash (git add src/db/queries.ts test/mark-inactive.test.ts), Deferred / explicitly out of scope (logged, not silently dropped), Finalization (+4 more)
 
 ### Community 68 - "Community 68"
-Cohesion: 0.13
-Nodes (15): code:ts (// offers table — add as the table-config callback (3rd arg ), code:sql (-- drizzle/0008_review_indexes.sql), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (git add src/db/schema.ts drizzle/0008_review_indexes.sql dri), code:ts (// test/list-offers.test.ts), code:ts (// src/db/queries.ts — listOffers (replace the in-JS slice v), code:bash (git add src/db/queries.ts test/list-offers.test.ts) (+7 more)
+Cohesion: 0.15
+Nodes (13): code:ts (// test/list-offers.test.ts), code:ts (// src/db/queries.ts — listOffers (replace the in-JS slice v), code:bash (git add src/db/queries.ts test/list-offers.test.ts), code:ts (// test/list-projection.test.ts), code:ts (// src/db/queries.ts — near the top, after imports), code:bash (git add src/db/queries.ts test/list-projection.test.ts), code:ts (// test/facets.test.ts), code:ts (// src/db/queries.ts — getFacets) (+5 more)
 
 ### Community 69 - "Community 69"
 Cohesion: 0.15
@@ -907,12 +1025,12 @@ Cohesion: 0.17
 Nodes (11): Backend pagination contract, Dashboard paged state + infinite fetch (`web/Dashboard.svelte`), Edge cases, Files touched, Frontend data layer (`web/lib/api.ts`), Key constraint: ranking is in-memory, Paginated + virtualized infinite scroll for the Oferty list, Preserved interactions (+3 more)
 
 ### Community 73 - "Community 73"
-Cohesion: 0.18
-Nodes (11): context, level, name, notNull, primaryKey, type, name, notNull (+3 more)
+Cohesion: 0.40
+Nodes (5): run_id, name, notNull, primaryKey, type
 
 ### Community 74 - "Community 74"
 Cohesion: 0.18
-Nodes (11): context, event, name, notNull, primaryKey, type, name, notNull (+3 more)
+Nodes (11): event, level, name, notNull, primaryKey, type, name, notNull (+3 more)
 
 ### Community 75 - "Community 75"
 Cohesion: 0.18
@@ -920,7 +1038,7 @@ Nodes (11): event, level, name, notNull, primaryKey, type, name, notNull (+3 mor
 
 ### Community 76 - "Community 76"
 Cohesion: 0.18
-Nodes (11): context, event, name, notNull, primaryKey, type, name, notNull (+3 more)
+Nodes (11): event, level, name, notNull, primaryKey, type, name, notNull (+3 more)
 
 ### Community 77 - "Community 77"
 Cohesion: 0.18
@@ -939,12 +1057,12 @@ Cohesion: 0.18
 Nodes (11): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+3 more)
 
 ### Community 81 - "Community 81"
-Cohesion: 0.20
-Nodes (10): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+2 more)
+Cohesion: 0.18
+Nodes (11): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+3 more)
 
 ### Community 82 - "Community 82"
 Cohesion: 0.12
-Nodes (17): name, notNull, primaryKey, type, acquired_at, holder, source, name (+9 more)
+Nodes (17): name, notNull, primaryKey, type, acquired_at, holder, id, name (+9 more)
 
 ### Community 83 - "Community 83"
 Cohesion: 0.12
@@ -959,8 +1077,8 @@ Cohesion: 0.14
 Nodes (17): EDITABLE, isNonNegNumberOrNull(), safeStaticPath(), validateConfigPatch(), ValidationResult, olx, d, ids (+9 more)
 
 ### Community 86 - "Community 86"
-Cohesion: 0.06
-Nodes (30): APIs, code:ts#index.test.ts (import { test, expect } from "bun:test";), code:ts#index.ts (import index from "./index.html"), code:html#index.html (<html>), code:tsx#frontend.tsx (import React from "react";), code:sh (bun --hot ./index.ts), Frontend, graphify (+22 more)
+Cohesion: 0.05
+Nodes (40): APIs, code:ts#index.test.ts (import { test, expect } from "bun:test";), code:ts#index.ts (import index from "./index.html"), code:html#index.html (<html>), code:tsx#frontend.tsx (import React from "react";), code:sh (bun --hot ./index.ts), Frontend, graphify (+32 more)
 
 ### Community 87 - "Community 87"
 Cohesion: 0.20
@@ -1099,16 +1217,16 @@ Cohesion: 0.22
 Nodes (9): checkConstraints, compositePrimaryKeys, indexes, isRLSEnabled, name, policies, schema, uniqueConstraints (+1 more)
 
 ### Community 121 - "Community 121"
-Cohesion: 0.20
-Nodes (10): checkConstraints, compositePrimaryKeys, indexes, isRLSEnabled, name, policies, schema, uniqueConstraints (+2 more)
+Cohesion: 0.22
+Nodes (9): checkConstraints, compositePrimaryKeys, indexes, isRLSEnabled, name, policies, schema, uniqueConstraints (+1 more)
 
 ### Community 122 - "Community 122"
-Cohesion: 0.22
-Nodes (9): checkConstraints, compositePrimaryKeys, foreignKeys, isRLSEnabled, name, policies, schema, uniqueConstraints (+1 more)
+Cohesion: 0.12
+Nodes (17): logs_ts_idx, columns, concurrently, isUnique, method, name, with, checkConstraints (+9 more)
 
 ### Community 123 - "Community 123"
-Cohesion: 0.25
-Nodes (8): checkConstraints, compositePrimaryKeys, isRLSEnabled, name, policies, schema, uniqueConstraints, public.offer_snapshots
+Cohesion: 0.22
+Nodes (9): checkConstraints, compositePrimaryKeys, isRLSEnabled, name, policies, schema, uniqueConstraints, tables (+1 more)
 
 ### Community 124 - "Community 124"
 Cohesion: 0.22
@@ -1127,8 +1245,8 @@ Cohesion: 0.22
 Nodes (8): code:bash (git add docker-compose.prod.yml), code:bash (make up-fresh   # resets DB volume; only if you accept losin), code:bash (git add -A && git commit -m "chore: scheduler + multi-source), Crawler Scheduler (in-process) + Multi-source Implementation Plan, File Structure, Self-Review Notes, Task 10: Full verification, Task 9: Remove the prod curl sidecar
 
 ### Community 128 - "Community 128"
-Cohesion: 0.25
-Nodes (8): logs_ts_idx, columns, concurrently, isUnique, method, name, with, indexes
+Cohesion: 0.47
+Nodes (4): cosineSimilarity(), rankByCosine(), items, ranked
 
 ### Community 129 - "Community 129"
 Cohesion: 0.25
@@ -1155,8 +1273,8 @@ Cohesion: 0.25
 Nodes (8): code:sql (ALTER TABLE "offers" ADD COLUMN "kind" text;--> statement-br), code:json ({), code:ts (import {), code:ts (kind: text("kind"),), code:ts (extractEnabled: boolean("extract_enabled").notNull().default), code:ts (export const offerSnapshots = pgTable("offer_snapshots", {), code:bash (git add drizzle/0005_search_and_history.sql drizzle/meta/_jo), Task 1: Migration 0005 + schema
 
 ### Community 135 - "Community 135"
-Cohesion: 0.40
-Nodes (5): event, name, notNull, primaryKey, type
+Cohesion: 0.07
+Nodes (49): createServer(), DB, appendLog(), ensureConfig(), getActiveScorableOffers(), getConfig(), getFacets(), getKnownExternalIds() (+41 more)
 
 ### Community 136 - "Community 136"
 Cohesion: 0.36
@@ -1171,8 +1289,8 @@ Cohesion: 0.29
 Nodes (3): pln, tier, tierClass
 
 ### Community 139 - "Community 139"
-Cohesion: 0.11
-Nodes (18): module, name, peerDependencies, typescript, private, type, module, name (+10 more)
+Cohesion: 0.08
+Nodes (24): module, name, peerDependencies, typescript, private, type, module, name (+16 more)
 
 ### Community 140 - "Community 140"
 Cohesion: 0.29
@@ -1259,8 +1377,8 @@ Cohesion: 0.33
 Nodes (6): title, default, name, notNull, primaryKey, type
 
 ### Community 161 - "Community 161"
-Cohesion: 0.33
-Nodes (6): id, default, name, notNull, primaryKey, type
+Cohesion: 0.12
+Nodes (17): default, name, notNull, primaryKey, type, captured_at, data, offer_id (+9 more)
 
 ### Community 162 - "Community 162"
 Cohesion: 0.33
@@ -1699,12 +1817,12 @@ Cohesion: 0.33
 Nodes (6): ts, default, name, notNull, primaryKey, type
 
 ### Community 271 - "Community 271"
-Cohesion: 0.33
-Nodes (6): id, default, name, notNull, primaryKey, type
+Cohesion: 0.18
+Nodes (13): Source, SOURCE_LABEL, AddResult, addUrls(), normalizeHost(), resolveSource(), SOURCE_HOSTS, splitPasted() (+5 more)
 
 ### Community 272 - "Community 272"
 Cohesion: 0.33
-Nodes (6): message, default, name, notNull, primaryKey, type
+Nodes (6): id, default, name, notNull, primaryKey, type
 
 ### Community 273 - "Community 273"
 Cohesion: 0.33
@@ -1899,8 +2017,8 @@ Cohesion: 0.33
 Nodes (6): title, default, name, notNull, primaryKey, type
 
 ### Community 321 - "Community 321"
-Cohesion: 0.33
-Nodes (6): context, name, notNull, primaryKey, type, columns
+Cohesion: 0.12
+Nodes (16): context, event, run_id, name, notNull, primaryKey, type, name (+8 more)
 
 ### Community 322 - "Community 322"
 Cohesion: 0.33
@@ -1915,16 +2033,16 @@ Cohesion: 0.11
 Nodes (19): compilerOptions, allowImportingTsExtensions, allowJs, jsx, lib, module, moduleDetection, moduleResolution (+11 more)
 
 ### Community 325 - "Community 325"
-Cohesion: 0.33
-Nodes (6): id, default, name, notNull, primaryKey, type
+Cohesion: 0.12
+Nodes (17): name, notNull, primaryKey, type, acquired_at, holder, id, name (+9 more)
 
 ### Community 326 - "Community 326"
-Cohesion: 0.14
-Nodes (11): isDue(), nextDelayMs(), SchedulerConfig, SchedulerDeps, startScheduler(), AppConfig, c, cfg (+3 more)
+Cohesion: 0.21
+Nodes (8): isDue(), nextDelayMs(), SchedulerConfig, SchedulerDeps, startScheduler(), { deps, calls }, { deps, calls, setClock }, stop
 
 ### Community 327 - "Community 327"
-Cohesion: 0.33
-Nodes (6): name, notNull, primaryKey, type, area, columns
+Cohesion: 0.40
+Nodes (5): name, notNull, primaryKey, type, area
 
 ### Community 328 - "Community 328"
 Cohesion: 0.33
@@ -2015,8 +2133,8 @@ Cohesion: 0.33
 Nodes (6): request_delay_ms, default, name, notNull, primaryKey, type
 
 ### Community 350 - "Community 350"
-Cohesion: 0.33
-Nodes (6): dependencies, bun-plugin-svelte, drizzle-orm, postgres, svelte, @tanstack/virtual-core
+Cohesion: 0.12
+Nodes (17): name, notNull, primaryKey, type, acquired_at, holder, source, name (+9 more)
 
 ### Community 351 - "Community 351"
 Cohesion: 0.33
@@ -2067,8 +2185,8 @@ Cohesion: 0.23
 Nodes (7): body, { endpoint }, { endpoint, init }, BrowserlessConfig, buildBrowserlessRequest(), fetchPage(), FetchPageOptions
 
 ### Community 363 - "Community 363"
-Cohesion: 0.18
-Nodes (13): Source, SOURCE_LABEL, AddResult, addUrls(), normalizeHost(), resolveSource(), SOURCE_HOSTS, splitPasted() (+5 more)
+Cohesion: 0.13
+Nodes (14): dialect, enums, id, _meta, columns, schemas, tables, policies (+6 more)
 
 ### Community 364 - "Community 364"
 Cohesion: 0.47
@@ -2111,12 +2229,12 @@ Cohesion: 0.40
 Nodes (5): district, name, notNull, primaryKey, type
 
 ### Community 374 - "Community 374"
-Cohesion: 0.40
-Nodes (5): price, name, notNull, primaryKey, type
+Cohesion: 0.13
+Nodes (15): offers_status_idx, offers_status_score_idx, columns, concurrently, isUnique, method, name, with (+7 more)
 
 ### Community 375 - "Community 375"
-Cohesion: 0.40
-Nodes (5): rooms, name, notNull, primaryKey, type
+Cohesion: 0.13
+Nodes (14): dialect, enums, id, _meta, columns, schemas, tables, policies (+6 more)
 
 ### Community 376 - "Community 376"
 Cohesion: 0.40
@@ -2127,20 +2245,20 @@ Cohesion: 0.40
 Nodes (5): score_reasons, name, notNull, primaryKey, type
 
 ### Community 378 - "Community 378"
-Cohesion: 0.40
-Nodes (5): url, name, notNull, primaryKey, type
+Cohesion: 0.13
+Nodes (15): offers_status_idx, offers_status_score_idx, columns, concurrently, isUnique, method, name, with (+7 more)
 
 ### Community 379 - "Community 379"
-Cohesion: 0.40
-Nodes (5): run_id, name, notNull, primaryKey, type
+Cohesion: 0.13
+Nodes (15): scripts, build, compose:dev, compose:dev:down, compose:prod, compose:prod:down, compose:prod:logs, db:generate (+7 more)
 
 ### Community 380 - "Community 380"
-Cohesion: 0.24
+Cohesion: 0.21
 Nodes (7): ScoreInput, scoreOffer(), ScoreOptions, ScoreResult, fetchImpl(), jsonRes(), opts
 
 ### Community 381 - "Community 381"
 Cohesion: 0.40
-Nodes (5): columns, name, nullsNotDistinct, uniqueConstraints, offers_external_id_unique
+Nodes (5): name, notNull, primaryKey, type, area
 
 ### Community 382 - "Community 382"
 Cohesion: 0.40
@@ -2199,8 +2317,8 @@ Cohesion: 0.40
 Nodes (5): url, name, notNull, primaryKey, type
 
 ### Community 396 - "Community 396"
-Cohesion: 0.14
-Nodes (14): columns, name, nullsNotDistinct, checkConstraints, compositePrimaryKeys, foreignKeys, isRLSEnabled, name (+6 more)
+Cohesion: 0.15
+Nodes (13): columns, name, nullsNotDistinct, checkConstraints, compositePrimaryKeys, foreignKeys, isRLSEnabled, name (+5 more)
 
 ### Community 397 - "Community 397"
 Cohesion: 0.40
@@ -2327,8 +2445,8 @@ Cohesion: 0.40
 Nodes (5): run_id, name, notNull, primaryKey, type
 
 ### Community 428 - "Community 428"
-Cohesion: 0.40
-Nodes (5): level, name, notNull, primaryKey, type
+Cohesion: 0.33
+Nodes (6): message, default, name, notNull, primaryKey, type
 
 ### Community 429 - "Community 429"
 Cohesion: 0.40
@@ -2467,8 +2585,8 @@ Cohesion: 0.40
 Nodes (5): embedding, name, notNull, primaryKey, type
 
 ### Community 463 - "Community 463"
-Cohesion: 0.40
-Nodes (5): event, name, notNull, primaryKey, type
+Cohesion: 0.33
+Nodes (6): message, default, name, notNull, primaryKey, type
 
 ### Community 464 - "Community 464"
 Cohesion: 0.40
@@ -2539,8 +2657,8 @@ Cohesion: 0.40
 Nodes (5): embedding, name, notNull, primaryKey, type
 
 ### Community 481 - "Community 481"
-Cohesion: 0.50
-Nodes (3): NotifyInput, sendNotification(), fakeFetch
+Cohesion: 0.33
+Nodes (6): source, default, name, notNull, primaryKey, type
 
 ### Community 482 - "Community 482"
 Cohesion: 0.40
@@ -2611,20 +2729,20 @@ Cohesion: 0.40
 Nodes (5): embedding, name, notNull, primaryKey, type
 
 ### Community 499 - "Community 499"
-Cohesion: 0.40
-Nodes (5): event, name, notNull, primaryKey, type
+Cohesion: 0.33
+Nodes (6): id, default, name, notNull, primaryKey, type
 
 ### Community 500 - "Community 500"
 Cohesion: 0.40
 Nodes (5): level, name, notNull, primaryKey, type
 
 ### Community 501 - "Community 501"
-Cohesion: 0.40
-Nodes (5): run_id, name, notNull, primaryKey, type
+Cohesion: 0.33
+Nodes (6): code:ts (// offers table — add as the table-config callback (3rd arg ), code:sql (-- drizzle/0008_review_indexes.sql), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (DATABASE_URL=postgres://renthunter:renthunter@localhost:5432), code:bash (git add src/db/schema.ts drizzle/0008_review_indexes.sql dri), Task 5: Add the missing indexes (hand-authored migration)
 
 ### Community 502 - "Community 502"
-Cohesion: 0.40
-Nodes (5): description, name, notNull, primaryKey, type
+Cohesion: 0.33
+Nodes (6): description, name, notNull, primaryKey, type, columns
 
 ### Community 503 - "Community 503"
 Cohesion: 0.40
@@ -2659,8 +2777,8 @@ Cohesion: 0.40
 Nodes (5): score_reasons, name, notNull, primaryKey, type
 
 ### Community 511 - "Community 511"
-Cohesion: 0.40
-Nodes (5): url, name, notNull, primaryKey, type
+Cohesion: 0.20
+Nodes (10): offer_snapshots_offer_id_offers_id_fk, columnsFrom, columnsTo, name, onDelete, onUpdate, schemaTo, tableFrom (+2 more)
 
 ### Community 512 - "Community 512"
 Cohesion: 0.40
@@ -2755,8 +2873,8 @@ Cohesion: 0.50
 Nodes (3): dialect, entries, version
 
 ### Community 537 - "Community 537"
-Cohesion: 0.50
-Nodes (3): exclude, exclude, exclude
+Cohesion: 0.40
+Nodes (4): exclude, exclude, exclude, exclude
 
 ### Community 538 - "Community 538"
 Cohesion: 0.50
@@ -2859,59 +2977,531 @@ Cohesion: 0.50
 Nodes (4): code:ts (import { test, expect } from "bun:test";), code:ts (import { createHash } from "node:crypto";), code:bash (git add src/embeddings/embedText.ts test/embed-text.test.ts), Task 6: Embed-text composition + hash
 
 ### Community 563 - "Community 563"
-Cohesion: 0.50
-Nodes (4): code:ts (// web/lib/api.ts), code:svelte (<script lang="ts">), code:bash (git add web/OfferHistory.svelte web/lib/api.ts), Task 14: Error state + abort for `OfferHistory` fetch
+Cohesion: 0.15
+Nodes (13): columns, name, nullsNotDistinct, checkConstraints, compositePrimaryKeys, foreignKeys, isRLSEnabled, name (+5 more)
 
 ### Community 564 - "Community 564"
 Cohesion: 0.67
 Nodes (3): code:ts (export interface LogEntry {), code:bash (git add web/lib/api.ts), Task 8: Web API client — `LogEntry` + `getLogs()`
 
 ### Community 565 - "Community 565"
-Cohesion: 0.47
-Nodes (4): cosineSimilarity(), rankByCosine(), items, ranked
+Cohesion: 0.20
+Nodes (10): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+2 more)
 
 ### Community 566 - "Community 566"
-Cohesion: 0.50
-Nodes (4): code:ts (// test/facets.test.ts), code:ts (// src/db/queries.ts — getFacets), code:bash (git add src/db/queries.ts test/facets.test.ts), Task 8: Compute facets in SQL
+Cohesion: 0.20
+Nodes (10): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+2 more)
 
 ### Community 572 - "Community 572"
 Cohesion: 0.33
 Nodes (6): id, default, name, notNull, primaryKey, type
 
+### Community 573 - "Community 573"
+Cohesion: 0.12
+Nodes (17): logs_ts_idx, columns, concurrently, isUnique, method, name, with, checkConstraints (+9 more)
+
+### Community 574 - "Community 574"
+Cohesion: 0.22
+Nodes (9): checkConstraints, compositePrimaryKeys, isRLSEnabled, name, policies, schema, uniqueConstraints, tables (+1 more)
+
 ### Community 575 - "Community 575"
 Cohesion: 0.40
-Nodes (5): context, name, notNull, primaryKey, type
+Nodes (5): url, name, notNull, primaryKey, type
 
 ### Community 576 - "Community 576"
-Cohesion: 0.23
-Nodes (8): embed(), EmbedOptions, chatJson(), ChatOptions, withRetry(), TIMEOUTS, fetchImpl, opts
+Cohesion: 0.24
+Nodes (7): embed(), EmbedOptions, ChatOptions, withRetry(), TIMEOUTS, fetchImpl, opts
 
 ### Community 577 - "Community 577"
+Cohesion: 0.25
+Nodes (8): offer_snapshots_offer_id_idx, columns, concurrently, isUnique, method, name, with, indexes
+
+### Community 578 - "Community 578"
 Cohesion: 0.40
-Nodes (5): level, name, notNull, primaryKey, type
+Nodes (5): event, name, notNull, primaryKey, type
 
 ### Community 579 - "Community 579"
 Cohesion: 0.40
 Nodes (5): event, name, notNull, primaryKey, type
 
+### Community 580 - "Community 580"
+Cohesion: 0.40
+Nodes (5): context, name, notNull, primaryKey, type
+
+### Community 581 - "Community 581"
+Cohesion: 0.40
+Nodes (5): context, name, notNull, primaryKey, type
+
+### Community 582 - "Community 582"
+Cohesion: 0.15
+Nodes (13): columns, name, nullsNotDistinct, checkConstraints, compositePrimaryKeys, foreignKeys, isRLSEnabled, name (+5 more)
+
+### Community 583 - "Community 583"
+Cohesion: 0.18
+Nodes (11): name, notNull, primaryKey, type, area, url, columns, name (+3 more)
+
+### Community 584 - "Community 584"
+Cohesion: 0.33
+Nodes (6): default, name, notNull, primaryKey, type, ai_base_url
+
+### Community 585 - "Community 585"
+Cohesion: 0.33
+Nodes (6): default, name, notNull, primaryKey, type, ai_criteria
+
+### Community 586 - "Community 586"
+Cohesion: 0.33
+Nodes (6): default, name, notNull, primaryKey, type, apprise_urls
+
+### Community 587 - "Community 587"
+Cohesion: 0.33
+Nodes (6): concurrency_limit, default, name, notNull, primaryKey, type
+
+### Community 588 - "Community 588"
+Cohesion: 0.12
+Nodes (16): context, event, run_id, name, notNull, primaryKey, type, name (+8 more)
+
+### Community 589 - "Community 589"
+Cohesion: 0.33
+Nodes (6): deepseek_enabled, default, name, notNull, primaryKey, type
+
+### Community 590 - "Community 590"
+Cohesion: 0.33
+Nodes (6): embed_enabled, default, name, notNull, primaryKey, type
+
+### Community 591 - "Community 591"
+Cohesion: 0.33
+Nodes (6): embed_model, default, name, notNull, primaryKey, type
+
+### Community 592 - "Community 592"
+Cohesion: 0.33
+Nodes (6): extract_enabled, default, name, notNull, primaryKey, type
+
+### Community 593 - "Community 593"
+Cohesion: 0.33
+Nodes (6): features, default, name, notNull, primaryKey, type
+
+### Community 594 - "Community 594"
+Cohesion: 0.33
+Nodes (6): first_seen, default, name, notNull, primaryKey, type
+
+### Community 595 - "Community 595"
+Cohesion: 0.33
+Nodes (6): images, default, name, notNull, primaryKey, type
+
+### Community 596 - "Community 596"
+Cohesion: 0.33
+Nodes (6): last_seen, default, name, notNull, primaryKey, type
+
+### Community 597 - "Community 597"
+Cohesion: 0.33
+Nodes (6): list_pages, default, name, notNull, primaryKey, type
+
+### Community 598 - "Community 598"
+Cohesion: 0.33
+Nodes (6): max_area, name, notNull, primaryKey, type, columns
+
+### Community 599 - "Community 599"
+Cohesion: 0.33
+Nodes (6): max_detail_fetches_per_run, default, name, notNull, primaryKey, type
+
+### Community 600 - "Community 600"
+Cohesion: 0.40
+Nodes (5): url, name, notNull, primaryKey, type
+
+### Community 601 - "Community 601"
+Cohesion: 0.33
+Nodes (6): notified, default, name, notNull, primaryKey, type
+
+### Community 602 - "Community 602"
+Cohesion: 0.33
+Nodes (6): output_language, default, name, notNull, primaryKey, type
+
+### Community 603 - "Community 603"
+Cohesion: 0.33
+Nodes (6): poll_interval_min, default, name, notNull, primaryKey, type
+
+### Community 604 - "Community 604"
+Cohesion: 0.33
+Nodes (6): request_delay_ms, default, name, notNull, primaryKey, type
+
+### Community 605 - "Community 605"
+Cohesion: 0.33
+Nodes (6): rescore_interval_min, default, name, notNull, primaryKey, type
+
+### Community 606 - "Community 606"
+Cohesion: 0.33
+Nodes (6): score_threshold, default, name, notNull, primaryKey, type
+
+### Community 607 - "Community 607"
+Cohesion: 0.33
+Nodes (6): scorer_model, default, name, notNull, primaryKey, type
+
+### Community 608 - "Community 608"
+Cohesion: 0.33
+Nodes (6): search_urls, default, name, notNull, primaryKey, type
+
+### Community 609 - "Community 609"
+Cohesion: 0.33
+Nodes (6): status, default, name, notNull, primaryKey, type
+
+### Community 610 - "Community 610"
+Cohesion: 0.33
+Nodes (6): title, default, name, notNull, primaryKey, type
+
+### Community 611 - "Community 611"
+Cohesion: 0.33
+Nodes (6): ts, default, name, notNull, primaryKey, type
+
+### Community 612 - "Community 612"
+Cohesion: 0.18
+Nodes (11): context, level, name, notNull, primaryKey, type, name, notNull (+3 more)
+
+### Community 613 - "Community 613"
+Cohesion: 0.40
+Nodes (5): price, name, notNull, primaryKey, type
+
+### Community 614 - "Community 614"
+Cohesion: 0.20
+Nodes (10): offer_snapshots_offer_id_offers_id_fk, columnsFrom, columnsTo, name, onDelete, onUpdate, schemaTo, tableFrom (+2 more)
+
+### Community 615 - "Community 615"
+Cohesion: 0.40
+Nodes (5): url, name, notNull, primaryKey, type
+
+### Community 616 - "Community 616"
+Cohesion: 0.40
+Nodes (5): rooms, name, notNull, primaryKey, type
+
+### Community 617 - "Community 617"
+Cohesion: 0.40
+Nodes (5): columns, name, nullsNotDistinct, uniqueConstraints, offers_external_id_unique
+
+### Community 618 - "Community 618"
+Cohesion: 0.40
+Nodes (5): context, name, notNull, primaryKey, type
+
+### Community 619 - "Community 619"
+Cohesion: 0.40
+Nodes (5): event, name, notNull, primaryKey, type
+
+### Community 620 - "Community 620"
+Cohesion: 0.50
+Nodes (4): code:ts (// web/lib/api.ts), code:svelte (<script lang="ts">), code:bash (git add web/OfferHistory.svelte web/lib/api.ts), Task 14: Error state + abort for `OfferHistory` fetch
+
+### Community 621 - "Community 621"
+Cohesion: 0.20
+Nodes (10): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+2 more)
+
+### Community 622 - "Community 622"
+Cohesion: 0.33
+Nodes (6): description, name, notNull, primaryKey, type, columns
+
+### Community 623 - "Community 623"
+Cohesion: 0.40
+Nodes (5): district, name, notNull, primaryKey, type
+
+### Community 624 - "Community 624"
+Cohesion: 0.40
+Nodes (5): district_canonical, name, notNull, primaryKey, type
+
+### Community 625 - "Community 625"
+Cohesion: 0.40
+Nodes (5): embed_text_hash, name, notNull, primaryKey, type
+
+### Community 626 - "Community 626"
+Cohesion: 0.40
+Nodes (5): embedding, name, notNull, primaryKey, type
+
+### Community 627 - "Community 627"
+Cohesion: 0.20
+Nodes (10): checkConstraints, compositePrimaryKeys, foreignKeys, indexes, isRLSEnabled, name, policies, schema (+2 more)
+
+### Community 628 - "Community 628"
+Cohesion: 0.40
+Nodes (5): external_id, name, notNull, primaryKey, type
+
+### Community 629 - "Community 629"
+Cohesion: 0.40
+Nodes (5): kind, name, notNull, primaryKey, type
+
+### Community 630 - "Community 630"
+Cohesion: 0.40
+Nodes (5): level, name, notNull, primaryKey, type
+
+### Community 631 - "Community 631"
+Cohesion: 0.40
+Nodes (5): max_price, name, notNull, primaryKey, type
+
+### Community 632 - "Community 632"
+Cohesion: 0.40
+Nodes (5): max_rooms, name, notNull, primaryKey, type
+
+### Community 633 - "Community 633"
+Cohesion: 0.40
+Nodes (5): min_area, name, notNull, primaryKey, type
+
+### Community 634 - "Community 634"
+Cohesion: 0.40
+Nodes (5): min_price, name, notNull, primaryKey, type
+
+### Community 635 - "Community 635"
+Cohesion: 0.40
+Nodes (5): min_rooms, name, notNull, primaryKey, type
+
+### Community 636 - "Community 636"
+Cohesion: 0.40
+Nodes (5): price, name, notNull, primaryKey, type
+
+### Community 637 - "Community 637"
+Cohesion: 0.40
+Nodes (5): rooms, name, notNull, primaryKey, type
+
+### Community 638 - "Community 638"
+Cohesion: 0.22
+Nodes (9): checkConstraints, compositePrimaryKeys, foreignKeys, isRLSEnabled, name, policies, schema, uniqueConstraints (+1 more)
+
+### Community 639 - "Community 639"
+Cohesion: 0.40
+Nodes (5): score, name, notNull, primaryKey, type
+
+### Community 640 - "Community 640"
+Cohesion: 0.40
+Nodes (5): score_reasons, name, notNull, primaryKey, type
+
+### Community 641 - "Community 641"
+Cohesion: 0.22
+Nodes (9): checkConstraints, compositePrimaryKeys, isRLSEnabled, name, policies, schema, uniqueConstraints, tables (+1 more)
+
+### Community 642 - "Community 642"
+Cohesion: 0.25
+Nodes (8): logs_ts_idx, columns, concurrently, isUnique, method, name, with, indexes
+
+### Community 643 - "Community 643"
+Cohesion: 0.25
+Nodes (8): offer_snapshots_offer_id_idx, columns, concurrently, isUnique, method, name, with, indexes
+
+### Community 644 - "Community 644"
+Cohesion: 0.25
+Nodes (8): offers_status_idx, columns, concurrently, isUnique, method, name, with, indexes
+
+### Community 645 - "Community 645"
+Cohesion: 0.29
+Nodes (7): offers_status_score_idx, columns, concurrently, isUnique, method, name, with
+
+### Community 646 - "Community 646"
+Cohesion: 0.33
+Nodes (6): dependencies, bun-plugin-svelte, drizzle-orm, postgres, svelte, @tanstack/virtual-core
+
+### Community 647 - "Community 647"
+Cohesion: 0.33
+Nodes (6): devDependencies, bun-plugin-tailwind, drizzle-kit, @electric-sql/pglite, tailwindcss, @types/bun
+
+### Community 648 - "Community 648"
+Cohesion: 0.33
+Nodes (6): source, default, name, notNull, primaryKey, type
+
+### Community 649 - "Community 649"
+Cohesion: 0.33
+Nodes (6): default, name, notNull, primaryKey, type, ai_criteria
+
+### Community 650 - "Community 650"
+Cohesion: 0.33
+Nodes (6): default, name, notNull, primaryKey, type, apprise_urls
+
+### Community 651 - "Community 651"
+Cohesion: 0.33
+Nodes (6): concurrency_limit, default, name, notNull, primaryKey, type
+
+### Community 652 - "Community 652"
+Cohesion: 0.33
+Nodes (6): context, name, notNull, primaryKey, type, columns
+
+### Community 653 - "Community 653"
+Cohesion: 0.33
+Nodes (6): deepseek_enabled, default, name, notNull, primaryKey, type
+
+### Community 654 - "Community 654"
+Cohesion: 0.33
+Nodes (6): embed_enabled, default, name, notNull, primaryKey, type
+
+### Community 655 - "Community 655"
+Cohesion: 0.33
+Nodes (6): extract_enabled, default, name, notNull, primaryKey, type
+
+### Community 656 - "Community 656"
+Cohesion: 0.33
+Nodes (6): features, default, name, notNull, primaryKey, type
+
+### Community 657 - "Community 657"
+Cohesion: 0.33
+Nodes (6): first_seen, default, name, notNull, primaryKey, type
+
+### Community 658 - "Community 658"
+Cohesion: 0.33
+Nodes (6): images, default, name, notNull, primaryKey, type
+
+### Community 659 - "Community 659"
+Cohesion: 0.33
+Nodes (6): last_seen, default, name, notNull, primaryKey, type
+
+### Community 660 - "Community 660"
+Cohesion: 0.33
+Nodes (6): list_pages, default, name, notNull, primaryKey, type
+
+### Community 661 - "Community 661"
+Cohesion: 0.33
+Nodes (6): max_detail_fetches_per_run, default, name, notNull, primaryKey, type
+
+### Community 662 - "Community 662"
+Cohesion: 0.33
+Nodes (6): message, default, name, notNull, primaryKey, type
+
+### Community 663 - "Community 663"
+Cohesion: 0.33
+Nodes (6): min_rooms, name, notNull, primaryKey, type, columns
+
+### Community 664 - "Community 664"
+Cohesion: 0.33
+Nodes (6): notified, default, name, notNull, primaryKey, type
+
+### Community 665 - "Community 665"
+Cohesion: 0.33
+Nodes (6): output_language, default, name, notNull, primaryKey, type
+
+### Community 666 - "Community 666"
+Cohesion: 0.33
+Nodes (6): poll_interval_min, default, name, notNull, primaryKey, type
+
+### Community 667 - "Community 667"
+Cohesion: 0.33
+Nodes (6): request_delay_ms, default, name, notNull, primaryKey, type
+
+### Community 668 - "Community 668"
+Cohesion: 0.33
+Nodes (6): rescore_interval_min, default, name, notNull, primaryKey, type
+
+### Community 669 - "Community 669"
+Cohesion: 0.33
+Nodes (6): score_threshold, default, name, notNull, primaryKey, type
+
+### Community 670 - "Community 670"
+Cohesion: 0.33
+Nodes (6): search_urls, default, name, notNull, primaryKey, type
+
+### Community 671 - "Community 671"
+Cohesion: 0.33
+Nodes (6): status, default, name, notNull, primaryKey, type
+
+### Community 672 - "Community 672"
+Cohesion: 0.33
+Nodes (6): title, default, name, notNull, primaryKey, type
+
+### Community 673 - "Community 673"
+Cohesion: 0.33
+Nodes (6): ts, default, name, notNull, primaryKey, type
+
+### Community 674 - "Community 674"
+Cohesion: 0.40
+Nodes (5): data, name, notNull, primaryKey, type
+
+### Community 675 - "Community 675"
+Cohesion: 0.40
+Nodes (5): description, name, notNull, primaryKey, type
+
+### Community 676 - "Community 676"
+Cohesion: 0.40
+Nodes (5): district, name, notNull, primaryKey, type
+
+### Community 677 - "Community 677"
+Cohesion: 0.40
+Nodes (5): district_canonical, name, notNull, primaryKey, type
+
+### Community 678 - "Community 678"
+Cohesion: 0.40
+Nodes (5): embed_text_hash, name, notNull, primaryKey, type
+
+### Community 679 - "Community 679"
+Cohesion: 0.40
+Nodes (5): embedding, name, notNull, primaryKey, type
+
+### Community 680 - "Community 680"
+Cohesion: 0.40
+Nodes (5): event, name, notNull, primaryKey, type
+
+### Community 681 - "Community 681"
+Cohesion: 0.40
+Nodes (5): external_id, name, notNull, primaryKey, type
+
+### Community 682 - "Community 682"
+Cohesion: 0.40
+Nodes (5): kind, name, notNull, primaryKey, type
+
+### Community 683 - "Community 683"
+Cohesion: 0.40
+Nodes (5): level, name, notNull, primaryKey, type
+
+### Community 684 - "Community 684"
+Cohesion: 0.40
+Nodes (5): max_area, name, notNull, primaryKey, type
+
+### Community 685 - "Community 685"
+Cohesion: 0.40
+Nodes (5): max_price, name, notNull, primaryKey, type
+
+### Community 686 - "Community 686"
+Cohesion: 0.40
+Nodes (5): max_rooms, name, notNull, primaryKey, type
+
+### Community 687 - "Community 687"
+Cohesion: 0.40
+Nodes (5): min_area, name, notNull, primaryKey, type
+
+### Community 688 - "Community 688"
+Cohesion: 0.40
+Nodes (5): min_price, name, notNull, primaryKey, type
+
+### Community 689 - "Community 689"
+Cohesion: 0.40
+Nodes (5): price, name, notNull, primaryKey, type
+
+### Community 690 - "Community 690"
+Cohesion: 0.40
+Nodes (5): rooms, name, notNull, primaryKey, type
+
+### Community 691 - "Community 691"
+Cohesion: 0.40
+Nodes (5): run_id, name, notNull, primaryKey, type
+
+### Community 692 - "Community 692"
+Cohesion: 0.40
+Nodes (5): score, name, notNull, primaryKey, type
+
+### Community 693 - "Community 693"
+Cohesion: 0.40
+Nodes (5): score_reasons, name, notNull, primaryKey, type
+
+### Community 694 - "Community 694"
+Cohesion: 0.50
+Nodes (3): NotifyInput, sendNotification(), fakeFetch
+
 ## Knowledge Gaps
-- **3533 isolated node(s):** `name`, `module`, `type`, `private`, `dev` (+3528 more)
+- **4242 isolated node(s):** `name`, `module`, `type`, `private`, `dev` (+4237 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `columns` connect `Community 342` to `Community 514`, `Community 515`, `Community 516`, `Community 517`, `Community 518`, `Community 325`, `Community 335`, `Community 336`, `Community 337`, `Community 338`, `Community 339`, `Community 340`, `Community 341`, `Community 343`, `Community 344`, `Community 345`, `Community 346`, `Community 347`, `Community 348`, `Community 349`, `Community 113`?**
-  _High betweenness centrality (0.007) - this node is a cross-community bridge._
-- **Why does `id` connect `Community 572` to `Community 33`, `Community 34`, `Community 42`, `Community 305`, `Community 313`?**
+- **Why does `./VirtualList.svelte` connect `Community 57` to `Community 19`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **Why does `id` connect `Community 325` to `Community 161`, `Community 622`, `Community 588`, `Community 598`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Why does `columns` connect `Community 313` to `Community 33`, `Community 314`, `Community 315`, `Community 316`, `Community 572`, `Community 317`, `Community 318`, `Community 64`, `Community 320`, `Community 319`, `Community 487`, `Community 488`, `Community 489`, `Community 490`, `Community 491`, `Community 492`, `Community 493`, `Community 494`, `Community 495`, `Community 496`, `Community 497`, `Community 498`?**
+- **Why does `columns` connect `Community 622` to `Community 640`, `Community 325`, `Community 582`, `Community 593`, `Community 594`, `Community 595`, `Community 596`, `Community 601`, `Community 481`, `Community 610`, `Community 609`, `Community 615`, `Community 623`, `Community 624`, `Community 625`, `Community 381`, `Community 626`, `Community 628`, `Community 629`, `Community 636`, `Community 637`, `Community 639`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
 - **What connects `name`, `module`, `type` to the rest of the system?**
-  _3533 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _4242 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.07390873015873016 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**

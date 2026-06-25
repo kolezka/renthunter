@@ -117,3 +117,32 @@ test("validateConfigPatch passes rescoreIntervalMin through into the patch", () 
   const r = validateConfigPatch({ rescoreIntervalMin: 720 });
   expect(r.ok && r.patch.rescoreIntervalMin).toBe(720);
 });
+
+test("accepts scorer/embed model and an http(s) ai base url", () => {
+  const r = validateConfigPatch({
+    scorerModel: "deepseek/deepseek-reasoner",
+    embedModel: "bge-m3",
+    aiBaseUrl: "https://litellm.example",
+  });
+  expect(r.ok).toBe(true);
+  if (r.ok) {
+    expect(r.patch.scorerModel).toBe("deepseek/deepseek-reasoner");
+    expect(r.patch.embedModel).toBe("bge-m3");
+    expect(r.patch.aiBaseUrl).toBe("https://litellm.example");
+  }
+});
+
+test("accepts an empty aiBaseUrl (means: use env default)", () => {
+  expect(validateConfigPatch({ aiBaseUrl: "" }).ok).toBe(true);
+});
+
+test("rejects an empty scorerModel", () => {
+  const r = validateConfigPatch({ scorerModel: "" });
+  expect(r.ok).toBe(false);
+});
+
+test("rejects a non-http aiBaseUrl", () => {
+  const r = validateConfigPatch({ aiBaseUrl: "ftp://nope" });
+  expect(r.ok).toBe(false);
+  if (!r.ok) expect(r.error).toContain("aiBaseUrl");
+});

@@ -200,3 +200,16 @@ test("GET /api/offers/search returns a page envelope with limit/offset", async (
   expect(body.items.length).toBe(1);
 });
 
+test("GET /api/config exposes aiKeyConfigured + aiBaseUrlEffective and never a key", async () => {
+  const res = await fetch(`${base}/api/config`);
+  expect(res.ok).toBe(true);
+  const body = await res.json();
+  expect(typeof body.aiKeyConfigured).toBe("boolean");
+  expect(typeof body.aiBaseUrlEffective).toBe("string");
+  expect(body.scorerModel).toBe("deepseek/deepseek-chat");
+  // The secret must never be serialized under any common key name.
+  for (const k of ["apiKey", "deepseekApiKey", "embedApiKey", "litellmApiKey", "LITELLM_API_KEY"]) {
+    expect(k in body).toBe(false);
+  }
+});
+

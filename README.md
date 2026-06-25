@@ -168,8 +168,22 @@ Two kinds of configuration:
 
 Both AI surfaces are plain **OpenAI-compatible** HTTP clients, so they can point at a
 [LiteLLM](https://docs.litellm.ai/) proxy instead of calling providers directly — one
-gateway and one key for chat **and** embeddings. Set the base URLs to the proxy's `/v1`
-endpoint and pick the model names LiteLLM exposes:
+gateway and **one key** for chat **and** embeddings. The simplest setup uses the two
+`LITELLM_*` vars, which take precedence over `DEEPSEEK_*` / `EMBED_*` when set:
+
+```
+# Single key routes BOTH deepseek/* scoring and bge-m3 embeddings through the proxy.
+LITELLM_API_KEY=sk-<your-litellm-key>
+LITELLM_BASE_URL=https://<your-litellm-host>
+```
+
+The scorer model, embedding model, and endpoint URL are also editable **at runtime** in
+**Settings → AI scoring** — changes take effect immediately without a restart (DB-backed,
+override env). The API key is env-only and never shown in the UI; it appears as a
+**"configured ✓"** status indicator instead.
+
+If you prefer to configure the two surfaces independently (e.g. different providers or
+keys), set the individual vars instead — they remain fully supported:
 
 ```
 # Chat (scoring + feature extraction)
@@ -177,9 +191,7 @@ DEEPSEEK_BASE_URL=https://<your-litellm-host>/v1
 DEEPSEEK_API_KEY=sk-<your-litellm-key>
 SCORER_MODEL=deepseek/deepseek-chat
 
-# Embeddings (semantic search) — the embed model must be registered in LiteLLM.
-# bge-m3 (multilingual, 1024-dim) is a good default; pull it into the LiteLLM-backing
-# Ollama (`ollama pull bge-m3`) and register it as an Embedding-mode model.
+# Embeddings (semantic search)
 EMBED_BASE_URL=https://<your-litellm-host>/v1
 EMBED_API_KEY=sk-<your-litellm-key>
 EMBED_MODEL=bge-m3

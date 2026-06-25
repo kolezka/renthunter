@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { loadConfig } from "../src/config";
+import { loadConfig, resolveBaseUrl, aiKeyConfigured, aiBaseUrlDefault } from "../src/config";
 
 test("loadConfig reads required env vars", () => {
   const cfg = loadConfig({
@@ -33,4 +33,42 @@ test("loadConfig embedBaseUrl defaults to OpenAI", () => {
 test("loadConfig reads SCORER_MODEL with a deepseek/deepseek-chat default", () => {
   expect(loadConfig({ DATABASE_URL: "x" }).scorerModel).toBe("deepseek/deepseek-chat");
   expect(loadConfig({ DATABASE_URL: "x", SCORER_MODEL: "qwen3:30b-a3b" }).scorerModel).toBe("qwen3:30b-a3b");
+});
+
+test("LITELLM_API_KEY feeds both scoring and embedding keys", () => {
+  const c = loadConfig({ DATABASE_URL: "x", LITELLM_API_KEY: "lit" });
+  expect(c.deepseekApiKey).toBe("lit");
+  expect(c.embedApiKey).toBe("lit");
+});
+
+test("LITELLM_BASE_URL is the default base for both scoring and embedding", () => {
+  const c = loadConfig({ DATABASE_URL: "x", LITELLM_BASE_URL: "https://proxy" });
+  expect(c.deepseekBaseUrl).toBe("https://proxy");
+  expect(c.embedBaseUrl).toBe("https://proxy");
+});
+
+test("legacy DEEPSEEK_/EMBED_ keys still work when LITELLM unset", () => {
+  const c = loadConfig({ DATABASE_URL: "x", DEEPSEEK_API_KEY: "d", EMBED_API_KEY: "e" });
+  expect(c.deepseekApiKey).toBe("d");
+  expect(c.embedApiKey).toBe("e");
+});
+
+test("resolveBaseUrl: DB value wins, trailing slash trimmed, empty falls back to env", () => {
+  expect(resolveBaseUrl("https://db/", "https://env")).toBe("https://db");
+  expect(resolveBaseUrl("", "https://env")).toBe("https://env");
+  expect(resolveBaseUrl(null, "https://env/")).toBe("https://env");
+  expect(resolveBaseUrl("  https://db  ", "https://env")).toBe("https://db");
+});
+
+test("aiKeyConfigured reflects any configured AI key", () => {
+  expect(aiKeyConfigured({})).toBe(false);
+  expect(aiKeyConfigured({ LITELLM_API_KEY: "k" })).toBe(true);
+  expect(aiKeyConfigured({ DEEPSEEK_API_KEY: "k" })).toBe(true);
+  expect(aiKeyConfigured({ EMBED_API_KEY: "k" })).toBe(true);
+});
+
+test("aiBaseUrlDefault precedence: LITELLM_BASE_URL > DEEPSEEK_BASE_URL > deepseek.com", () => {
+  expect(aiBaseUrlDefault({})).toBe("https://api.deepseek.com");
+  expect(aiBaseUrlDefault({ DEEPSEEK_BASE_URL: "https://d" })).toBe("https://d");
+  expect(aiBaseUrlDefault({ LITELLM_BASE_URL: "https://l", DEEPSEEK_BASE_URL: "https://d" })).toBe("https://l");
 });

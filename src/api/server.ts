@@ -3,7 +3,7 @@ import { listOffers, getConfig, updateConfig, listLogs, searchOffers, getFacets,
 import { validateConfigPatch, safeStaticPath } from "./validate";
 import { embed } from "../embeddings/client";
 import type { Offer } from "../db/schema";
-import { loadConfig } from "../config";
+import { loadConfig, resolveBaseUrl, aiKeyConfigured, aiBaseUrlDefault } from "../config";
 import { refreshOffer } from "../pipeline/refresh";
 import { buildRefreshDeps, runCrawlGuarded, runRescoreGuarded } from "../pipeline/deps";
 import { progressBus } from "../pipeline/progress";
@@ -105,7 +105,11 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         if (q && cfg.embedEnabled) {
           const env = loadConfig();
           try {
-            queryEmbedding = await embed(q, { baseUrl: env.embedBaseUrl, apiKey: env.embedApiKey, model: env.embedModel });
+            queryEmbedding = await embed(q, {
+              baseUrl: resolveBaseUrl(cfg.aiBaseUrl, env.embedBaseUrl),
+              apiKey: env.embedApiKey,
+              model: cfg.embedModel || env.embedModel,
+            });
           } catch (err) {
             // Degrade to filter+sort, but log so a misconfigured embed provider isn't silently invisible.
             queryEmbedding = null;
@@ -132,7 +136,12 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         return json(await listLogs({ limit }));
       }
       if (path === "/api/config" && req.method === "GET") {
-        return json(await getConfig());
+        const cfg = await getConfig();
+        return json({
+          ...cfg,
+          aiKeyConfigured: aiKeyConfigured(),
+          aiBaseUrlEffective: aiBaseUrlDefault(),
+        });
       }
       if (path === "/api/config" && req.method === "PUT") {
         let body: Record<string, unknown>;

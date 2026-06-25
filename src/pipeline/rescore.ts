@@ -1,5 +1,6 @@
 import type { Config, Offer } from "../db/schema";
 import type { Logger } from "../log/logger";
+import { resolveBaseUrl } from "../config";
 import type { RescoreEvent, RescoreSummary } from "./progress";
 import { runPool } from "./pool";
 import { buildOfferNotification } from "../notify/message";
@@ -44,7 +45,7 @@ export async function runRescore(deps: RescoreDeps): Promise<RescoreSummary> {
     try {
       const { score, reasons } = await deps.scoreOffer(
         { description: offer.description ?? "", criteria: config.aiCriteria },
-        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, model: deps.deepseekModel, language: config.outputLanguage },
+        { apiKey: deps.deepseekApiKey, baseUrl: resolveBaseUrl(config.aiBaseUrl, deps.deepseekBaseUrl), model: config.scorerModel || deps.deepseekModel, language: config.outputLanguage },
       );
       await deps.updateOfferScore(offer.externalId, score, reasons);
       if (deps.notifyOnQualify && score >= config.scoreThreshold && !offer.notified) {

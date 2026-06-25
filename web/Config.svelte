@@ -152,6 +152,24 @@
                 </div>
 
               {:else if active === "ai"}
+                <div class="mb-[18px] grid gap-[14px] rounded-[14px] border border-[var(--glass-border)] bg-white/[0.03] p-4">
+                  <label class="grid gap-[7px]">
+                    <span class={labelSpan}>LiteLLM endpoint <em class="font-medium not-italic text-ink-3">· blank = use server env</em></span>
+                    <input type="text" bind:value={cfg.aiBaseUrl} placeholder={cfg.aiBaseUrlEffective ?? "https://api.deepseek.com"} class={control} />
+                  </label>
+                  <div class="flex items-center gap-2 text-[0.82rem]">
+                    <span class={labelSpan}>API key</span>
+                    {#if cfg.aiKeyConfigured}
+                      <span class="font-semibold text-good">configured ✓ <em class="font-medium not-italic text-ink-3">· set via server env</em></span>
+                    {:else}
+                      <span class="font-semibold text-bad">not set ✗ <em class="font-medium not-italic text-ink-3">· set LITELLM_API_KEY in env</em></span>
+                    {/if}
+                  </div>
+                  <div class={grid}>
+                    <label class="grid gap-[7px]"><span class={labelSpan}>Scorer model <em class="font-medium not-italic text-ink-3">· deepseek/*</em></span><input type="text" maxlength="120" bind:value={cfg.scorerModel} placeholder="deepseek/deepseek-chat" class={control} /></label>
+                    <label class="grid gap-[7px]"><span class={labelSpan}>Embedding model</span><input type="text" maxlength="120" bind:value={cfg.embedModel} placeholder="bge-m3" class={control} /></label>
+                  </div>
+                </div>
                 <label class="grid gap-[7px]">
                   <span class={labelSpan}>AI criteria</span>
                   <textarea bind:value={cfg.aiCriteria} rows="5" placeholder="Describe the ideal apartment…" class="{control} resize-y leading-normal"></textarea>

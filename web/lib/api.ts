@@ -31,6 +31,12 @@ export interface Config {
   requestDelayMs: number; concurrencyLimit: number;
   extractEnabled: boolean;
   embedEnabled: boolean;
+  scorerModel: string;
+  embedModel: string;
+  aiBaseUrl: string;
+  // Read-only, server-derived (never sent back on save):
+  aiKeyConfigured?: boolean;
+  aiBaseUrlEffective?: string;
 }
 
 export interface Page<T> { items: T[]; total: number }
