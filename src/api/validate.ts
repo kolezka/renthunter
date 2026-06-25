@@ -8,6 +8,7 @@ const EDITABLE: (keyof Config)[] = [
   "aiCriteria", "outputLanguage", "scoreThreshold", "pollIntervalMin", "rescoreIntervalMin", "appriseUrls", "deepseekEnabled",
   "listPages", "maxDetailFetchesPerRun", "requestDelayMs", "concurrencyLimit",
   "extractEnabled", "embedEnabled",
+  "scorerModel", "embedModel", "aiBaseUrl",
 ];
 
 // Only registered source hosts are allowed as the scrape target — searchUrl is
@@ -101,6 +102,29 @@ export function validateConfigPatch(body: Record<string, unknown>): ValidationRe
       if (typeof v !== "number" || !Number.isInteger(v) || v < min || v > max) {
         const suffix = note ? ` (${note})` : "";
         return { ok: false, error: `${k} must be an integer ${min}-${max}${suffix}` };
+      }
+    }
+  }
+
+  for (const k of ["scorerModel", "embedModel"] as const) {
+    if (k in patch) {
+      const v = patch[k];
+      if (typeof v !== "string" || v.trim().length === 0 || v.length > 120) {
+        return { ok: false, error: `${k} must be a non-empty string up to 120 chars` };
+      }
+    }
+  }
+
+  if ("aiBaseUrl" in patch) {
+    const v = patch.aiBaseUrl;
+    if (typeof v !== "string" || v.length > 300) {
+      return { ok: false, error: "aiBaseUrl must be a string up to 300 chars" };
+    }
+    if (v.trim() !== "") {
+      let u: URL;
+      try { u = new URL(v); } catch { return { ok: false, error: "aiBaseUrl must be empty or a valid URL" }; }
+      if (u.protocol !== "https:" && u.protocol !== "http:") {
+        return { ok: false, error: "aiBaseUrl must be http(s)" };
       }
     }
   }
