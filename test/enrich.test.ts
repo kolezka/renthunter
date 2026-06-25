@@ -86,3 +86,19 @@ test("enrichOffer passes the configured chat model to extractFeatures", async ()
   );
   expect(sentModel).toBe("deepseek/deepseek-chat");
 });
+
+test("enrichOffer prefers DB embed model + ai base url over env deps", async () => {
+  let sentBaseUrl: string | undefined;
+  let sentModel: string | undefined;
+  const local = {
+    ...deps,
+    embed: async (_t: string, o: any) => { sentBaseUrl = o.baseUrl; sentModel = o.model; return [0.1]; },
+  };
+  await enrichOffer(
+    { title: "Kawalerka Wrzeszcz", price: 2000, area: 30, rooms: 1, district: "Gdańsk", description: "x", images: [] },
+    { extractEnabled: false, embedEnabled: true, aiBaseUrl: "https://proxy/", embedModel: "bge-m3" } as any,
+    local,
+  );
+  expect(sentBaseUrl).toBe("https://proxy");      // DB override, slash trimmed
+  expect(sentModel).toBe("bge-m3");               // DB override beats deps.embedModel ("m")
+});

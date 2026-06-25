@@ -1,4 +1,5 @@
 import type { Config, NewOffer } from "../db/schema";
+import { resolveBaseUrl } from "../config";
 import { passesFilters } from "./filter";
 import type { ListItem, OfferDetail, Source } from "../scraper/sources/types";
 import { runPool } from "./pool";
@@ -65,7 +66,7 @@ export async function maybeScore(
   if (!config.deepseekEnabled) return { score: null, reasons: null };
   const r = await deps.scoreOffer(
     { description: detail.description, criteria: config.aiCriteria },
-    { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, model: deps.deepseekModel, language: config.outputLanguage },
+    { apiKey: deps.deepseekApiKey, baseUrl: resolveBaseUrl(config.aiBaseUrl, deps.deepseekBaseUrl), model: config.scorerModel || deps.deepseekModel, language: config.outputLanguage },
   );
   return { score: r.score, reasons: r.reasons };
 }

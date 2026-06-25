@@ -3,6 +3,7 @@ import type { OfferDetail } from "../scraper/sources/types";
 import type { Logger } from "../log/logger";
 import { extractKeywords } from "../keywords/gazetteer";
 import { buildEmbedText, embedTextHash } from "../embeddings/embedText";
+import { resolveBaseUrl } from "../config";
 
 export interface EnrichDeps {
   extractFeatures: (i: { title: string; description: string }, o: { apiKey: string; baseUrl: string; model?: string; language?: string }) => Promise<string[]>;
@@ -23,7 +24,7 @@ export type EnrichFields = Pick<NewOffer,
  *  upsertOffer preserves the existing vector. */
 export async function enrichOffer(
   d: OfferDetail,
-  config: Pick<Config, "extractEnabled" | "embedEnabled" | "outputLanguage">,
+  config: Pick<Config, "extractEnabled" | "embedEnabled" | "outputLanguage" | "scorerModel" | "embedModel" | "aiBaseUrl">,
   deps: EnrichDeps,
   prevEmbedTextHash: string | null = null,
 ): Promise<EnrichFields> {
@@ -34,7 +35,7 @@ export async function enrichOffer(
     try {
       features = await deps.extractFeatures(
         { title: d.title, description: d.description },
-        { apiKey: deps.deepseekApiKey, baseUrl: deps.deepseekBaseUrl, model: deps.deepseekModel, language: config.outputLanguage },
+        { apiKey: deps.deepseekApiKey, baseUrl: resolveBaseUrl(config.aiBaseUrl, deps.deepseekBaseUrl), model: config.scorerModel || deps.deepseekModel, language: config.outputLanguage },
       );
     } catch (err) {
       await deps.log.log({ level: "warn", event: "enrich.features.error", message: String(err) });
@@ -51,7 +52,7 @@ export async function enrichOffer(
       embedding = null;
     } else {
       try {
-        embedding = await deps.embed(text, { baseUrl: deps.embedBaseUrl, apiKey: deps.embedApiKey, model: deps.embedModel });
+        embedding = await deps.embed(text, { baseUrl: resolveBaseUrl(config.aiBaseUrl, deps.embedBaseUrl), apiKey: deps.embedApiKey, model: config.embedModel || deps.embedModel });
       } catch (err) {
         embedding = null;
         await deps.log.log({ level: "warn", event: "enrich.embed.error", message: String(err) });

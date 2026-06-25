@@ -146,6 +146,19 @@ test("a failing notification is swallowed and does not abort scoring", async () 
   expect(updates.length).toBe(2);
 });
 
+test("runRescore uses DB scorerModel + aiBaseUrl when set", async () => {
+  let sentModel: string | undefined;
+  let sentBaseUrl: string | undefined;
+  const { deps } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, scorerModel: "deepseek/deepseek-reasoner", aiBaseUrl: "https://proxy/" }) as any,
+    scoreOffer: async (_i: any, o: any) => { sentModel = o.model; sentBaseUrl = o.baseUrl; return { score: 80, reasons: "ok" }; },
+    deepseekModel: "deepseek/deepseek-chat",
+  });
+  await runRescore(deps);
+  expect(sentModel).toBe("deepseek/deepseek-reasoner");
+  expect(sentBaseUrl).toBe("https://proxy");
+});
+
 describe("runRescoreGuarded (DB)", () => {
   beforeEach(async () => {
     await db.delete(runLock); await db.delete(offers); await db.delete(config);

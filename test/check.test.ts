@@ -324,3 +324,19 @@ test("maybeScore passes the configured model to scoreOffer", async () => {
   );
   expect(sentModel).toBe("deepseek/deepseek-chat");
 });
+
+test("maybeScore prefers DB scorerModel + aiBaseUrl over env deps", async () => {
+  let sentModel: string | undefined;
+  let sentBaseUrl: string | undefined;
+  const deps = {
+    scoreOffer: async (_i: any, o: any) => { sentModel = o.model; sentBaseUrl = o.baseUrl; return { score: 1, reasons: "x" }; },
+    deepseekApiKey: "k", deepseekBaseUrl: "https://env", deepseekModel: "deepseek/deepseek-chat",
+  } as any;
+  await maybeScore(
+    { title: "t", description: "d", price: 1, area: 1, rooms: 1, district: "x", images: [] } as any,
+    { deepseekEnabled: true, aiCriteria: "c", outputLanguage: "Polish", scorerModel: "deepseek/deepseek-reasoner", aiBaseUrl: "https://proxy" } as any,
+    deps,
+  );
+  expect(sentModel).toBe("deepseek/deepseek-reasoner");
+  expect(sentBaseUrl).toBe("https://proxy");
+});
