@@ -25,9 +25,18 @@ export function resolveSource(url: string): Source | null {
   return null;
 }
 
-/** Split a pasted blob into candidate URL strings (newline / comma / whitespace). */
+/**
+ * Split a pasted blob into candidate URL strings (newline / whitespace / comma
+ * separators). Commas are valid INSIDE a URL path or query — Trójmiasto and
+ * Nieruchomości-online filter URLs depend on them — so a comma only separates
+ * when it sits between URLs (directly before "http", or trailing before
+ * whitespace); it never fragments a single URL.
+ */
 export function splitPasted(text: string): string[] {
-  return text.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  return text
+    .split(/\s+|,+(?=https?:\/\/)/i)
+    .map((s) => s.trim().replace(/,+$/, ""))
+    .filter(Boolean);
 }
 
 export interface AddResult {
