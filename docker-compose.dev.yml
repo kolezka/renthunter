@@ -1,7 +1,9 @@
-# Development stack — full app, hot-reload, one command:
-#   docker compose -f docker-compose.dev.yml up
+# Development stack — hot-reload, one command:
+#   docker compose -f docker-compose.dev.yml up          # db + app only (default)
+#   docker compose -f docker-compose.dev.yml --profile notifications up   # + apprise
+#   docker compose -f docker-compose.dev.yml --profile embeddings up      # + local ollama
 # Ports are loopback-only so `bun test` and `trigger:dev` on the host can still
-# reach the DB/apprise. The app runs from bind-mounted source with `bun --hot`.
+# reach the DB. The app runs from bind-mounted source with `bun --hot`.
 name: renthunter-dev
 
 services:
@@ -22,8 +24,14 @@ services:
       timeout: 3s
       retries: 5
 
+  # Notification gateway (Apprise). Opt-in: only started with `--profile notifications`
+  # (or COMPOSE_PROFILES=notifications). A plain `docker compose -f docker-compose.dev.yml up`
+  # runs db + app only. The app degrades gracefully without it: sendNotification is a no-op
+  # when no targets are configured, and a failed notify is caught per-offer (the crawl
+  # continues). To notify without running this, point APPRISE_URL at an external instance.
   apprise:
     image: caronc/apprise:latest
+    profiles: ["notifications"]
     ports:
       # Loopback-only: unauthenticated gateway, must not be exposed to the network.
       - "127.0.0.1:8000:8000"
@@ -74,14 +82,20 @@ services:
       # gives real env vars precedence over .env file values. So this `db` host (not
       # the host .env's `localhost`) is what the app actually uses inside the network.
       DATABASE_URL: postgres://renthunter:${POSTGRES_PASSWORD:-renthunter}@db:5432/renthunter
+      # Route all AI (scoring + embeddings) through a self-hosted LiteLLM proxy with a
+      # single key. When set, config.ts prefers these over the DEEPSEEK_*/EMBED_* vars
+      # below — so litellm needs no local Ollama.
+      LITELLM_API_KEY: ${LITELLM_API_KEY:-}
+      LITELLM_BASE_URL: ${LITELLM_BASE_URL:-}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       SCORER_MODEL: ${SCORER_MODEL:-deepseek/deepseek-chat}
-      # Default to the local Ollama service (free). Override these to use OpenAI/Jina.
+      # Embeddings fall back to the opt-in local Ollama service (--profile embeddings) when
+      # LITELLM_BASE_URL is unset. Override these to use OpenAI/Jina directly.
       EMBED_BASE_URL: ${EMBED_BASE_URL:-http://ollama:11434/v1}
       EMBED_API_KEY: ${EMBED_API_KEY:-ollama}
       EMBED_MODEL: ${EMBED_MODEL:-bge-m3}
-      APPRISE_URL: http://apprise:8000
+      APPRISE_URL: ${APPRISE_URL:-http://apprise:8000}
       PORT: "3000"
       BROWSERLESS_URL: ${BROWSERLESS_URL:-}
       BROWSERLESS_TOKEN: ${BROWSERLESS_TOKEN:-}
@@ -94,14 +108,12 @@ services:
       # Anonymous volume: keep the container's linux node_modules, don't share the
       # host's darwin one (native deps would break across platforms).
       - /app/node_modules
-    # No depends_on for ollama: embeddings are opt-in (see the ollama service) and
-    # the app degrades gracefully when the embed provider is unreachable, so boot
-    # must not block on an Ollama that may not be running.
+    # Only depends_on db. apprise and ollama are both opt-in profiles (notifications /
+    # embeddings) and the app degrades gracefully when either is unreachable, so boot
+    # must not block on services that may not be running.
     depends_on:
       db:
         condition: service_healthy
-      apprise:
-        condition: service_started
 
 volumes:
   pgdata:
