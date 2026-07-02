@@ -83,7 +83,7 @@ export function createServer(port: number, opts: ServerOptions = {}) {
 
       if (path === "/api/rescore" && req.method === "POST") {
         const r = await runRescore();
-        if ("disabled" in r) return json({ error: "DeepSeek scoring is disabled" }, 400);
+        if ("disabled" in r) return json({ error: "AI scoring is disabled" }, 400);
         if ("busy" in r) return json({ error: "a run is already in progress" }, 409);
         return json({ runId: r.runId }, 202);
       }
