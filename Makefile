@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help install build typecheck test check dev start \
         db-push db-generate db-migrate db-studio db-backup db-restore \
-        up up-fresh down lan-ip prod prod-down prod-logs
+        up up-notify up-embeddings up-browserless up-fresh down lan-ip prod prod-down prod-logs
 
 # Best-effort LAN IP of this host (macOS en0/en1, then Linux fallback).
 LAN_IP := $(shell ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || hostname -I 2>/dev/null | awk '{print $$1}')
@@ -12,6 +12,11 @@ LAN_IP := $(shell ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2
 BACKUP_DIR ?= backups
 # Which compose stack to dump/restore. Defaults to dev; `make db-backup COMPOSE=docker-compose.prod.yml` for prod.
 COMPOSE ?= docker-compose.dev.yml
+
+# Dev-stack compose invocation + the URL banner shared by the up* targets. The app is
+# published on host port 3005 (compose maps 3005 -> container 3000).
+DEV_COMPOSE := docker compose -f docker-compose.dev.yml
+DEV_URL_MSG := Dev app → http://localhost:3005  and  http://$(LAN_IP):3005 (other devices on your network)
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -67,12 +72,24 @@ db-restore: ## Restore the DB from a dump: make db-restore FILE=backups/renthunt
 	@gunzip -c "$(FILE)" | docker compose -f $(COMPOSE) exec -T db psql -v ON_ERROR_STOP=1 -U renthunter -d renthunter \
 	  && echo "restore done" || { echo "restore FAILED"; exit 1; }
 
-up: ## Start the dev stack, reachable on the LAN (docker compose, hot reload)
-	@echo "Dev app → http://localhost:3000  and  http://$(LAN_IP):3000 (other devices on your network)"
-	bun run compose:dev
+up: ## Start the dev stack (db + app only) on the LAN. Add services via COMPOSE_PROFILES=notifications,embeddings
+	@echo "$(DEV_URL_MSG)"
+	$(DEV_COMPOSE) up
 
-up-fresh: ## Reset the DB volume, then start the dev stack (run once after the push→migrate switch)
-	docker compose -f docker-compose.dev.yml down -v
+up-notify: ## Start the dev stack + apprise notifications
+	@echo "$(DEV_URL_MSG)"
+	$(DEV_COMPOSE) --profile notifications up
+
+up-embeddings: ## Start the dev stack + local ollama embeddings
+	@echo "$(DEV_URL_MSG)"
+	$(DEV_COMPOSE) --profile embeddings up
+
+up-browserless: ## Start the dev stack + local browserless (routes all scraping through it)
+	@echo "$(DEV_URL_MSG)"
+	BROWSERLESS_URL=http://browserless:3000 BROWSERLESS_TOKEN=local-dev $(DEV_COMPOSE) --profile browserless up
+
+up-fresh: ## Reset the DB volume, then start the dev stack (db + app only)
+	$(DEV_COMPOSE) down -v
 	@$(MAKE) up
 
 lan-ip: ## Print this host's LAN IP (where other devices reach the app)

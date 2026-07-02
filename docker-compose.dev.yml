@@ -2,6 +2,7 @@
 #   docker compose -f docker-compose.dev.yml up          # db + app only (default)
 #   docker compose -f docker-compose.dev.yml --profile notifications up   # + apprise
 #   docker compose -f docker-compose.dev.yml --profile embeddings up      # + local ollama
+#   docker compose -f docker-compose.dev.yml --profile browserless up     # + local browserless
 # Ports are loopback-only so `bun test` and `trigger:dev` on the host can still
 # reach the DB. The app runs from bind-mounted source with `bun --hot`.
 name: renthunter-dev
@@ -68,6 +69,23 @@ services:
       OLLAMA_HOST: http://ollama:11434
     entrypoint: ["/bin/sh", "-c", "ollama pull ${EMBED_MODEL:-bge-m3}"]
     restart: "no"
+
+  # Headless-Chrome fetch backend (browserless v2). Opt-in: `--profile browserless`.
+  # Renders JS-heavy pages via POST /content from the container's own egress IP, so a
+  # blocked host IP never hits the portals directly. Heavy (Chrome), off by default.
+  # `make up-browserless` starts this AND sets the app's BROWSERLESS_URL/TOKEN to match;
+  # a plain `up` leaves BROWSERLESS_URL empty (direct fetch). NOTE: fetchPage has no
+  # direct-fetch fallback — a set-but-unreachable browserless fails every scrape, so only
+  # point BROWSERLESS_URL here together with this service running.
+  browserless:
+    image: ghcr.io/browserless/chromium:latest
+    profiles: ["browserless"]
+    environment:
+      # Must match the app's BROWSERLESS_TOKEN (set together by `make up-browserless`).
+      TOKEN: ${BROWSERLESS_TOKEN:-local-dev}
+    ports:
+      # Loopback-only: reachable from the host for debugging, not from the network.
+      - "127.0.0.1:3010:3000"
 
   app:
     image: oven/bun:1
