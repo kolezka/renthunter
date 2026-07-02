@@ -125,3 +125,19 @@ export interface OfferSnapshot { id: number; offerId: number; capturedAt: string
 export async function getOfferHistory(externalId: string, signal?: AbortSignal): Promise<OfferSnapshot[]> {
   return getJson<OfferSnapshot[]>(`/api/offers/${encodeURIComponent(externalId)}/history`, signal);
 }
+
+export interface AiModelsResult { models: string[]; error?: string }
+
+/** Model ids available on the LiteLLM proxy. `baseUrl` tests an endpoint typed into
+ *  the form before saving; `fresh` bypasses the server's 60s cache (Refresh button).
+ *  A non-empty `baseUrl` goes over POST with a JSON body — the server rejects a
+ *  `baseUrl` query param on GET (400) since that's a no-preflight cross-origin
+ *  request that could exfiltrate a server-chosen key's response to an
+ *  attacker-chosen URL; see src/api/server.ts. */
+export async function getAiModels(fresh = false, baseUrl = ""): Promise<AiModelsResult> {
+  const trimmed = baseUrl.trim();
+  if (trimmed) {
+    return postJson<AiModelsResult>("/api/ai/models", { baseUrl: trimmed, fresh }, "Model list");
+  }
+  return getJson<AiModelsResult>(`/api/ai/models${fresh ? "?fresh=1" : ""}`);
+}

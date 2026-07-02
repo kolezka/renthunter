@@ -1,7 +1,10 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { getConfig, saveConfig, type Config } from "./lib/api";
-  import SearchUrlList from "./SearchUrlList.svelte";
+  import SearchTab from "./config/SearchTab.svelte";
+  import AiTab from "./config/AiTab.svelte";
+  import CrawlingTab from "./config/CrawlingTab.svelte";
+  import NotificationsTab from "./config/NotificationsTab.svelte";
 
   let { onClose }: { onClose: () => void } = $props();
 
@@ -11,12 +14,11 @@
   let error = $state("");
   let appriseText = $state("");
 
-  type SectionId = "search" | "filters" | "ai" | "performance" | "notifications";
+  type SectionId = "search" | "ai" | "crawling" | "notifications";
   const SECTIONS: { id: SectionId; label: string; blurb: string }[] = [
     { id: "search", label: "Search", blurb: "Where RentHunter looks for listings." },
-    { id: "filters", label: "Filters", blurb: "Hard limits applied before scoring." },
     { id: "ai", label: "AI scoring", blurb: "How offers are scored and enriched." },
-    { id: "performance", label: "Performance", blurb: "Crawl throughput and pacing." },
+    { id: "crawling", label: "Crawling", blurb: "When and how hard the crawler runs." },
     { id: "notifications", label: "Notifications", blurb: "Where new matches are sent." },
   ];
   let active = $state<SectionId>("search");
@@ -52,24 +54,12 @@
       error = err instanceof Error ? err.message : "Failed to save";
     }
   }
-
-  // No backdrop-filter inside the modal: it already sits over the overlay's single
-  // blur layer, so plain translucent fills avoid stacking expensive blur passes.
-  const labelSpan = "text-[0.78rem] font-semibold tracking-[0.03em] text-ink-2";
-  const control =
-    "w-full rounded-[12px] border border-[var(--glass-border)] bg-black/25 px-[13px] py-[11px] text-ink transition-[border-color,box-shadow,background] duration-200 placeholder:text-ink-3 focus:border-[rgba(47,109,255,0.7)] focus:bg-black/35 focus:shadow-[0_0_0_3px_rgba(47,109,255,0.18)] focus:outline-none";
-  const grid = "grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[14px]";
-  const toggleTrack =
-    "relative h-[27px] w-[46px] flex-shrink-0 rounded-full border border-[var(--glass-border)] bg-white/10 transition-[background,border-color] duration-300 peer-checked:border-transparent peer-checked:bg-[linear-gradient(120deg,var(--color-aurora-indigo),var(--color-aurora-violet))] peer-checked:[&>span]:translate-x-[19px] peer-focus-visible:shadow-[0_0_0_3px_rgba(47,109,255,0.3)]";
-  const toggleKnob =
-    "absolute left-[2px] top-[2px] h-[21px] w-[21px] rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1.18,0.36,1)]";
 </script>
 
 {#snippet ico(id: SectionId)}
   {#if id === "search"}<circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
-  {:else if id === "filters"}<path d="M4 6h16M4 12h10M4 18h6" /><circle cx="17" cy="12" r="2" /><circle cx="13" cy="18" r="2" />
   {:else if id === "ai"}<path d="M12 3l1.7 4.8L18.5 9.5l-4.8 1.7L12 16l-1.7-4.8L5.5 9.5l4.8-1.7z" /><path d="M5 16l.8 2.2L8 19l-2.2.8L5 22" />
-  {:else if id === "performance"}<path d="M13 2 4 14h7l-1 8 9-12h-7z" />
+  {:else if id === "crawling"}<path d="M13 2 4 14h7l-1 8 9-12h-7z" />
   {:else if id === "notifications"}<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" />
   {/if}
 {/snippet}
@@ -139,78 +129,16 @@
               </div>
 
               {#if active === "search"}
-                <SearchUrlList bind:urls={cfg.searchUrls} />
-
-              {:else if active === "filters"}
-                <div class={grid}>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Min price</span><input type="number" bind:value={cfg.minPrice} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Max price</span><input type="number" bind:value={cfg.maxPrice} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Min area</span><input type="number" bind:value={cfg.minArea} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Max area</span><input type="number" min="0" bind:value={cfg.maxArea} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Min rooms</span><input type="number" bind:value={cfg.minRooms} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Max rooms</span><input type="number" min="0" bind:value={cfg.maxRooms} class={control} /></label>
-                </div>
+                <SearchTab bind:cfg />
 
               {:else if active === "ai"}
-                <div class="mb-[18px] grid gap-[14px] rounded-[14px] border border-[var(--glass-border)] bg-white/[0.03] p-4">
-                  <label class="grid gap-[7px]">
-                    <span class={labelSpan}>LiteLLM endpoint <em class="font-medium not-italic text-ink-3">· blank = use server env</em></span>
-                    <input type="text" bind:value={cfg.aiBaseUrl} placeholder={cfg.aiBaseUrlEffective ?? "https://api.deepseek.com"} class={control} />
-                  </label>
-                  <div class="flex items-center gap-2 text-[0.82rem]">
-                    <span class={labelSpan}>API key</span>
-                    {#if cfg.aiKeyConfigured}
-                      <span class="font-semibold text-good">configured ✓ <em class="font-medium not-italic text-ink-3">· set via server env</em></span>
-                    {:else}
-                      <span class="font-semibold text-bad">not set ✗ <em class="font-medium not-italic text-ink-3">· set LITELLM_API_KEY in env</em></span>
-                    {/if}
-                  </div>
-                  <div class={grid}>
-                    <label class="grid gap-[7px]"><span class={labelSpan}>Scorer model <em class="font-medium not-italic text-ink-3">· deepseek/*</em></span><input type="text" maxlength="120" bind:value={cfg.scorerModel} placeholder="deepseek/deepseek-chat" class={control} /></label>
-                    <label class="grid gap-[7px]"><span class={labelSpan}>Embedding model</span><input type="text" maxlength="120" bind:value={cfg.embedModel} placeholder="bge-m3" class={control} /></label>
-                  </div>
-                </div>
-                <label class="grid gap-[7px]">
-                  <span class={labelSpan}>AI criteria</span>
-                  <textarea bind:value={cfg.aiCriteria} rows="5" placeholder="Describe the ideal apartment…" class="{control} resize-y leading-normal"></textarea>
-                </label>
-                <div class="mt-[14px] {grid}">
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Score threshold (0–100)</span><input type="number" min="0" max="100" bind:value={cfg.scoreThreshold} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Interval (min) <em class="font-medium not-italic text-ink-3">· 0 = off</em></span><input type="number" min="0" bind:value={cfg.pollIntervalMin} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Auto-rescore (min) <em class="font-medium not-italic text-ink-3">· 0 = off</em></span><input type="number" min="0" max="10080" bind:value={cfg.rescoreIntervalMin} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Output language <em class="font-medium not-italic text-ink-3">· AI reasons &amp; features</em></span><input type="text" maxlength="40" bind:value={cfg.outputLanguage} placeholder="Polish" class={control} /></label>
-                </div>
-                <div class="mt-5 grid gap-[14px] rounded-[14px] border border-[var(--glass-border)] bg-white/[0.03] p-4">
-                  <label class="flex cursor-pointer select-none items-center gap-3">
-                    <input type="checkbox" bind:checked={cfg.deepseekEnabled} class="peer pointer-events-none absolute opacity-0" />
-                    <span class={toggleTrack} aria-hidden="true"><span class={toggleKnob}></span></span>
-                    <span class="text-[0.92rem] font-semibold">DeepSeek scoring</span>
-                  </label>
-                  <label class="flex cursor-pointer select-none items-center gap-3">
-                    <input type="checkbox" bind:checked={cfg.extractEnabled} class="peer pointer-events-none absolute opacity-0" />
-                    <span class={toggleTrack} aria-hidden="true"><span class={toggleKnob}></span></span>
-                    <span class="text-[0.92rem] font-semibold">Feature extraction (AI)</span>
-                  </label>
-                  <label class="flex cursor-pointer select-none items-center gap-3">
-                    <input type="checkbox" bind:checked={cfg.embedEnabled} class="peer pointer-events-none absolute opacity-0" />
-                    <span class={toggleTrack} aria-hidden="true"><span class={toggleKnob}></span></span>
-                    <span class="text-[0.92rem] font-semibold">Embeddings (semantic search)</span>
-                  </label>
-                </div>
+                <AiTab bind:cfg />
 
-              {:else if active === "performance"}
-                <div class={grid}>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Workers (parallel)</span><input type="number" min="1" max="16" bind:value={cfg.concurrencyLimit} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>List pages</span><input type="number" min="1" max="10" bind:value={cfg.listPages} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Max fetches / run</span><input type="number" min="1" max="500" bind:value={cfg.maxDetailFetchesPerRun} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Delay (ms)</span><input type="number" min="0" max="10000" bind:value={cfg.requestDelayMs} class={control} /></label>
-                </div>
+              {:else if active === "crawling"}
+                <CrawlingTab bind:cfg />
 
               {:else if active === "notifications"}
-                <label class="grid gap-[7px]">
-                  <span class={labelSpan}>Apprise URLs <em class="font-medium not-italic text-ink-3">· one per line</em></span>
-                  <textarea bind:value={appriseText} rows="5" placeholder={"discord://…\ntgram://…\nntfy://…"} class="{control} resize-y leading-normal"></textarea>
-                </label>
+                <NotificationsTab bind:appriseText />
               {/if}
             </div>
           {/key}

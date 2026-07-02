@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { listOffers, getConfig, updateConfig, listLogs, searchOffers, getFacets, getOfferHistory, toListOffer } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
 import { embed } from "../embeddings/client";
+import { getAiModels as getAiModelsCached, type AiModelsResult } from "./models";
 import type { Offer } from "../db/schema";
 import { loadConfig, resolveBaseUrl, aiKeyConfigured, aiBaseUrlDefault } from "../config";
 import { refreshOffer } from "../pipeline/refresh";
@@ -13,6 +14,7 @@ export interface ServerOptions {
   runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
   refreshOfferById?: (externalId: string) => Promise<Offer | null>;
   runRescore?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true } | { disabled: true }>;
+  getAiModels?: (fresh: boolean, baseUrlOverride?: string) => Promise<AiModelsResult>;
 }
 
 // Default in-process crawl, triggered by POST /api/run (source "manual").
@@ -33,6 +35,22 @@ function defaultRefresh(externalId: string): Promise<Offer | null> {
   });
 }
 
+// Model list for the settings UI. baseUrlOverride lets the operator test an endpoint
+// typed into the form before saving it; this sends the server key to that URL, which
+// is the same exposure as saving aiBaseUrl via PUT /api/config (scoring calls it with
+// the key on the next run) — single trusted operator. baseUrlOverride is only accepted
+// via POST (JSON body), which is preflight-protected cross-origin, restoring parity
+// with PUT /api/config; a GET+query-param equivalent would be drive-by triggerable.
+async function defaultGetAiModels(fresh: boolean, baseUrlOverride?: string): Promise<AiModelsResult> {
+  const env = loadConfig();
+  const cfg = await getConfig();
+  return getAiModelsCached({
+    baseUrl: resolveBaseUrl(baseUrlOverride || cfg.aiBaseUrl, env.deepseekBaseUrl),
+    apiKey: env.deepseekApiKey,
+    fresh,
+  });
+}
+
 const DIST = resolve(import.meta.dir, "../../web/dist");
 
 const json = (data: unknown, status = 200) =>
@@ -50,6 +68,7 @@ export function createServer(port: number, opts: ServerOptions = {}) {
   const runCrawler = opts.runCrawler ?? defaultRunCrawler;
   const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
   const runRescore = opts.runRescore ?? defaultRunRescore;
+  const getAiModelsFn = opts.getAiModels ?? defaultGetAiModels;
 
   return Bun.serve<{ unsub?: () => void }>({
     port,
@@ -64,7 +83,7 @@ export function createServer(port: number, opts: ServerOptions = {}) {
 
       if (path === "/api/rescore" && req.method === "POST") {
         const r = await runRescore();
-        if ("disabled" in r) return json({ error: "DeepSeek scoring is disabled" }, 400);
+        if ("disabled" in r) return json({ error: "AI scoring is disabled" }, 400);
         if ("busy" in r) return json({ error: "a run is already in progress" }, 409);
         return json({ runId: r.runId }, 202);
       }
@@ -135,6 +154,48 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         const limit = limitParam ? Math.min(Math.max(parseInt(limitParam, 10) || 300, 1), 1000) : 300;
         return json(await listLogs({ limit }));
       }
+      if (path === "/api/ai/models" && req.method === "GET") {
+        // baseUrl is deliberately NOT accepted here: a GET with a user-controlled query
+        // param is a simple cross-origin request (no CORS preflight), so a malicious page
+        // could drive-by trigger this from the operator's browser and exfiltrate the
+        // response of a server-chosen key to an attacker-chosen URL. Use POST instead.
+        if (url.searchParams.has("baseUrl")) {
+          return json({ error: "use POST /api/ai/models to test an unsaved endpoint" }, 400);
+        }
+        const fresh = url.searchParams.get("fresh") === "1";
+        return json(await getAiModelsFn(fresh, undefined));
+      }
+      if (path === "/api/ai/models" && req.method === "POST") {
+        // POST is a CORS-safelisted method, so without this check a cross-origin
+        // <form enctype="text/plain"> POST would be a "simple" request (no preflight)
+        // whose body JSON.parse still accepts — the classic JSON-CSRF-via-text/plain
+        // bypass. Requiring Content-Type: application/json is what actually forces
+        // the browser to preflight: a safelisted content-type (text/plain,
+        // application/x-www-form-urlencoded, multipart/form-data) is rejected here,
+        // so only same-origin (or explicitly CORS-allowed) callers can reach this code.
+        const ct = req.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase();
+        if (ct !== "application/json") return json({ error: "content-type must be application/json" }, 415);
+        let body: Record<string, unknown>;
+        try {
+          body = (await req.json()) as Record<string, unknown>;
+        } catch {
+          return json({ error: "invalid JSON body" }, 400);
+        }
+        let baseUrl: string | undefined;
+        if (body.baseUrl !== undefined) {
+          if (typeof body.baseUrl !== "string") return json({ error: "baseUrl must be a string" }, 400);
+          if (body.baseUrl) {
+            // Same rules as the aiBaseUrl config field: http(s) URL, ≤300 chars.
+            if (body.baseUrl.length > 300) return json({ error: "baseUrl must be at most 300 chars" }, 400);
+            let u: URL;
+            try { u = new URL(body.baseUrl); } catch { return json({ error: "baseUrl must be a valid URL" }, 400); }
+            if (u.protocol !== "https:" && u.protocol !== "http:") return json({ error: "baseUrl must be http(s)" }, 400);
+            baseUrl = body.baseUrl;
+          }
+        }
+        return json(await getAiModelsFn(body.fresh === true, baseUrl || undefined));
+      }
+
       if (path === "/api/config" && req.method === "GET") {
         const cfg = await getConfig();
         return json({

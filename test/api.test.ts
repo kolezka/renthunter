@@ -124,7 +124,7 @@ test("POST /api/rescore returns 400 when deepseek disabled", async () => {
     const res = await fetch(`${b}/api/rescore`, { method: "POST" });
     expect(res.status).toBe(400);
     const body = (await res.json()) as { error: string };
-    expect(body.error.toLowerCase()).toContain("deepseek");
+    expect(body.error.toLowerCase()).toContain("ai scoring");
   } finally { s.stop(true); }
 });
 
@@ -213,3 +213,33 @@ test("GET /api/config exposes aiKeyConfigured + aiBaseUrlEffective and never a k
   }
 });
 
+test("POST /api/rescore reports 'AI scoring is disabled' when scoring is off", async () => {
+  const s = createServer(0, { runRescore: async () => ({ disabled: true as const }) });
+  const b = `http://localhost:${s.port}`;
+  try {
+    const res = await fetch(`${b}/api/rescore`, { method: "POST" });
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("AI scoring is disabled");
+  } finally { s.stop(true); }
+});
+
+// CONTRACT (regression guard): saving a model name that is NOT in the LiteLLM proxy
+// list must always succeed. The model picker is a convenience layer — validation may
+// only check shape (non-empty, ≤120 chars), never reachability or list membership.
+// Trap: "validate models against /v1/models" would break saves whenever the proxy
+// is down and block pre-provisioned model names.
+test("PUT /api/config accepts scorer/embed models unknown to any proxy", async () => {
+  const res = await fetch(`${base}/api/config`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      scorerModel: "some-vendor/model-that-no-proxy-lists",
+      embedModel: "custom-embed-9000",
+    }),
+  });
+  expect(res.status).toBe(200);
+  const c = (await res.json()) as Record<string, unknown>;
+  expect(c.scorerModel).toBe("some-vendor/model-that-no-proxy-lists");
+  expect(c.embedModel).toBe("custom-embed-9000");
+});
