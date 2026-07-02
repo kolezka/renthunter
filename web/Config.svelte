@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { getConfig, saveConfig, type Config } from "./lib/api";
-  import { labelSpan, control, grid, toggleTrack, toggleKnob, hint, card } from "./config/styles";
   import SearchTab from "./config/SearchTab.svelte";
+  import AiTab from "./config/AiTab.svelte";
   import CrawlingTab from "./config/CrawlingTab.svelte";
   import NotificationsTab from "./config/NotificationsTab.svelte";
 
@@ -132,51 +132,7 @@
                 <SearchTab bind:cfg />
 
               {:else if active === "ai"}
-                <div class="mb-[18px] grid gap-[14px] rounded-[14px] border border-[var(--glass-border)] bg-white/[0.03] p-4">
-                  <label class="grid gap-[7px]">
-                    <span class={labelSpan}>LiteLLM endpoint <em class="font-medium not-italic text-ink-3">· blank = use server env</em></span>
-                    <input type="text" bind:value={cfg.aiBaseUrl} placeholder={cfg.aiBaseUrlEffective ?? "https://api.deepseek.com"} class={control} />
-                  </label>
-                  <div class="flex items-center gap-2 text-[0.82rem]">
-                    <span class={labelSpan}>API key</span>
-                    {#if cfg.aiKeyConfigured}
-                      <span class="font-semibold text-good">configured ✓ <em class="font-medium not-italic text-ink-3">· set via server env</em></span>
-                    {:else}
-                      <span class="font-semibold text-bad">not set ✗ <em class="font-medium not-italic text-ink-3">· set LITELLM_API_KEY in env</em></span>
-                    {/if}
-                  </div>
-                  <div class={grid}>
-                    <label class="grid gap-[7px]"><span class={labelSpan}>Scorer model <em class="font-medium not-italic text-ink-3">· deepseek/*</em></span><input type="text" maxlength="120" bind:value={cfg.scorerModel} placeholder="deepseek/deepseek-chat" class={control} /></label>
-                    <label class="grid gap-[7px]"><span class={labelSpan}>Embedding model</span><input type="text" maxlength="120" bind:value={cfg.embedModel} placeholder="bge-m3" class={control} /></label>
-                  </div>
-                </div>
-                <label class="grid gap-[7px]">
-                  <span class={labelSpan}>AI criteria</span>
-                  <textarea bind:value={cfg.aiCriteria} rows="5" placeholder="Describe the ideal apartment…" class="{control} resize-y leading-normal"></textarea>
-                </label>
-                <div class="mt-[14px] {grid}">
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Score threshold (0–100)</span><input type="number" min="0" max="100" bind:value={cfg.scoreThreshold} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Interval (min) <em class="font-medium not-italic text-ink-3">· 0 = off</em></span><input type="number" min="0" bind:value={cfg.pollIntervalMin} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Auto-rescore (min) <em class="font-medium not-italic text-ink-3">· 0 = off</em></span><input type="number" min="0" max="10080" bind:value={cfg.rescoreIntervalMin} class={control} /></label>
-                  <label class="grid gap-[7px]"><span class={labelSpan}>Output language <em class="font-medium not-italic text-ink-3">· AI reasons &amp; features</em></span><input type="text" maxlength="40" bind:value={cfg.outputLanguage} placeholder="Polish" class={control} /></label>
-                </div>
-                <div class="mt-5 grid gap-[14px] rounded-[14px] border border-[var(--glass-border)] bg-white/[0.03] p-4">
-                  <label class="flex cursor-pointer select-none items-center gap-3">
-                    <input type="checkbox" bind:checked={cfg.deepseekEnabled} class="peer pointer-events-none absolute opacity-0" />
-                    <span class={toggleTrack} aria-hidden="true"><span class={toggleKnob}></span></span>
-                    <span class="text-[0.92rem] font-semibold">DeepSeek scoring</span>
-                  </label>
-                  <label class="flex cursor-pointer select-none items-center gap-3">
-                    <input type="checkbox" bind:checked={cfg.extractEnabled} class="peer pointer-events-none absolute opacity-0" />
-                    <span class={toggleTrack} aria-hidden="true"><span class={toggleKnob}></span></span>
-                    <span class="text-[0.92rem] font-semibold">Feature extraction (AI)</span>
-                  </label>
-                  <label class="flex cursor-pointer select-none items-center gap-3">
-                    <input type="checkbox" bind:checked={cfg.embedEnabled} class="peer pointer-events-none absolute opacity-0" />
-                    <span class={toggleTrack} aria-hidden="true"><span class={toggleKnob}></span></span>
-                    <span class="text-[0.92rem] font-semibold">Embeddings (semantic search)</span>
-                  </label>
-                </div>
+                <AiTab bind:cfg />
 
               {:else if active === "crawling"}
                 <CrawlingTab bind:cfg />
