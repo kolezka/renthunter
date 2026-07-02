@@ -84,3 +84,45 @@ test("POST /api/ai/models with invalid JSON body is a 400", async () => {
     expect(called).toBe(false);
   } finally { s.stop(true); }
 });
+
+test("POST /api/ai/models with content-type text/plain is rejected — CORS-preflight bypass guard", async () => {
+  let called = false;
+  const { s, base } = serve(async () => { called = true; return { models: [] }; });
+  try {
+    const res = await fetch(`${base}/api/ai/models`, {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: JSON.stringify({ baseUrl: "https://evil.example" }),
+    });
+    expect(res.status).toBe(415);
+    expect(called).toBe(false);
+  } finally { s.stop(true); }
+});
+
+test("POST /api/ai/models with no content-type header is rejected", async () => {
+  let called = false;
+  const { s, base } = serve(async () => { called = true; return { models: [] }; });
+  try {
+    const res = await fetch(`${base}/api/ai/models`, {
+      method: "POST",
+      body: JSON.stringify({ baseUrl: "https://evil.example" }),
+    });
+    expect(res.status).toBe(415);
+    expect(called).toBe(false);
+  } finally { s.stop(true); }
+});
+
+test("POST /api/ai/models with a non-string baseUrl is a 400, not an upstream call", async () => {
+  let called = false;
+  const { s, base } = serve(async () => { called = true; return { models: [] }; });
+  try {
+    const res = await fetch(`${base}/api/ai/models`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ baseUrl: 12345 }),
+    });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "baseUrl must be a string" });
+    expect(called).toBe(false);
+  } finally { s.stop(true); }
+});

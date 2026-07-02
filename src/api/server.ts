@@ -166,6 +166,15 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         return json(await getAiModelsFn(fresh, undefined));
       }
       if (path === "/api/ai/models" && req.method === "POST") {
+        // POST is a CORS-safelisted method, so without this check a cross-origin
+        // <form enctype="text/plain"> POST would be a "simple" request (no preflight)
+        // whose body JSON.parse still accepts — the classic JSON-CSRF-via-text/plain
+        // bypass. Requiring Content-Type: application/json is what actually forces
+        // the browser to preflight: a safelisted content-type (text/plain,
+        // application/x-www-form-urlencoded, multipart/form-data) is rejected here,
+        // so only same-origin (or explicitly CORS-allowed) callers can reach this code.
+        const ct = req.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase();
+        if (ct !== "application/json") return json({ error: "content-type must be application/json" }, 415);
         let body: Record<string, unknown>;
         try {
           body = (await req.json()) as Record<string, unknown>;
@@ -173,15 +182,18 @@ export function createServer(port: number, opts: ServerOptions = {}) {
           return json({ error: "invalid JSON body" }, 400);
         }
         let baseUrl: string | undefined;
-        if (typeof body.baseUrl === "string" && body.baseUrl) {
-          // Same rules as the aiBaseUrl config field: http(s) URL, ≤300 chars.
-          if (body.baseUrl.length > 300) return json({ error: "baseUrl must be at most 300 chars" }, 400);
-          let u: URL;
-          try { u = new URL(body.baseUrl); } catch { return json({ error: "baseUrl must be a valid URL" }, 400); }
-          if (u.protocol !== "https:" && u.protocol !== "http:") return json({ error: "baseUrl must be http(s)" }, 400);
-          baseUrl = body.baseUrl;
+        if (body.baseUrl !== undefined) {
+          if (typeof body.baseUrl !== "string") return json({ error: "baseUrl must be a string" }, 400);
+          if (body.baseUrl) {
+            // Same rules as the aiBaseUrl config field: http(s) URL, ≤300 chars.
+            if (body.baseUrl.length > 300) return json({ error: "baseUrl must be at most 300 chars" }, 400);
+            let u: URL;
+            try { u = new URL(body.baseUrl); } catch { return json({ error: "baseUrl must be a valid URL" }, 400); }
+            if (u.protocol !== "https:" && u.protocol !== "http:") return json({ error: "baseUrl must be http(s)" }, 400);
+            baseUrl = body.baseUrl;
+          }
         }
-        return json(await getAiModelsFn(Boolean(body.fresh), baseUrl || undefined));
+        return json(await getAiModelsFn(body.fresh === true, baseUrl || undefined));
       }
 
       if (path === "/api/config" && req.method === "GET") {
