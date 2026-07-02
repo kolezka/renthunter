@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { listOffers, getConfig, updateConfig, listLogs, searchOffers, getFacets, getOfferHistory, toListOffer } from "../db/queries";
 import { validateConfigPatch, safeStaticPath } from "./validate";
 import { embed } from "../embeddings/client";
+import { getAiModels as getAiModelsCached, type AiModelsResult } from "./models";
 import type { Offer } from "../db/schema";
 import { loadConfig, resolveBaseUrl, aiKeyConfigured, aiBaseUrlDefault } from "../config";
 import { refreshOffer } from "../pipeline/refresh";
@@ -13,6 +14,7 @@ export interface ServerOptions {
   runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
   refreshOfferById?: (externalId: string) => Promise<Offer | null>;
   runRescore?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true } | { disabled: true }>;
+  getAiModels?: (fresh: boolean, baseUrlOverride?: string) => Promise<AiModelsResult>;
 }
 
 // Default in-process crawl, triggered by POST /api/run (source "manual").
@@ -33,6 +35,20 @@ function defaultRefresh(externalId: string): Promise<Offer | null> {
   });
 }
 
+// Model list for the settings UI. baseUrlOverride lets the operator test an endpoint
+// typed into the form before saving it; this sends the server key to that URL, which
+// is the same exposure as saving aiBaseUrl via PUT /api/config (scoring calls it with
+// the key on the next run) — single trusted operator.
+async function defaultGetAiModels(fresh: boolean, baseUrlOverride?: string): Promise<AiModelsResult> {
+  const env = loadConfig();
+  const cfg = await getConfig();
+  return getAiModelsCached({
+    baseUrl: resolveBaseUrl(baseUrlOverride || cfg.aiBaseUrl, env.deepseekBaseUrl),
+    apiKey: env.deepseekApiKey,
+    fresh,
+  });
+}
+
 const DIST = resolve(import.meta.dir, "../../web/dist");
 
 const json = (data: unknown, status = 200) =>
@@ -50,6 +66,7 @@ export function createServer(port: number, opts: ServerOptions = {}) {
   const runCrawler = opts.runCrawler ?? defaultRunCrawler;
   const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
   const runRescore = opts.runRescore ?? defaultRunRescore;
+  const getAiModelsFn = opts.getAiModels ?? defaultGetAiModels;
 
   return Bun.serve<{ unsub?: () => void }>({
     port,
@@ -135,6 +152,19 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         const limit = limitParam ? Math.min(Math.max(parseInt(limitParam, 10) || 300, 1), 1000) : 300;
         return json(await listLogs({ limit }));
       }
+      if (path === "/api/ai/models" && req.method === "GET") {
+        const fresh = url.searchParams.get("fresh") === "1";
+        const override = url.searchParams.get("baseUrl") ?? "";
+        if (override) {
+          // Same rules as the aiBaseUrl config field: http(s) URL, ≤300 chars.
+          if (override.length > 300) return json({ error: "baseUrl must be at most 300 chars" }, 400);
+          let u: URL;
+          try { u = new URL(override); } catch { return json({ error: "baseUrl must be a valid URL" }, 400); }
+          if (u.protocol !== "https:" && u.protocol !== "http:") return json({ error: "baseUrl must be http(s)" }, 400);
+        }
+        return json(await getAiModelsFn(fresh, override || undefined));
+      }
+
       if (path === "/api/config" && req.method === "GET") {
         const cfg = await getConfig();
         return json({
