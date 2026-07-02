@@ -100,16 +100,15 @@ services:
       # gives real env vars precedence over .env file values. So this `db` host (not
       # the host .env's `localhost`) is what the app actually uses inside the network.
       DATABASE_URL: postgres://renthunter:${POSTGRES_PASSWORD:-renthunter}@db:5432/renthunter
-      # Route all AI (scoring + embeddings) through a self-hosted LiteLLM proxy with a
-      # single key. When set, config.ts prefers these over the DEEPSEEK_*/EMBED_* vars
-      # below — so litellm needs no local Ollama.
+      # Chat AI (scoring + feature extraction) goes through the LiteLLM proxy — the
+      # only chat credential pair. Embeddings use it too UNLESS EMBED_* is set: explicit
+      # EMBED_* wins, so the defaults below keep embeddings on the opt-in local Ollama
+      # (--profile embeddings) even while chat stays on LiteLLM. NOTE: a non-empty
+      # Endpoint in Settings → AI scoring (DB ai_base_url) overrides BOTH chat and
+      # embedding env URLs — leave it empty when splitting providers via env.
       LITELLM_API_KEY: ${LITELLM_API_KEY:-}
       LITELLM_BASE_URL: ${LITELLM_BASE_URL:-}
-      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
-      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       SCORER_MODEL: ${SCORER_MODEL:-deepseek/deepseek-chat}
-      # Embeddings fall back to the opt-in local Ollama service (--profile embeddings) when
-      # LITELLM_BASE_URL is unset. Override these to use OpenAI/Jina directly.
       EMBED_BASE_URL: ${EMBED_BASE_URL:-http://ollama:11434/v1}
       EMBED_API_KEY: ${EMBED_API_KEY:-ollama}
       EMBED_MODEL: ${EMBED_MODEL:-bge-m3}

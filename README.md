@@ -124,7 +124,7 @@ a paid OpenAI-compatible provider instead of Ollama if you prefer.
    and routes to the exposed port `3000`; no host port is published, so the internal
    services (`db`, `apprise`) stay off the public network.
 3. Set the environment variables in the app's **Environment Variables** tab —
-   `POSTGRES_PASSWORD` is required; everything else (DeepSeek, browserless, embeddings)
+   `POSTGRES_PASSWORD` is required; everything else (LiteLLM, browserless, embeddings)
    is optional. See `.env.production.example` for the full list. To enable semantic
    search, add `COMPOSE_PROFILES=embeddings` (starts the internal Ollama provider) and
    turn on Embeddings in the panel.
@@ -155,7 +155,7 @@ Two kinds of configuration:
   |-----|---------|---------|
   | `DATABASE_URL` | Postgres connection (required) | — |
   | `PORT` | App HTTP port | `3000` |
-  | `DEEPSEEK_API_KEY` / `DEEPSEEK_BASE_URL` | AI scoring | `https://api.deepseek.com` |
+  | `LITELLM_API_KEY` / `LITELLM_BASE_URL` | Chat AI (scoring + feature extraction); embeddings fallback | `https://api.deepseek.com` |
   | `SCORER_MODEL` | Chat model name sent for scoring + feature extraction | `deepseek/deepseek-chat` |
   | `EMBED_BASE_URL` / `EMBED_API_KEY` / `EMBED_MODEL` | Embeddings for semantic search | `https://api.openai.com/v1`, `text-embedding-3-small` |
   | `APPRISE_URL` | Apprise API endpoint | `http://localhost:8000` |

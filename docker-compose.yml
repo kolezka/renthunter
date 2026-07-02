@@ -94,15 +94,16 @@ services:
       DATABASE_URL: postgres://renthunter:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your env}@db:5432/renthunter
       PORT: "3000"
       APPRISE_URL: http://apprise:8000
-      # Embeddings — default to the internal Ollama service (free). Override to use OpenAI/Jina.
+      # Embeddings — explicit EMBED_* wins over LITELLM_*; the defaults keep embeddings
+      # on the internal opt-in Ollama (COMPOSE_PROFILES=embeddings). Override to use
+      # OpenAI/Jina or the proxy. NOTE: a non-empty Endpoint in Settings → AI scoring
+      # (DB ai_base_url) overrides BOTH chat and embedding env URLs.
       EMBED_BASE_URL: ${EMBED_BASE_URL:-http://ollama:11434/v1}
       EMBED_API_KEY: ${EMBED_API_KEY:-ollama}
       EMBED_MODEL: ${EMBED_MODEL:-bge-m3}
-      # Optional — DeepSeek AI scoring. Leave empty to run filters-only.
-      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
-      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       SCORER_MODEL: ${SCORER_MODEL:-deepseek/deepseek-chat}
-      # LiteLLM proxy — single key for scoring + embeddings (overrides the above when set).
+      # LiteLLM proxy — the only chat AI credential pair (scoring + feature extraction);
+      # also the embeddings fallback when EMBED_* is unset. Empty key = filters-only.
       LITELLM_API_KEY: ${LITELLM_API_KEY:-}
       LITELLM_BASE_URL: ${LITELLM_BASE_URL:-}
       # Optional — route all scraping through a self-hosted browserless instance
