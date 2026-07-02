@@ -1,5 +1,5 @@
 import { test, expect, beforeEach } from "bun:test";
-import { fetchAiModels, getAiModels, clearModelsCache, MODELS_CACHE_TTL_MS } from "../src/api/models";
+import { fetchAiModels, getAiModels, clearModelsCache, MODELS_CACHE_TTL_MS, MODELS_CACHE_MAX } from "../src/api/models";
 
 /** Build a fetchImpl stub. `handler` gets the requested URL string. */
 function upstream(handler: (url: string, init?: RequestInit) => Response | Promise<Response> | never): typeof fetch {
@@ -128,4 +128,33 @@ test("getAiModels re-fetches after the TTL expires", async () => {
   t += 2;
   await getAiModels(opts);
   expect(calls).toBe(2);
+});
+
+test("getAiModels bounds the cache to MODELS_CACHE_MAX and evicts the oldest", async () => {
+  let calls = 0;
+  const t = 1_000_000; // fixed clock so TTL never expires — isolate eviction from staleness
+  const fetchImpl = upstream(() => { calls++; return okBody(["m"]); });
+  const opt = (i: number) => ({ baseUrl: `https://p${i}.example`, apiKey: "k", fetchImpl, now: () => t });
+
+  // Fill the cache exactly to capacity — one upstream call per distinct endpoint.
+  for (let i = 0; i < MODELS_CACHE_MAX; i++) await getAiModels(opt(i));
+  expect(calls).toBe(MODELS_CACHE_MAX);
+
+  // The oldest entry (p0) is still cached at capacity: a re-read is a cache hit
+  // and does NOT re-insert, so p0 stays the least-recently-fetched.
+  await getAiModels(opt(0));
+  expect(calls).toBe(MODELS_CACHE_MAX);
+
+  // One more distinct endpoint overflows the cap and evicts the oldest (p0).
+  await getAiModels(opt(MODELS_CACHE_MAX));
+  expect(calls).toBe(MODELS_CACHE_MAX + 1);
+
+  // p0 was evicted → re-fetching it hits upstream again (proves it was dropped).
+  // This re-insert overflows again and evicts the new oldest (p1).
+  await getAiModels(opt(0));
+  expect(calls).toBe(MODELS_CACHE_MAX + 2);
+
+  // A recently-fetched entry that's still resident (p{MAX}) is a cache hit → no call.
+  await getAiModels(opt(MODELS_CACHE_MAX));
+  expect(calls).toBe(MODELS_CACHE_MAX + 2);
 });

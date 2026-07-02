@@ -117,16 +117,8 @@ test("POST /api/rescore returns 409 when busy", async () => {
   } finally { s.stop(true); }
 });
 
-test("POST /api/rescore returns 400 when deepseek disabled", async () => {
-  const s = createServer(0, { runRescore: async () => ({ disabled: true as const }) });
-  const b = `http://localhost:${s.port}`;
-  try {
-    const res = await fetch(`${b}/api/rescore`, { method: "POST" });
-    expect(res.status).toBe(400);
-    const body = (await res.json()) as { error: string };
-    expect(body.error.toLowerCase()).toContain("ai scoring");
-  } finally { s.stop(true); }
-});
+// The rescore-disabled 400 is asserted exactly by
+// "POST /api/rescore reports 'AI scoring is disabled' when scoring is off" below.
 
 test("GET /api/offers/facets returns facet sets", async () => {
   await upsertOffer({ externalId: "facet:1", url: "u", source: "trojmiasto", title: "T", kind: "mieszkanie", districtCanonical: "Gdańsk Oliwa", features: ["winda"] });
