@@ -16,17 +16,21 @@ test("GET /api/ai/models returns the model list", async () => {
   } finally { s.stop(true); }
 });
 
-test("GET /api/ai/models forwards fresh=1 and baseUrl to the resolver", async () => {
+test("GET /api/ai/models forwards fresh=1 (no baseUrl); POST forwards a JSON baseUrl override", async () => {
   const seen: Array<{ fresh: boolean; baseUrlOverride?: string }> = [];
   const { s, base } = serve(async (fresh, baseUrlOverride) => {
     seen.push({ fresh, baseUrlOverride });
     return { models: [] };
   });
   try {
-    await fetch(`${base}/api/ai/models`);
-    await fetch(`${base}/api/ai/models?fresh=1&baseUrl=${encodeURIComponent("https://proxy.example")}`);
+    await fetch(`${base}/api/ai/models?fresh=1`);
+    await fetch(`${base}/api/ai/models`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ baseUrl: "https://proxy.example", fresh: true }),
+    });
     expect(seen).toEqual([
-      { fresh: false, baseUrlOverride: undefined },
+      { fresh: true, baseUrlOverride: undefined },
       { fresh: true, baseUrlOverride: "https://proxy.example" },
     ]);
   } finally { s.stop(true); }
@@ -41,14 +45,42 @@ test("a degraded upstream is still HTTP 200 with an error field", async () => {
   } finally { s.stop(true); }
 });
 
-test("a malformed baseUrl param is a 400, not an upstream call", async () => {
+test("a malformed baseUrl in the POST body is a 400, not an upstream call", async () => {
   let called = false;
   const { s, base } = serve(async () => { called = true; return { models: [] }; });
   try {
     for (const bad of ["notaurl", "ftp://x.example", "https://" + "x".repeat(300)]) {
-      const res = await fetch(`${base}/api/ai/models?baseUrl=${encodeURIComponent(bad)}`);
+      const res = await fetch(`${base}/api/ai/models`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ baseUrl: bad }),
+      });
       expect(res.status).toBe(400);
     }
+    expect(called).toBe(false);
+  } finally { s.stop(true); }
+});
+
+test("GET /api/ai/models?baseUrl=... is rejected — that override requires POST", async () => {
+  let called = false;
+  const { s, base } = serve(async () => { called = true; return { models: [] }; });
+  try {
+    const res = await fetch(`${base}/api/ai/models?baseUrl=${encodeURIComponent("https://proxy.example")}`);
+    expect(res.status).toBe(400);
+    expect(called).toBe(false);
+  } finally { s.stop(true); }
+});
+
+test("POST /api/ai/models with invalid JSON body is a 400", async () => {
+  let called = false;
+  const { s, base } = serve(async () => { called = true; return { models: [] }; });
+  try {
+    const res = await fetch(`${base}/api/ai/models`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "{not json",
+    });
+    expect(res.status).toBe(400);
     expect(called).toBe(false);
   } finally { s.stop(true); }
 });

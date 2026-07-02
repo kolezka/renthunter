@@ -22,6 +22,10 @@ export async function fetchAiModels(opts: FetchModelsOpts): Promise<AiModelsResu
     res = await f(`${opts.baseUrl}/v1/models`, {
       headers: opts.apiKey ? { authorization: `Bearer ${opts.apiKey}` } : {},
       signal: AbortSignal.timeout(opts.timeoutMs ?? 5000),
+      // Never auto-follow redirects: the Authorization header must not leak to a
+      // 3xx Location the proxy points at, on- or off-host. A redirect is treated
+      // as an error result below (via the !res.ok branch), not a followed hop.
+      redirect: "manual",
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "TimeoutError") {

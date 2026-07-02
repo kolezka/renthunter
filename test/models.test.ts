@@ -43,6 +43,15 @@ test("fetchAiModels maps non-OK upstream to a 200-shaped error result", async ()
   expect(r.error).toBe("LiteLLM returned HTTP 401");
 });
 
+test("fetchAiModels treats a 3xx upstream redirect as an error, never follows it", async () => {
+  const r = await fetchAiModels({
+    baseUrl: "https://proxy.example", apiKey: "sk-test",
+    fetchImpl: upstream(() => new Response(null, { status: 302, headers: { location: "https://elsewhere.example" } })),
+  });
+  expect(r.models).toEqual([]);
+  expect(r.error).toBe("LiteLLM returned HTTP 302");
+});
+
 test("fetchAiModels maps invalid JSON to an error result", async () => {
   const r = await fetchAiModels({
     baseUrl: "https://proxy.example", apiKey: "sk-test",

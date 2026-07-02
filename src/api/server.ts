@@ -38,7 +38,9 @@ function defaultRefresh(externalId: string): Promise<Offer | null> {
 // Model list for the settings UI. baseUrlOverride lets the operator test an endpoint
 // typed into the form before saving it; this sends the server key to that URL, which
 // is the same exposure as saving aiBaseUrl via PUT /api/config (scoring calls it with
-// the key on the next run) — single trusted operator.
+// the key on the next run) — single trusted operator. baseUrlOverride is only accepted
+// via POST (JSON body), which is preflight-protected cross-origin, restoring parity
+// with PUT /api/config; a GET+query-param equivalent would be drive-by triggerable.
 async function defaultGetAiModels(fresh: boolean, baseUrlOverride?: string): Promise<AiModelsResult> {
   const env = loadConfig();
   const cfg = await getConfig();
@@ -153,16 +155,33 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         return json(await listLogs({ limit }));
       }
       if (path === "/api/ai/models" && req.method === "GET") {
-        const fresh = url.searchParams.get("fresh") === "1";
-        const override = url.searchParams.get("baseUrl") ?? "";
-        if (override) {
-          // Same rules as the aiBaseUrl config field: http(s) URL, ≤300 chars.
-          if (override.length > 300) return json({ error: "baseUrl must be at most 300 chars" }, 400);
-          let u: URL;
-          try { u = new URL(override); } catch { return json({ error: "baseUrl must be a valid URL" }, 400); }
-          if (u.protocol !== "https:" && u.protocol !== "http:") return json({ error: "baseUrl must be http(s)" }, 400);
+        // baseUrl is deliberately NOT accepted here: a GET with a user-controlled query
+        // param is a simple cross-origin request (no CORS preflight), so a malicious page
+        // could drive-by trigger this from the operator's browser and exfiltrate the
+        // response of a server-chosen key to an attacker-chosen URL. Use POST instead.
+        if (url.searchParams.has("baseUrl")) {
+          return json({ error: "use POST /api/ai/models to test an unsaved endpoint" }, 400);
         }
-        return json(await getAiModelsFn(fresh, override || undefined));
+        const fresh = url.searchParams.get("fresh") === "1";
+        return json(await getAiModelsFn(fresh, undefined));
+      }
+      if (path === "/api/ai/models" && req.method === "POST") {
+        let body: Record<string, unknown>;
+        try {
+          body = (await req.json()) as Record<string, unknown>;
+        } catch {
+          return json({ error: "invalid JSON body" }, 400);
+        }
+        let baseUrl: string | undefined;
+        if (typeof body.baseUrl === "string" && body.baseUrl) {
+          // Same rules as the aiBaseUrl config field: http(s) URL, ≤300 chars.
+          if (body.baseUrl.length > 300) return json({ error: "baseUrl must be at most 300 chars" }, 400);
+          let u: URL;
+          try { u = new URL(body.baseUrl); } catch { return json({ error: "baseUrl must be a valid URL" }, 400); }
+          if (u.protocol !== "https:" && u.protocol !== "http:") return json({ error: "baseUrl must be http(s)" }, 400);
+          baseUrl = body.baseUrl;
+        }
+        return json(await getAiModelsFn(Boolean(body.fresh), baseUrl || undefined));
       }
 
       if (path === "/api/config" && req.method === "GET") {
