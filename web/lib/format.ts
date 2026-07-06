@@ -38,3 +38,11 @@ export function fmtDateTime(iso: string): string {
   if (Number.isNaN(d.getTime())) return "–";
   return d.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
 }
+
+/** Elapsed runtime as m:ss (or h:mm:ss past an hour). */
+export function formatElapsed(ms: number): string {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  const mm = String(m).padStart(h > 0 ? 2 : 1, "0"), ss = String(sec).padStart(2, "0");
+  return h > 0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`;
+}

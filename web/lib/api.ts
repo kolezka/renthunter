@@ -85,6 +85,18 @@ export async function runCrawler(): Promise<{ runId: string }> {
   return postJson<{ runId: string }>("/api/run", {}, "Run");
 }
 
+export interface RunProgress { phase: "listing" | "processing" | "scoring"; processed: number; total: number | null }
+export interface RunSnapshot {
+  runId: string; kind: "crawl" | "rescore"; source: string;
+  startedAt: string; cancelling: boolean; progress: RunProgress;
+}
+export async function getCurrentRun(): Promise<{ run: RunSnapshot | null }> {
+  return getJson<{ run: RunSnapshot | null }>("/api/runs/current");
+}
+export async function cancelCurrentRun(): Promise<{ cancelled?: boolean; error?: string }> {
+  return postJson<{ cancelled?: boolean; error?: string }>("/api/runs/current/cancel", {}, "Cancel");
+}
+
 export async function refreshOffer(externalId: string): Promise<Offer> {
   return postJson<Offer>(`/api/offers/${encodeURIComponent(externalId)}/refresh`, {}, "Refresh");
 }

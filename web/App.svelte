@@ -2,6 +2,7 @@
   import Dashboard from "./Dashboard.svelte";
   import Config from "./Config.svelte";
   import Logs from "./Logs.svelte";
+  import RunStatus from "./RunStatus.svelte";
 
   let configOpen = $state(false);
   // Set by Dashboard via $bindable when an offer detail modal is open, so App
@@ -47,6 +48,7 @@
     </div>
 
     <div class="flex items-center gap-3">
+      <RunStatus />
       <div class="flex gap-1 rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] p-1" role="group" aria-label="View">
         <button
           class="cursor-pointer rounded-full px-4 py-[6px] text-[0.85rem] transition-colors {view === 'dashboard' ? 'bg-[var(--glass-fill-strong)] text-ink' : 'text-ink-3 hover:text-ink'}"

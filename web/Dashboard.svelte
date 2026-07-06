@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from "svelte";
   import { getOffers, runCrawler, refreshOffer, rescoreAll, searchOffers, getFacets, SOURCE_LABEL, type Offer, type RescoreEvent, type Facets, type SearchQuery } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate, fmtDateTime } from "./lib/format";
+  import { runStatus } from "./lib/runStatus.svelte";
   import OfferDetail from "./OfferDetail.svelte";
   import SearchBar from "./SearchBar.svelte";
   import VirtualList from "./VirtualList.svelte";
@@ -58,6 +59,7 @@
   let refreshingIds = $state(new Set<string>());
   let selected = $state<Offer | null>(null);
   let rescoring = $state(false);
+  const runActive = $derived(runStatus.current !== null);
   let ws: WebSocket | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   let rescoreSafetyTimer: ReturnType<typeof setTimeout> | null = null;
@@ -194,6 +196,7 @@
     await resetAndLoad();
     facets = await getFacets();
     connectWs();
+    runStatus.start();
   });
 
   onDestroy(() => {
@@ -201,6 +204,7 @@
     if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
     if (toastTimer) clearTimeout(toastTimer);
     if (ws) { ws.onclose = null; ws.close(); } // null onclose so teardown doesn't reconnect
+    runStatus.stop();
   });
 
   const spring = "ease-[cubic-bezier(0.22,1.18,0.36,1)]";
@@ -222,8 +226,8 @@
   <div class="flex items-center gap-3">
     <button
       onclick={onRescore}
-      disabled={rescoring}
-      title="Rescore AI for active offers using the current criteria"
+      disabled={rescoring || runActive}
+      title={runActive ? "A run is already in progress" : "Rescore AI for active offers using the current criteria"}
       class="inline-flex items-center gap-[7px] rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] px-[16px] py-[8px] text-[0.85rem] font-semibold text-ink shadow-[var(--inset-sheen)] transition-[transform,background,filter] duration-300 ease-[cubic-bezier(0.22,1.18,0.36,1)] hover:bg-[rgba(47,109,255,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
     >
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={rescoring ? "animate-spin" : ""}><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
@@ -231,7 +235,8 @@
     </button>
     <button
       onclick={onRun}
-      disabled={running}
+      disabled={running || runActive}
+      title={runActive ? "A run is already in progress" : undefined}
       class="inline-flex items-center gap-[7px] rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] px-[16px] py-[8px] text-[0.85rem] font-semibold text-ink shadow-[var(--inset-sheen)] transition-[transform,background,filter] duration-300 ease-[cubic-bezier(0.22,1.18,0.36,1)] hover:bg-[rgba(47,109,255,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
     >
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={running ? "animate-spin" : ""}><path d="M5 3v4M3 5h4"/><path d="M12 5a7 7 0 1 1-7 7"/></svg>
