@@ -3,6 +3,7 @@
   import { getOffers, runCrawler, refreshOffer, rescoreAll, searchOffers, getFacets, SOURCE_LABEL, type Offer, type RescoreEvent, type Facets, type SearchQuery } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate, fmtDateTime } from "./lib/format";
   import { runStatus } from "./lib/runStatus.svelte";
+  import { loadRecencyPreset, presetToHours, type RecencyKey } from "./lib/recency";
   import OfferDetail from "./OfferDetail.svelte";
   import SearchBar from "./SearchBar.svelte";
   import VirtualList from "./VirtualList.svelte";
@@ -15,7 +16,14 @@
   let offers: Offer[] = $state([]);
   let total = $state(0);
   let loadingMore = $state(false);
-  let currentQuery = $state<SearchQuery | null>(null);
+  // Seed the initial query from the persisted recency preset (default 24h) so the
+  // very first load goes through the filtered searchOffers path — no plain
+  // getOffers fetch, no reliance on child/parent onMount ordering.
+  const initialRecency: RecencyKey = loadRecencyPreset();
+  let currentQuery = $state<SearchQuery | null>({
+    sort: "score",
+    sinceHours: presetToHours(initialRecency) ?? undefined,
+  });
   const PAGE = 50;
   const hasMore = $derived(offers.length < total);
 
@@ -261,7 +269,7 @@
   <div class="mb-4 animate-rise rounded-[12px] border border-[var(--glass-border)] bg-[var(--glass-fill-strong)] px-4 py-3 text-[0.88rem] text-ink-2">{toast}</div>
 {/if}
 
-<SearchBar {facets} onChange={onSearch} />
+<SearchBar {facets} {initialRecency} onChange={onSearch} />
 
 {#if loading}
   <div class="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px] max-[560px]:grid-cols-1">
