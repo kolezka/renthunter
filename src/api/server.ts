@@ -9,6 +9,7 @@ import { refreshOffer } from "../pipeline/refresh";
 import { buildRefreshDeps, runCrawlGuarded, runRescoreGuarded } from "../pipeline/deps";
 import { progressBus } from "../pipeline/progress";
 import { appLogger, createRunLogger } from "../log/logger";
+import { runRegistry, type RunSnapshot } from "../pipeline/runs";
 
 export interface ServerOptions {
   runCrawler?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true }>;
@@ -17,6 +18,8 @@ export interface ServerOptions {
   getAiModels?: (fresh: boolean, baseUrlOverride?: string) => Promise<AiModelsResult>;
   /** SSE tail poll interval for /api/logs/stream; tests inject a fast one. */
   logStreamIntervalMs?: number;
+  getCurrentRun?: () => RunSnapshot | null;
+  cancelRun?: () => { runId: string } | null;
 }
 
 // Default in-process crawl, triggered by POST /api/run (source "manual").
@@ -72,6 +75,8 @@ export function createServer(port: number, opts: ServerOptions = {}) {
   const runRescore = opts.runRescore ?? defaultRunRescore;
   const getAiModelsFn = opts.getAiModels ?? defaultGetAiModels;
   const logStreamIntervalMs = opts.logStreamIntervalMs ?? 1000;
+  const getCurrentRun = opts.getCurrentRun ?? (() => runRegistry.current());
+  const cancelRun = opts.cancelRun ?? (() => runRegistry.cancel());
 
   return Bun.serve<{ unsub?: () => void }>({
     port,
@@ -95,6 +100,15 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         const r = await runCrawler();
         if ("busy" in r) return json({ error: "a run is already in progress" }, 409);
         return json({ runId: r.runId }, 202);
+      }
+
+      if (path === "/api/runs/current" && req.method === "GET") {
+        return json({ run: getCurrentRun() });
+      }
+      if (path === "/api/runs/current/cancel" && req.method === "POST") {
+        const r = cancelRun();
+        if (!r) return json({ error: "no active run" });
+        return json({ cancelled: true, runId: r.runId });
       }
 
       const refreshMatch = path.match(/^\/api\/offers\/([^/]+)\/refresh$/);

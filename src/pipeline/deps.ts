@@ -17,6 +17,7 @@ import { embed } from "../embeddings/client";
 import { runCheck } from "./check";
 import { runRescore, type RescoreDeps } from "./rescore";
 import { progressBus } from "./progress";
+import { runRegistry } from "./runs";
 
 // A run lease older than this is considered stale and may be reclaimed.
 // Must exceed the longest possible run (trigger maxDuration=300s).
@@ -24,17 +25,24 @@ const RUN_LOCK_STALE_MS = 15 * 60 * 1000;
 
 /** Bind the browserless config (if any) into a fetchPage closure matching the
  *  injected (url) => Promise<string> shape. Empty url → direct fetch. */
-function makeFetchPage(env: AppConfig) {
+function makeFetchPage(env: AppConfig, signal?: AbortSignal) {
   const browserless = env.browserless.url ? env.browserless : undefined;
-  return (url: string) => fetchPage(url, { browserless });
+  return (url: string) => fetchPage(url, { browserless, signal });
 }
 
-/** Compose the logged CheckDeps used by runCheck (trigger task + manual run). */
-export function buildCheckDeps(env: AppConfig, logger: Logger): CheckDeps {
+/** Compose the logged CheckDeps used by runCheck (trigger task + manual run).
+ *  When `run` is given (real guarded runs), wires runId/signal/emitProgress
+ *  and binds the signal into the fetchPage closure so cancellation reaches
+ *  in-flight fetches. */
+export function buildCheckDeps(
+  env: AppConfig,
+  logger: Logger,
+  run?: { runId: string; signal: AbortSignal },
+): CheckDeps {
   return withLogging(
     {
       getConfig, getKnownExternalIds, upsertOffer, markNotified, markInactive,
-      fetchPage: makeFetchPage(env), resolveSource, scoreOffer, sendNotification,
+      fetchPage: makeFetchPage(env, run?.signal), resolveSource, scoreOffer, sendNotification,
       appriseUrl: env.appriseUrl,
       deepseekApiKey: env.deepseekApiKey,
       deepseekBaseUrl: env.deepseekBaseUrl,
@@ -42,6 +50,9 @@ export function buildCheckDeps(env: AppConfig, logger: Logger): CheckDeps {
       extractFeatures, embed,
       embedBaseUrl: env.embedBaseUrl, embedApiKey: env.embedApiKey, embedModel: env.embedModel,
       log: logger,
+      runId: run?.runId,
+      signal: run?.signal,
+      emitProgress: run ? (e) => progressBus.emit(e) : undefined,
     },
     logger,
   );
@@ -78,17 +89,24 @@ export async function runCrawlGuarded(
   const runId = crypto.randomUUID();
   const acquired = await acquireRunLock(runId, source, RUN_LOCK_STALE_MS);
   if (!acquired) return { busy: true };
+  const controller = new AbortController();
+  runRegistry.register({ runId, kind: "crawl", source, controller });
   const logger = createRunLogger(appLogger, runId);
-  const done = runCheck(buildCheckDeps(env, logger))
+  const done = runCheck(buildCheckDeps(env, logger, { runId, signal: controller.signal }))
     .then(() => {})
     .catch((err) => { console.error(`${source} runCheck failed:`, err); })
-    .finally(() => releaseRunLock(runId));
+    .finally(() => { runRegistry.finish(runId); return releaseRunLock(runId); });
   return { runId, done };
 }
 
 /** Compose deps for the re-score path. emitProgress goes to the in-process bus
  *  (relayed to WebSocket clients by the server). */
-export function buildRescoreDeps(env: AppConfig, logger: Logger, runId: string): RescoreDeps {
+export function buildRescoreDeps(
+  env: AppConfig,
+  logger: Logger,
+  runId: string,
+  signal?: AbortSignal,
+): RescoreDeps {
   return {
     runId,
     getConfig,
@@ -103,6 +121,7 @@ export function buildRescoreDeps(env: AppConfig, logger: Logger, runId: string):
     deepseekApiKey: env.deepseekApiKey,
     deepseekBaseUrl: env.deepseekBaseUrl,
     deepseekModel: env.scorerModel,
+    signal,
     log: logger,
   };
 }
@@ -121,10 +140,12 @@ export async function runRescoreGuarded(
   const runId = crypto.randomUUID();
   const acquired = await acquireRunLock(runId, "rescore", RUN_LOCK_STALE_MS);
   if (!acquired) return { busy: true };
+  const controller = new AbortController();
+  runRegistry.register({ runId, kind: "rescore", source: "rescore", controller });
   const logger = createRunLogger(appLogger, runId);
-  const done = runRescore(buildRescoreDeps(env, logger, runId))
+  const done = runRescore(buildRescoreDeps(env, logger, runId, controller.signal))
     .then(() => {})
     .catch((err) => { console.error("rescore failed:", err); })
-    .finally(() => releaseRunLock(runId));
+    .finally(() => { runRegistry.finish(runId); return releaseRunLock(runId); });
   return { runId, done };
 }
