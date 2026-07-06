@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { getOffers, runCrawler, refreshOffer, rescoreAll, searchOffers, getFacets, SOURCE_LABEL, type Offer, type RescoreEvent, type Facets, type SearchQuery } from "./lib/api";
+  import { runCrawler, refreshOffer, rescoreAll, searchOffers, getFacets, SOURCE_LABEL, type Offer, type RescoreEvent, type Facets, type SearchQuery } from "./lib/api";
   import { fmtPln, tier, tierClass, relativeDate, fmtDateTime } from "./lib/format";
   import { runStatus } from "./lib/runStatus.svelte";
   import { loadRecencyPreset, presetToHours, type RecencyKey } from "./lib/recency";
@@ -20,7 +20,7 @@
   // very first load goes through the filtered searchOffers path — no plain
   // getOffers fetch, no reliance on child/parent onMount ordering.
   const initialRecency: RecencyKey = loadRecencyPreset();
-  let currentQuery = $state<SearchQuery | null>({
+  let currentQuery = $state<SearchQuery>({
     sort: "score",
     sinceHours: presetToHours(initialRecency) ?? undefined,
   });
@@ -32,7 +32,7 @@
   let queryGen = 0;
 
   async function fetchPage(offset: number): Promise<Page<Offer>> {
-    return currentQuery ? searchOffers(currentQuery, offset, PAGE) : getOffers(offset, PAGE);
+    return searchOffers(currentQuery, offset, PAGE);
   }
 
   async function loadMore() {
@@ -144,10 +144,7 @@
       // grew the list past this snapshot (don't shrink rows out from under the user)
       const gen = queryGen;
       const windowSize = Math.max(offers.length, PAGE);
-      (currentQuery
-        ? searchOffers(currentQuery, 0, windowSize)
-        : getOffers(0, windowSize)
-      ).then((page) => {
+      searchOffers(currentQuery, 0, windowSize).then((page) => {
         if (gen !== queryGen || page.items.length < offers.length) return;
         offers = page.items;
         total = page.total;

@@ -71,6 +71,7 @@
       type="button"
       onclick={() => (panelOpen = !panelOpen)}
       aria-expanded={panelOpen}
+      aria-controls="offers-filters-panel"
       class="inline-flex items-center gap-[7px] rounded-full border px-4 py-[9px] text-[0.85rem] font-semibold transition-colors {activeCount
         ? 'border-[var(--glass-border-strong)] bg-[var(--glass-fill-strong)] text-ink shadow-[var(--inset-sheen)]'
         : 'border-[var(--glass-border)] bg-[var(--glass-fill)] text-ink-2 hover:text-ink'}"
@@ -84,7 +85,7 @@
   </div>
 
   {#if panelOpen}
-    <div class="glass flex flex-col gap-[14px] rounded-[var(--radius-glass)] p-4 animate-rise">
+    <div id="offers-filters-panel" class="glass flex flex-col gap-[14px] rounded-[var(--radius-glass)] p-4 animate-rise">
       <div class="flex items-start gap-3">
         <span class={rowLabel}>Posted</span>
         <div class="flex flex-wrap gap-2">

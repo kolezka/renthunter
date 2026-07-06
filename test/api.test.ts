@@ -172,6 +172,25 @@ test("GET /api/offers/search degrades to unfiltered on invalid sinceHours", asyn
   expect(body.items.map((o) => o.externalId).sort()).toEqual(["old:1", "recent:1"]);
 });
 
+test("GET /api/offers/search clamps a huge sinceHours and degrades a negative one", async () => {
+  await db.delete(offers);
+  await upsertOffer({ externalId: "recent:1", url: "u", source: "trojmiasto", title: "R" });
+  await upsertOffer({ externalId: "old:1", url: "u", source: "trojmiasto", title: "O" });
+  await db.update(offers).set({ firstSeen: new Date(Date.now() - 48 * 3600_000) }).where(eq(offers.externalId, "old:1"));
+
+  // Huge value clamps to 8760h (~1yr); both offers fall within that window.
+  const clamped = await fetch(`${base}/api/offers/search?sinceHours=99999&sort=newest`);
+  expect(clamped.status).toBe(200);
+  const cb = (await clamped.json()) as { items: Array<{ externalId: string }> };
+  expect(cb.items.map((o) => o.externalId).sort()).toEqual(["old:1", "recent:1"]);
+
+  // Negative degrades to unfiltered (HTTP 200, both offers).
+  const neg = await fetch(`${base}/api/offers/search?sinceHours=-5&sort=newest`);
+  expect(neg.status).toBe(200);
+  const nb = (await neg.json()) as { items: Array<{ externalId: string }> };
+  expect(nb.items.map((o) => o.externalId).sort()).toEqual(["old:1", "recent:1"]);
+});
+
 test("GET /ws relays progressBus events to the client", async () => {
   const { progressBus } = await import("../src/pipeline/progress");
   const ws = new WebSocket(`ws://localhost:${server.port}/ws`);

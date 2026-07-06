@@ -110,8 +110,11 @@ export async function markInactive(
 }
 
 export async function listOffers(page?: PageParams): Promise<Page<ListOffer>> {
-  // Returns offers of ALL statuses (active + inactive) by design — the dashboard
-  // renders a per-row status badge and relies on inactive rows still showing up.
+  // Returns offers of ALL statuses (active + inactive). Backs GET /api/offers.
+  // NOTE: since the recency filter shipped, the Offers dashboard no longer uses
+  // this for its default view — it always queries through searchOffers
+  // (status=active), so inactive/delisted offers are intentionally not shown there.
+  // The all-statuses semantics are kept here for any consumer that wants them.
   // There is no `WHERE status=` predicate, so the status-leading
   // offers_status_score_idx does NOT serve this query (that index primarily
   // benefits searchOffers, which filters status=active). Order + paginate + count
@@ -247,7 +250,7 @@ export interface SearchParams {
   features?: string[];
   sources?: string[];
   sort?: "score" | "newest" | "price" | "area";
-  // Only offers whose firstSeen is within the last N hours (omit/0 = no limit).
+  // Only offers whose firstSeen is within the last N hours (omit / 0 / negative = no limit).
   sinceHours?: number;
 }
 
