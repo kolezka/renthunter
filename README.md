@@ -4,7 +4,8 @@ RentHunter is a self-hosted rental-listing monitor for the Trójmiasto area. It 
 offers from multiple portals, applies hard filters and optional AI scoring, and
 pushes a notification the moment an interesting offer appears. A Svelte SPA lets you
 search semantically, browse with sortable infinite scroll, inspect each offer's
-change history, and reconfigure everything live — all stored in Postgres.
+change history, watch the crawl in a live log console, and reconfigure everything
+live — all stored in Postgres.
 
 Everything runs in-process and off-host: no cloud queue, no external scheduler, and
 Postgres/Apprise are never exposed to the public network.
@@ -40,7 +41,8 @@ time (`src/pipeline/`):
 The crawl is triggered two ways: the **in-process scheduler** (`pipeline/scheduler.ts`)
 re-runs it every `config.pollIntervalMin` minutes (`0` = off), and the
 **"Uruchom crawler"** button in the UI fires `POST /api/run` on demand. Live progress
-streams to the browser over a WebSocket (`pipeline/progress.ts`).
+streams to the browser over a WebSocket (`pipeline/progress.ts`), and every pipeline
+event lands in the **Logs** tab in real time over SSE (see [Live logs](#live-logs)).
 
 ### Search & browsing
 
@@ -53,12 +55,25 @@ streams to the browser over a WebSocket (`pipeline/progress.ts`).
   so it stays fast with thousands of offers — infinite scroll fetches the next page
   and only the visible rows are rendered, in both the card and table views.
 
+### Live logs
+
+The **Logs** tab is a terminal-style live console. Entries stream in over
+**Server-Sent Events** — `GET /api/logs/stream` tails the `logs` table and a
+dropped connection resumes gaplessly via `Last-Event-ID` — under a
+`● live / ○ reconnecting` badge. Filter by **level / event / run** or free text
+(matches the message, the event name, and the structured context payload),
+toggle **Follow** to pin the tail, and click any entry to expand its context as
+pretty-printed JSON with one-click copy. Error entries additionally show a
+one-line summary of what failed (error, HTTP status, URL, duration) without
+expanding. Every entry is persisted twice: the Postgres `logs` table (what the
+UI reads) and a daily file under `logs/` (`src/log/logger.ts`).
+
 ## Tech stack
 
 | Layer | Choice |
 |-------|--------|
 | Runtime / bundler / test runner | **Bun** (server, `bun build`, `bun test` — no Node, webpack, vite, or jest) |
-| Web UI | **Svelte 5** (runes) SPA, **Tailwind v4**, `@tanstack/virtual-core` for virtualization; built to static assets and served by `Bun.serve()` with a WebSocket for live crawl progress |
+| Web UI | **Svelte 5** (runes) SPA, **Tailwind v4**, `@tanstack/virtual-core` for virtualization; built to static assets and served by `Bun.serve()` with a WebSocket for live crawl progress and an SSE stream for live logs |
 | Database | **Postgres** via **Drizzle ORM** + `postgres-js`; tests run against in-memory **PGlite** |
 | AI scoring | **DeepSeek** chat completions |
 | Semantic search | Text **embeddings** via any OpenAI-compatible endpoint (e.g. self-hosted **Ollama**, or OpenAI) + in-process cosine ranking |
@@ -206,7 +221,7 @@ scorer and feature extractor both depend on it.
 
 ```
 src/
-  api/         Bun.serve HTTP + WebSocket server, routes
+  api/         Bun.serve HTTP server: routes, WebSocket crawl progress, SSE log stream
   scraper/     source adapters (trojmiasto, olx, otodom, nieruchomosci-online) +
                HTML parsing; fetch.ts routes via direct fetch or self-hosted browserless
   pipeline/    crawl orchestration: filter, enrich, score, notify, scheduler, run-lock
@@ -215,7 +230,7 @@ src/
   keywords/    district gazetteer + feature extraction
   notify/      Apprise integration
   db/          Drizzle schema, queries, change-snapshot tracking
-  log/         DB-backed logger
+  log/         logger sinks: Postgres `logs` table (feeds the UI/SSE) + daily files
 web/           Svelte 5 SPA (cards/table, search, config, logs, history)
 test/          bun test suite (runs on PGlite)
 ```

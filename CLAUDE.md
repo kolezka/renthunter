@@ -12,6 +12,7 @@ Rental crawler: scrape listings → filter → AI-score (DeepSeek) → notify (A
 - Run locally (fresh dev DB): `docker compose -f docker-compose.dev.yml up -d db` → `DATABASE_URL=postgres://renthunter:renthunter@localhost:5432/renthunter bun run db:migrate` → `DATABASE_URL=… bun run dev`.
 - Crawl scheduling is in-process (`src/pipeline/scheduler.ts`), driven by DB `config.pollIntervalMin` (0 = off). No trigger.dev.
 - API routes use a `ServerOptions` DI pattern (`createServer(port, { runCrawler, getAiModels, … })`, defaulting to real impls) so tests inject stubs — follow it for new routes. Upstream/provider failures degrade as HTTP 200 + `{ error }` data (the UI treats it as degraded, not broken), never a 5xx.
+- `GET /api/logs/stream` is SSE: a per-connection DB-tail poller over `listLogs({ sinceId })` with an `id:` cursor + `Last-Event-ID` resume; a DB error during a tick is skipped (retry next tick), never a stream failure. Tests inject `ServerOptions.logStreamIntervalMs` (default 1000 ms) for fast polling — SSE tests MUST abort their fetch and `server.stop(true)` in `finally`, or the test file hangs.
 
 Default to using Bun instead of Node.js.
 
