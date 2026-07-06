@@ -15,6 +15,8 @@ export interface FetchPageOptions {
   fetchImpl?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
   /** When set (non-empty url), route the fetch through browserless /content. */
   browserless?: BrowserlessConfig;
+  /** Caller-side cancellation (e.g. run cancel); combined with the internal timeout. */
+  signal?: AbortSignal;
 }
 
 /** Build the POST request to a browserless /content endpoint that renders the
@@ -45,7 +47,8 @@ export async function fetchPage(url: string, opts: FetchPageOptions = {}): Promi
   const doFetch = opts.fetchImpl ?? fetch;
   const useBrowserless = Boolean(opts.browserless?.url);
   const timeoutMs = opts.timeoutMs ?? (useBrowserless ? TIMEOUTS.render : TIMEOUTS.scrape);
-  const signal = AbortSignal.timeout(timeoutMs);
+  const timeout = AbortSignal.timeout(timeoutMs);
+  const signal = opts.signal ? AbortSignal.any([timeout, opts.signal]) : timeout;
 
   if (useBrowserless) {
     const { endpoint, init } = buildBrowserlessRequest(url, opts.browserless!);
