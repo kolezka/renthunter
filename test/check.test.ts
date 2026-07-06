@@ -156,12 +156,27 @@ test("runCheck emits offer.error when a detail fetch fails", async () => {
   expect((err!.context as any).externalId).toBe("100");
 });
 
-test("runCheck emits run.error and rethrows when the list fetch fails", async () => {
+// List fetches degrade per-source (see the source-failure tests below); the
+// run.error + rethrow contract is for genuinely unexpected failures.
+test("runCheck emits run.error and rethrows on unexpected failures", async () => {
   const { deps, logs } = makeDeps({
-    fetchPage: async () => { throw new Error("list down"); },
+    getKnownExternalIds: async () => { throw new Error("db down"); },
   });
-  await expect(runCheck(deps)).rejects.toThrow("list down");
+  await expect(runCheck(deps)).rejects.toThrow("db down");
   expect(logs.find((l) => l.event === "run.error")).toBeDefined();
+});
+
+test("all sources failing completes the run without deactivating anything", async () => {
+  const inactiveCalls: Array<{ ids: string[] }> = [];
+  const { deps, logs } = makeDeps({
+    fetchPage: async () => { throw new Error("everything down"); },
+    markInactive: async (ids: string[]) => { inactiveCalls.push({ ids }); },
+  });
+  const summary = await runCheck(deps);
+  expect(summary.listedCount).toBe(0);
+  expect(logs.some((l) => l.event === "run.finish")).toBe(true);
+  // Empty active list = "no signal": the markInactive impl deactivates nothing.
+  expect(inactiveCalls[0]!.ids).toEqual([]);
 });
 
 test("maxDetailFetchesPerRun caps how many fresh offers are processed", async () => {
@@ -339,4 +354,68 @@ test("maybeScore prefers DB scorerModel + aiBaseUrl over env deps", async () => 
   );
   expect(sentModel).toBe("deepseek/deepseek-reasoner");
   expect(sentBaseUrl).toBe("https://proxy");
+});
+
+// --- Source-failure isolation: one dead source must not kill the run ---------
+// Regression for the 2026-07-06 incident: an OLX list fetch failing via
+// browserless (HTTP 500) aborted the whole check — remaining sources were never
+// crawled and nothing already collected was processed.
+
+test("a failing source list fetch skips that source but the run completes", async () => {
+  const srcB = makeSource({
+    id: "olx",
+    parseList: () => [{ externalId: "olx:1", url: "https://y/o-ogl1.html", source: "olx" }],
+  });
+  const { deps, upserts, logs } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, searchUrls: ["https://a", "https://b"] }) as any,
+    resolveSource: (url) => (url.startsWith("https://b") || url.startsWith("https://y") ? srcB : makeSource()),
+    fetchPage: async (url) => {
+      if (url.startsWith("https://b")) throw new Error("fetchPage via browserless -> HTTP 500");
+      return url.includes("ogl") ? "<detail>" : "<list>";
+    },
+  });
+  const summary = await runCheck(deps); // must NOT throw
+  expect(upserts.some((o) => o.externalId === "100")).toBe(true); // healthy source fully processed
+  expect(logs.some((l) => l.event === "run.finish")).toBe(true);
+  expect(logs.some((l) => l.event === "run.error")).toBe(false);
+  expect(logs.some((l) => l.event === "list.error" && l.context && (l.context as any).source === "olx")).toBe(true);
+  expect(summary.listedCount).toBe(1);
+});
+
+test("a source whose list fetch failed is excluded from markInactive", async () => {
+  const inactiveCalls: Array<{ ids: string[]; opts?: { excludeSources?: string[] } }> = [];
+  const srcB = makeSource({
+    id: "olx",
+    parseList: () => [{ externalId: "olx:1", url: "https://y/o-ogl1.html", source: "olx" }],
+  });
+  const { deps } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, searchUrls: ["https://a", "https://b"] }) as any,
+    resolveSource: (url) => (url.startsWith("https://b") || url.startsWith("https://y") ? srcB : makeSource()),
+    fetchPage: async (url) => {
+      if (url.startsWith("https://b")) throw new Error("HTTP 500");
+      return url.includes("ogl") ? "<detail>" : "<list>";
+    },
+    markInactive: async (ids: string[], opts?: { excludeSources?: string[] }) => {
+      inactiveCalls.push({ ids, opts });
+    },
+  });
+  await runCheck(deps);
+  expect(inactiveCalls.length).toBe(1);
+  expect(inactiveCalls[0]!.ids).toEqual(["100"]);
+  expect(inactiveCalls[0]!.opts?.excludeSources).toEqual(["olx"]);
+});
+
+test("list fetch failure skips the source's remaining pages", async () => {
+  const fetched: string[] = [];
+  const { deps } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, listPages: 3 }) as any,
+    fetchPage: async (url) => {
+      fetched.push(url);
+      if (url.includes("strona=2")) throw new Error("HTTP 500");
+      return url.includes("ogl") ? "<detail>" : "<list>";
+    },
+  });
+  await runCheck(deps); // must NOT throw
+  expect(fetched.some((u) => u.includes("strona=2"))).toBe(true);
+  expect(fetched.some((u) => u.includes("strona=3"))).toBe(false); // pointless retries skipped
 });

@@ -13,7 +13,7 @@ export interface CheckDeps extends EnrichDeps {
   getKnownExternalIds: () => Promise<Set<string>>;
   upsertOffer: (o: NewOffer) => Promise<void>;
   markNotified: (externalId: string) => Promise<void>;
-  markInactive: (activeExternalIds: string[]) => Promise<void>;
+  markInactive: (activeExternalIds: string[], opts?: { excludeSources?: string[] }) => Promise<void>;
   fetchPage: (url: string) => Promise<string>;
   resolveSource: (url: string) => Source | null;
   scoreOffer: (
@@ -128,7 +128,11 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
 
     // Fetch + merge every page of every configured source. parseList dedups
     // per page; the Map dedups across pages AND across sources by externalId.
+    // Sources are independent: one source failing must not abort the others,
+    // but a failed source's offers must be shielded from markInactive below
+    // (its missing list is "no signal", not "everything disappeared").
     const merged = new Map<string, ListItem>();
+    const failedSources = new Set<string>();
     for (const searchUrl of config.searchUrls) {
       const src = deps.resolveSource(searchUrl);
       if (!src) {
@@ -137,7 +141,14 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
       }
       for (const pageUrl of src.listPageUrls(searchUrl, config.listPages)) {
         await sleep(config.requestDelayMs);
-        const html = await deps.fetchPage(pageUrl);
+        let html: string;
+        try {
+          html = await deps.fetchPage(pageUrl);
+        } catch (err) {
+          await deps.log.log({ level: "error", event: "list.error", message: `failed fetching list ${pageUrl}`, context: { url: pageUrl, source: src.id, error: String(err) } });
+          failedSources.add(src.id);
+          break; // remaining pages of this search URL would just repeat the failure
+        }
         let listed: ListItem[];
         try {
           listed = src.parseList(html);
@@ -165,7 +176,7 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
       if (r.error) errorCount++;
     });
 
-    await deps.markInactive(activeIds);
+    await deps.markInactive(activeIds, { excludeSources: [...failedSources] });
 
     const summary = { listedCount: items.length, newCount: fresh.length, notifiedCount, errorCount };
     await deps.log.log({

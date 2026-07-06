@@ -89,13 +89,24 @@ export async function markNotified(externalId: string): Promise<void> {
 
 /** Mark offers that are NOT in the current list of active external_ids as inactive.
  *  An empty list is treated as "no signal" (likely a total scrape failure), NOT
- *  "everything is gone" — so it deactivates nothing. */
-export async function markInactive(activeExternalIds: string[]): Promise<void> {
+ *  "everything is gone" — so it deactivates nothing. `excludeSources` extends the
+ *  same principle to a partial failure: a source whose list scrape failed this
+ *  run is missing signal, so its offers are shielded from deactivation while the
+ *  healthy sources reconcile normally. */
+export async function markInactive(
+  activeExternalIds: string[],
+  opts: { excludeSources?: string[] } = {},
+): Promise<void> {
   if (activeExternalIds.length === 0) return;
+  const excluded = opts.excludeSources ?? [];
   await db
     .update(offers)
     .set({ status: "inactive" })
-    .where(and(eq(offers.status, "active"), notInArray(offers.externalId, activeExternalIds)));
+    .where(and(
+      eq(offers.status, "active"),
+      notInArray(offers.externalId, activeExternalIds),
+      ...(excluded.length > 0 ? [notInArray(offers.source, excluded)] : []),
+    ));
 }
 
 export async function listOffers(page?: PageParams): Promise<Page<ListOffer>> {
