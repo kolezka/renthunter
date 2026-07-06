@@ -419,3 +419,72 @@ test("list fetch failure skips the source's remaining pages", async () => {
   expect(fetched.some((u) => u.includes("strona=2"))).toBe(true);
   expect(fetched.some((u) => u.includes("strona=3"))).toBe(false); // pointless retries skipped
 });
+
+// --- Cancellation + crawl progress events ------------------------------------
+
+test("aborting the signal cancels the crawl: no markInactive, run.cancelled logged", async () => {
+  const controller = new AbortController();
+  const inactiveCalls: string[][] = [];
+  const { deps, logs, upserts } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, listPages: 3 }) as any,
+    fetchPage: async (url) => {
+      if (url.includes("strona=2")) controller.abort(); // cancel lands mid-listing
+      return url.includes("ogl") ? "<detail>" : "<list>";
+    },
+    markInactive: async (ids: string[]) => { inactiveCalls.push(ids); },
+  });
+  (deps as any).signal = controller.signal;
+  (deps as any).runId = "run-cancel";
+  const summary = await runCheck(deps); // must NOT throw
+  expect(logs.some((l) => l.event === "run.cancelled" && l.level === "info")).toBe(true);
+  expect(logs.some((l) => l.event === "run.finish")).toBe(false);
+  expect(inactiveCalls.length).toBe(0); // partial list must never deactivate
+  expect(upserts.length).toBe(0);       // pool never started
+  expect(summary.newCount).toBe(0);
+});
+
+test("abort during offer processing stops remaining offers", async () => {
+  const controller = new AbortController();
+  const { deps, upserts, logs } = makeDeps({
+    getConfig: async () => ({ ...baseConfig, concurrencyLimit: 1 }) as any,
+    resolveSource: () => makeSource({
+      parseList: () => [
+        { externalId: "1", url: "https://x/a-ogl1.html", source: "trojmiasto" },
+        { externalId: "2", url: "https://x/b-ogl2.html", source: "trojmiasto" },
+      ],
+    }),
+    fetchPage: async (url) => {
+      if (url.includes("ogl1")) controller.abort(); // abort while offer 1 is in flight
+      return url.includes("ogl") ? "<detail>" : "<list>";
+    },
+  });
+  (deps as any).signal = controller.signal;
+  await runCheck(deps);
+  // offer 1 completes (abort landed after its fetch); offer 2 is never started
+  expect(upserts.length).toBe(1);
+  expect(logs.some((l) => l.event === "run.cancelled")).toBe(true);
+});
+
+test("runCheck emits crawl progress events in order with correct counts", async () => {
+  const events: any[] = [];
+  const { deps } = makeDeps({
+    resolveSource: () => makeSource({
+      parseList: () => [
+        { externalId: "1", url: "https://x/a-ogl1.html", source: "trojmiasto" },
+        { externalId: "2", url: "https://x/b-ogl2.html", source: "trojmiasto" },
+      ],
+    }),
+  });
+  (deps as any).runId = "run-prog";
+  (deps as any).emitProgress = (e: any) => events.push(e);
+  await runCheck(deps);
+  expect(events[0]).toEqual({ type: "crawl:start", runId: "run-prog" });
+  expect(events[1]).toEqual({ type: "crawl:listed", runId: "run-prog", listed: 2, toProcess: 2 });
+  const offerEvents = events.filter((e) => e.type === "crawl:offer");
+  expect(offerEvents.length).toBe(2);
+  expect(offerEvents.map((e) => e.processed).sort()).toEqual([1, 2]);
+  expect(offerEvents[0]!.total).toBe(2);
+  const done = events[events.length - 1];
+  expect(done.type).toBe("crawl:done");
+  expect(done.summary.newCount).toBe(2);
+});

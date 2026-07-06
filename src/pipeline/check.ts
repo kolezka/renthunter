@@ -7,6 +7,7 @@ import type { Logger } from "../log/logger";
 import { enrichOffer, type EnrichDeps } from "./enrich";
 import { buildOfferRow } from "./offer-row";
 import { buildOfferNotification } from "../notify/message";
+import type { CrawlEvent } from "./progress";
 
 export interface CheckDeps extends EnrichDeps {
   getConfig: () => Promise<Config>;
@@ -26,6 +27,12 @@ export interface CheckDeps extends EnrichDeps {
   appriseUrl: string;
   deepseekApiKey: string;
   deepseekBaseUrl: string;
+  /** Present on real runs (set by the guard); used to tag progress events. */
+  runId?: string;
+  /** Cooperative cancellation: checked at loop boundaries, forwarded to fetches. */
+  signal?: AbortSignal;
+  /** Progress sink (in-process bus in production; no-op when absent). */
+  emitProgress?: (e: CrawlEvent) => void;
 }
 
 export interface CheckSummary {
@@ -125,6 +132,9 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
   try {
     await deps.log.log({ level: "info", event: "run.start", message: "check started" });
     const config = await deps.getConfig();
+    const runId = deps.runId ?? "unknown";
+    const cancelled = () => deps.signal?.aborted === true;
+    deps.emitProgress?.({ type: "crawl:start", runId });
 
     // Fetch + merge every page of every configured source. parseList dedups
     // per page; the Map dedups across pages AND across sources by externalId.
@@ -134,12 +144,14 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
     const merged = new Map<string, ListItem>();
     const failedSources = new Set<string>();
     for (const searchUrl of config.searchUrls) {
+      if (cancelled()) break;
       const src = deps.resolveSource(searchUrl);
       if (!src) {
         await deps.log.log({ level: "warn", event: "source.unknown", message: `no parser for ${searchUrl}`, context: { searchUrl } });
         continue;
       }
       for (const pageUrl of src.listPageUrls(searchUrl, config.listPages)) {
+        if (cancelled()) break;
         await sleep(config.requestDelayMs);
         let html: string;
         try {
@@ -167,24 +179,44 @@ export async function runCheck(deps: CheckDeps): Promise<CheckSummary> {
     const known = await deps.getKnownExternalIds();
     const fresh = interleaveBySource(items.filter((i) => !known.has(i.externalId)))
       .slice(0, config.maxDetailFetchesPerRun);
+    deps.emitProgress?.({ type: "crawl:listed", runId, listed: items.length, toProcess: fresh.length });
 
     let notifiedCount = 0;
     let errorCount = 0;
-    await runPool(fresh, config.concurrencyLimit, async (item) => {
-      const r = await processOffer(item, config, deps);
-      if (r.notified) notifiedCount++;
-      if (r.error) errorCount++;
-    });
+    let processedCount = 0;
+    if (!cancelled()) {
+      await runPool(fresh, config.concurrencyLimit, async (item) => {
+        if (cancelled()) return; // drain remaining queued items without work
+        const r = await processOffer(item, config, deps);
+        if (r.notified) notifiedCount++;
+        if (r.error) errorCount++;
+        processedCount++;
+        deps.emitProgress?.({ type: "crawl:offer", runId, processed: processedCount, total: fresh.length });
+      });
+    }
+
+    const summary = { listedCount: items.length, newCount: cancelled() ? processedCount : fresh.length, notifiedCount, errorCount };
+    if (cancelled()) {
+      // Partial lists are "no signal": never reconcile (markInactive) a cancelled run.
+      await deps.log.log({
+        level: "info",
+        event: "run.cancelled",
+        message: `check cancelled: ${processedCount} processed, ${notifiedCount} notified`,
+        context: summary,
+      });
+      deps.emitProgress?.({ type: "crawl:done", runId, summary });
+      return summary;
+    }
 
     await deps.markInactive(activeIds, { excludeSources: [...failedSources] });
 
-    const summary = { listedCount: items.length, newCount: fresh.length, notifiedCount, errorCount };
     await deps.log.log({
       level: "info",
       event: "run.finish",
       message: `check finished: ${summary.listedCount} listed, ${summary.newCount} new, ${summary.notifiedCount} notified, ${summary.errorCount} errors`,
       context: summary,
     });
+    deps.emitProgress?.({ type: "crawl:done", runId, summary });
     return summary;
   } catch (err) {
     await deps.log.log({
