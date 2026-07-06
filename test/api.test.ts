@@ -3,6 +3,7 @@ import { createServer } from "../src/api/server";
 import { db } from "../src/db/client";
 import { offers, config, logs } from "../src/db/schema";
 import { ensureConfig, appendLog, upsertOffer } from "../src/db/queries";
+import { eq } from "drizzle-orm";
 
 let server: ReturnType<typeof createServer>;
 let base: string;
@@ -145,6 +146,30 @@ test("GET /api/offers/search filters by district", async () => {
   expect(res.status).toBe(200);
   const body = (await res.json()) as { items: Array<{ externalId: string }>; total: number };
   expect(body.items.some((o) => o.externalId === "search:1")).toBe(true);
+});
+
+test("GET /api/offers/search filters by sinceHours", async () => {
+  await db.delete(offers);
+  await upsertOffer({ externalId: "recent:1", url: "u", source: "trojmiasto", title: "R" });
+  await upsertOffer({ externalId: "old:1", url: "u", source: "trojmiasto", title: "O" });
+  await db.update(offers).set({ firstSeen: new Date(Date.now() - 48 * 3600_000) }).where(eq(offers.externalId, "old:1"));
+
+  const res = await fetch(`${base}/api/offers/search?sinceHours=24&sort=newest`);
+  expect(res.status).toBe(200);
+  const body = (await res.json()) as { items: Array<{ externalId: string }>; total: number };
+  expect(body.items.map((o) => o.externalId)).toEqual(["recent:1"]);
+});
+
+test("GET /api/offers/search degrades to unfiltered on invalid sinceHours", async () => {
+  await db.delete(offers);
+  await upsertOffer({ externalId: "recent:1", url: "u", source: "trojmiasto", title: "R" });
+  await upsertOffer({ externalId: "old:1", url: "u", source: "trojmiasto", title: "O" });
+  await db.update(offers).set({ firstSeen: new Date(Date.now() - 48 * 3600_000) }).where(eq(offers.externalId, "old:1"));
+
+  const res = await fetch(`${base}/api/offers/search?sinceHours=abc&sort=newest`);
+  expect(res.status).toBe(200);
+  const body = (await res.json()) as { items: Array<{ externalId: string }>; total: number };
+  expect(body.items.map((o) => o.externalId).sort()).toEqual(["old:1", "recent:1"]);
 });
 
 test("GET /ws relays progressBus events to the client", async () => {

@@ -154,11 +154,13 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         }
         const sortParam = sp.get("sort");
         const sort = (["score", "newest", "price", "area"] as const).find((s) => s === sortParam);
+        const sinceRaw = parseInt(sp.get("sinceHours") ?? "", 10);
+        const sinceHours = Number.isFinite(sinceRaw) && sinceRaw > 0 ? Math.min(sinceRaw, 8760) : undefined;
         const page = await searchOffers({
           q, queryEmbedding,
           districts: list("districts"), kinds: list("kinds"),
           features: list("features"), sources: list("sources"),
-          sort,
+          sort, sinceHours,
         }, parsePage(sp));
         return json(page);
       }
