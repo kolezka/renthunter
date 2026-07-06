@@ -119,6 +119,7 @@ export interface Facets {
 export interface SearchQuery {
   q?: string; districts?: string[]; kinds?: string[]; features?: string[]; sources?: string[];
   sort?: "score" | "newest" | "price" | "area";
+  sinceHours?: number;
 }
 export async function getFacets(): Promise<Facets> {
   return getJson<Facets>("/api/offers/facets");
@@ -130,6 +131,7 @@ export async function searchOffers(query: SearchQuery, offset = 0, limit = 50): 
     const v = query[k]; if (v && v.length) p.set(k, v.join(","));
   }
   if (query.sort) p.set("sort", query.sort);
+  if (query.sinceHours) p.set("sinceHours", String(query.sinceHours));
   p.set("limit", String(limit));
   p.set("offset", String(offset));
   return getJson<Page<Offer>>(`/api/offers/search?${p.toString()}`);
