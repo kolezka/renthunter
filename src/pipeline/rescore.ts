@@ -22,6 +22,8 @@ export interface RescoreDeps {
   deepseekApiKey: string;
   deepseekBaseUrl: string;
   deepseekModel?: string;
+  /** Cooperative cancellation: checked before each offer. */
+  signal?: AbortSignal;
   log: Logger;
 }
 
@@ -42,6 +44,7 @@ export async function runRescore(deps: RescoreDeps): Promise<RescoreSummary> {
   let scored = 0;
   let errors = 0;
   await runPool(offers, config.concurrencyLimit, async (offer) => {
+    if (deps.signal?.aborted) return;
     try {
       const { score, reasons } = await deps.scoreOffer(
         { description: offer.description ?? "", criteria: config.aiCriteria },
@@ -78,12 +81,21 @@ export async function runRescore(deps: RescoreDeps): Promise<RescoreSummary> {
   });
 
   const summary: RescoreSummary = { scored, errors };
-  await deps.log.log({
-    level: "info",
-    event: "rescore.finish",
-    message: `rescore finished: ${scored} scored, ${errors} errors`,
-    context: summary,
-  });
+  if (deps.signal?.aborted) {
+    await deps.log.log({
+      level: "info",
+      event: "rescore.cancelled",
+      message: `rescore cancelled: ${scored} scored, ${errors} errors`,
+      context: summary,
+    });
+  } else {
+    await deps.log.log({
+      level: "info",
+      event: "rescore.finish",
+      message: `rescore finished: ${scored} scored, ${errors} errors`,
+      context: summary,
+    });
+  }
   deps.emitProgress?.({ type: "rescore:done", runId: deps.runId, summary });
   return summary;
 }

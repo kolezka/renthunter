@@ -159,6 +159,32 @@ test("runRescore uses DB scorerModel + aiBaseUrl when set", async () => {
   expect(sentBaseUrl).toBe("https://proxy");
 });
 
+test("aborting the signal cancels rescore: remaining offers skipped, rescore.cancelled logged", async () => {
+  const controller = new AbortController();
+  const scoredIds: string[] = [];
+  const logs: any[] = [];
+  const { deps } = makeDeps({
+    getActiveScorableOffers: async () => [
+      { externalId: "a", description: "a", title: "A", price: 1000, area: 30, rooms: 1, district: "d", url: "u", notified: false } as any,
+      { externalId: "b", description: "b", title: "B", price: 2000, area: 40, rooms: 2, district: "d", url: "u", notified: false } as any,
+      { externalId: "c", description: "c", title: "C", price: 3000, area: 50, rooms: 3, district: "d", url: "u", notified: false } as any,
+    ],
+    scoreOffer: async () => {
+      controller.abort(); // abort while the first offer is being scored
+      return { score: 50, reasons: "ok" };
+    },
+    updateOfferScore: async (id: string) => { scoredIds.push(id); },
+    log: { log: (e: any) => { logs.push(e); } },
+    getConfig: async () => ({ ...baseConfig, concurrencyLimit: 1 }) as any,
+  });
+  (deps as any).signal = controller.signal;
+  const summary = await runRescore(deps); // must NOT throw
+  expect(scoredIds.length).toBe(1); // in-flight offer finishes; b and c never start
+  expect(logs.some((l) => l.event === "rescore.cancelled" && l.level === "info")).toBe(true);
+  expect(logs.some((l) => l.event === "rescore.finish")).toBe(false);
+  expect(summary.scored).toBe(1);
+});
+
 describe("runRescoreGuarded (DB)", () => {
   beforeEach(async () => {
     await db.delete(runLock); await db.delete(offers); await db.delete(config);
