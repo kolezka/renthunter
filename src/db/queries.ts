@@ -1,4 +1,4 @@
-import { eq, notInArray, sql, desc, lt, and, isNotNull, asc, inArray, gt } from "drizzle-orm";
+import { eq, notInArray, sql, desc, lt, and, isNotNull, asc, inArray, gt, gte } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { db } from "./client";
 import { offers, config, logs, runLock, offerSnapshots, type Config, type NewOffer, type Offer, type LogRow, type OfferSnapshot } from "./schema";
@@ -247,6 +247,8 @@ export interface SearchParams {
   features?: string[];
   sources?: string[];
   sort?: "score" | "newest" | "price" | "area";
+  // Only offers whose firstSeen is within the last N hours (omit/0 = no limit).
+  sinceHours?: number;
 }
 
 export async function searchOffers(params: SearchParams, page?: PageParams): Promise<Page<ListOffer>> {
@@ -260,6 +262,10 @@ export async function searchOffers(params: SearchParams, page?: PageParams): Pro
     // BOUND parameter (not concatenated into SQL), so this is injection-safe.
     const pgLiteral = "{" + params.features.map((f) => f.replace(/\\/g, "\\\\").replace(/"/g, '\\"')).join(",") + "}";
     conds.push(sql`${offers.features} @> ${pgLiteral}::text[]`);
+  }
+  if (params.sinceHours && params.sinceHours > 0) {
+    const cutoff = new Date(Date.now() - params.sinceHours * 3600_000);
+    conds.push(gte(offers.firstSeen, cutoff));
   }
 
   const where = and(...conds);

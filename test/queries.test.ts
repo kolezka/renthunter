@@ -1,5 +1,5 @@
 import { test, expect, beforeEach } from "bun:test";
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
 import { db } from "../src/db/client";
 import { offers, config, logs } from "../src/db/schema";
 import {
@@ -198,6 +198,30 @@ test("searchOffers filters by features (array contains)", async () => {
   await seedSearch();
   const r = (await searchOffers({ features: ["garaż"] })).items;
   expect(r.map((o) => o.externalId)).toEqual(["s:2"]);
+});
+
+test("searchOffers filters by sinceHours (firstSeen recency)", async () => {
+  await seedSearch(); // s:1, s:2 both inserted just now (firstSeen ~ now)
+  // Age s:2 to 48h ago; s:1 stays recent.
+  await db.update(offers)
+    .set({ firstSeen: new Date(Date.now() - 48 * 3600_000) })
+    .where(eq(offers.externalId, "s:2"));
+
+  const recent = (await searchOffers({ sinceHours: 24, sort: "newest" })).items;
+  expect(recent.map((o) => o.externalId)).toEqual(["s:1"]);
+
+  const all = (await searchOffers({ sort: "newest" })).items;
+  expect(all.map((o) => o.externalId).sort()).toEqual(["s:1", "s:2"]);
+});
+
+test("sinceHours also filters the keyword (embedding) search branch", async () => {
+  await seedSearch(); // both offers are embeddable
+  await db.update(offers)
+    .set({ firstSeen: new Date(Date.now() - 48 * 3600_000) })
+    .where(eq(offers.externalId, "s:2"));
+  // Without the recency filter both would rank; with it only the recent one survives.
+  const r = (await searchOffers({ queryEmbedding: [0.5, 0.5], sinceHours: 24 })).items;
+  expect(r.map((o) => o.externalId)).toEqual(["s:1"]);
 });
 
 test("getFacets returns distinct districts/kinds/features", async () => {
