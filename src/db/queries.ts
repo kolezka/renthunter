@@ -1,4 +1,4 @@
-import { eq, notInArray, sql, desc, lt, and, isNotNull, asc, inArray } from "drizzle-orm";
+import { eq, notInArray, sql, desc, lt, and, isNotNull, asc, inArray, gt } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { db } from "./client";
 import { offers, config, logs, runLock, offerSnapshots, type Config, type NewOffer, type Offer, type LogRow, type OfferSnapshot } from "./schema";
@@ -139,12 +139,18 @@ export async function appendLog(entry: {
   });
 }
 
-export async function listLogs(opts: { limit?: number } = {}): Promise<LogRow[]> {
+export async function listLogs(opts: { limit?: number; sinceId?: number } = {}): Promise<LogRow[]> {
+  const limit = opts.limit ?? 300;
+  // Tail-cursor read for the SSE stream: rows strictly newer than sinceId,
+  // oldest-first so the client can append in order.
+  if (opts.sinceId !== undefined) {
+    return db.select().from(logs).where(gt(logs.id, opts.sinceId)).orderBy(asc(logs.id)).limit(limit);
+  }
   return db
     .select()
     .from(logs)
     .orderBy(desc(logs.ts), desc(logs.id))
-    .limit(opts.limit ?? 300);
+    .limit(limit);
 }
 
 export async function pruneLogs(): Promise<void> {
