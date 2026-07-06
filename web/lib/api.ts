@@ -79,6 +79,8 @@ export async function getLogs(limit = 300): Promise<LogEntry[]> {
   return getJson<LogEntry[]>(`/api/logs?limit=${limit}`);
 }
 
+export const logStreamUrl = "/api/logs/stream";
+
 export async function runCrawler(): Promise<{ runId: string }> {
   return postJson<{ runId: string }>("/api/run", {}, "Run");
 }
