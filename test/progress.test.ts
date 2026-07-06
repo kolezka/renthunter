@@ -1,8 +1,8 @@
 import { test, expect } from "bun:test";
-import { progressBus, type RescoreEvent } from "../src/pipeline/progress";
+import { progressBus, type RescoreEvent, type ProgressEvent } from "../src/pipeline/progress";
 
 test("subscribe receives emitted events; unsubscribe stops delivery", () => {
-  const seen: RescoreEvent[] = [];
+  const seen: ProgressEvent[] = [];
   const unsub = progressBus.subscribe((e) => seen.push(e));
 
   progressBus.emit({ type: "rescore:start", runId: "r1", total: 3 });
@@ -16,8 +16,8 @@ test("subscribe receives emitted events; unsubscribe stops delivery", () => {
 });
 
 test("multiple subscribers each receive the event", () => {
-  const a: RescoreEvent[] = [];
-  const b: RescoreEvent[] = [];
+  const a: ProgressEvent[] = [];
+  const b: ProgressEvent[] = [];
   const ua = progressBus.subscribe((e) => a.push(e));
   const ub = progressBus.subscribe((e) => b.push(e));
   progressBus.emit({ type: "rescore:start", runId: "r2", total: 0 });
