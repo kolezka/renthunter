@@ -93,6 +93,7 @@
     running = true;
     try {
       await runCrawler();
+      await runStatus.refresh();
       flash("Crawler started — results will appear in the logs.");
     } catch (e) {
       flash(e instanceof Error ? e.message : "Failed to start");
@@ -168,6 +169,7 @@
     rescoring = true; // optimistic; the start event will confirm
     try {
       await rescoreAll();
+      await runStatus.refresh();
       flash("Rescoring started…");
       if (rescoreSafetyTimer) clearTimeout(rescoreSafetyTimer);
       rescoreSafetyTimer = setTimeout(() => { rescoring = false; }, 5 * 60 * 1000); // safety net if rescore:done is missed
@@ -193,10 +195,10 @@
   }
 
   onMount(async () => {
+    runStatus.start();
     await resetAndLoad();
     facets = await getFacets();
     connectWs();
-    runStatus.start();
   });
 
   onDestroy(() => {

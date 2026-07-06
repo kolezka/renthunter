@@ -38,6 +38,9 @@ export const runStatus = {
       timer = null;
     }
   },
+  async refresh() {
+    await poll();
+  },
   async cancel() {
     if (!current) return;
     current = { ...current, cancelling: true }; // optimistic; server confirms
