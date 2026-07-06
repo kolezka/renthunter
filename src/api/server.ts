@@ -15,6 +15,8 @@ export interface ServerOptions {
   refreshOfferById?: (externalId: string) => Promise<Offer | null>;
   runRescore?: () => Promise<{ runId: string; done: Promise<void> } | { busy: true } | { disabled: true }>;
   getAiModels?: (fresh: boolean, baseUrlOverride?: string) => Promise<AiModelsResult>;
+  /** SSE tail poll interval for /api/logs/stream; tests inject a fast one. */
+  logStreamIntervalMs?: number;
 }
 
 // Default in-process crawl, triggered by POST /api/run (source "manual").
@@ -69,6 +71,7 @@ export function createServer(port: number, opts: ServerOptions = {}) {
   const refreshOfferById = opts.refreshOfferById ?? defaultRefresh;
   const runRescore = opts.runRescore ?? defaultRunRescore;
   const getAiModelsFn = opts.getAiModels ?? defaultGetAiModels;
+  const logStreamIntervalMs = opts.logStreamIntervalMs ?? 1000;
 
   return Bun.serve<{ unsub?: () => void }>({
     port,
@@ -153,6 +156,69 @@ export function createServer(port: number, opts: ServerOptions = {}) {
         const limitParam = url.searchParams.get("limit");
         const limit = limitParam ? Math.min(Math.max(parseInt(limitParam, 10) || 300, 1), 1000) : 300;
         return json(await listLogs({ limit }));
+      }
+      if (path === "/api/logs/stream" && req.method === "GET") {
+        // SSE tail of the logs table. Each connection runs its own light poller;
+        // the DB row is the event, so clients get stable ids for dedup, and the
+        // browser's automatic Last-Event-ID header resumes the cursor after a
+        // reconnect with no gap.
+        const lastEventId = parseInt(req.headers.get("last-event-id") ?? "", 10);
+        const enc = new TextEncoder();
+        let timer: ReturnType<typeof setInterval> | undefined;
+        let heartbeat: ReturnType<typeof setInterval> | undefined;
+        const stop = () => {
+          clearInterval(timer);
+          clearInterval(heartbeat);
+        };
+        const stream = new ReadableStream<Uint8Array>({
+          async start(controller) {
+            const send = (text: string) => controller.enqueue(enc.encode(text));
+            let cursor: number;
+            if (Number.isFinite(lastEventId)) {
+              cursor = lastEventId;
+            } else {
+              const newest = await listLogs({ limit: 1 });
+              cursor = newest[0]?.id ?? 0;
+            }
+            send(`event: ready\ndata: ${JSON.stringify({ lastId: cursor })}\n\n`);
+            let ticking = false;
+            timer = setInterval(async () => {
+              if (ticking) return; // don't overlap a slow query with the next tick
+              ticking = true;
+              try {
+                let rows;
+                try {
+                  rows = await listLogs({ sinceId: cursor, limit: 500 });
+                } catch (err) {
+                  console.error("logs stream: tail query failed, retrying next tick:", err);
+                  return;
+                }
+                if (rows.length === 0) return;
+                cursor = rows[rows.length - 1]!.id;
+                try {
+                  send(`id: ${cursor}\nevent: logs\ndata: ${JSON.stringify(rows)}\n\n`);
+                } catch {
+                  stop(); // socket force-closed without cancel() firing
+                }
+              } finally {
+                ticking = false;
+              }
+            }, logStreamIntervalMs);
+            heartbeat = setInterval(() => {
+              try {
+                send(": ping\n\n");
+              } catch {
+                stop();
+              }
+            }, 15_000);
+          },
+          cancel() {
+            stop();
+          },
+        });
+        return new Response(stream, {
+          headers: { "content-type": "text/event-stream", "cache-control": "no-cache" },
+        });
       }
       if (path === "/api/ai/models" && req.method === "GET") {
         // baseUrl is deliberately NOT accepted here: a GET with a user-controlled query
