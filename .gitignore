@@ -43,6 +43,11 @@ web/dist
 # Local DB dumps (contain real data — never commit)
 backups/
 
+# Live crawler config/URL snapshots exported from the deployed DB — carry the
+# server IP and real search URLs. Purged from history 2026-07-13; keep out.
+config.txt
+*.export.txt
+
 # superpowers brainstorming companion artifacts
 .superpowers/
 
